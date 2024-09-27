@@ -1,0 +1,47 @@
+
+/* image ticket */
+.image-container {
+  width: 200px;
+  overflow: hidden;
+  border-radius: 5px;
+  float: left;
+  position: relative;
+}
+
+.preview-image,
+.preview-video {
+  width: 100%;
+  height: auto;
+}
+
+.close-button {
+  position: absolute;
+  top: 0px;
+  right: 3px;
+  background: none;
+  border: none;
+  color: red;
+  font-size: 30px;
+  cursor: pointer;
+}
+
+/* /image ticket */
+/* show password */
+.show-password {
+  position: absolute;
+  top: 20px;
+  right: 10px;
+  /* Adjust to fit within your input field */
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #495057;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.show-password.hidden {
+  display: none;
+}
+
+/* end show password */

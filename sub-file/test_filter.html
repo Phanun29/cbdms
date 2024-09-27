@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filter Table</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .filter-input {
+            margin-bottom: 10px;
+            padding: 8px;
+            width: 100%;
+        }
+    </style>
+</head> 
+<body>
+
+<h2 class="text-center">Filterable Breeding Data Table</h2>
+
+<!-- Input fields for filtering -->
+<input type="text" id="filterPooch1" class="filter-input" onkeyup="filterTable()" placeholder="Search by ពូជទី១">
+<input type="text" id="filterPooch2" class="filter-input" onkeyup="filterTable()" placeholder="Search by ពូជទី២">
+<input type="text" id="filterJumnan" class="filter-input" onkeyup="filterTable()" placeholder="Search by ជំនាន់">
+
+<table class="table table-bordered text-nowrap" id="dataTable" width="100%" cellspacing="0">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>ពូជទី១</th>
+            <th>ពូជទី២</th>
+            <th>ជំនាន់</th>
+            <th>កម្ពស់ផ្លែ</th>
+            <th>កម្ពស់ដើម</th>
+            <th>ថ្ងៃចេញផ្កាញី​ ៥០%</th>
+            <th>ថ្ងៃចេញផ្កាឈ្មោល​ ៥០%</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>1</td>
+            <td>Pumpoy</td>
+            <td>Violet</td>
+            <td>1</td>
+            <td>2</td>
+            <td>3</td>
+            <td>4</td>
+            <td>2</td>
+            <td align="center">
+                <button type="button" class="btn btn-flat btn-default btn-sm dropdown-toggle dropdown-icon" data-toggle="dropdown">
+                    Action
+                    <span class="sr-only">Toggle Dropdown</span>
+                </button>
+                <div class="dropdown-menu" role="menu">
+                    <a class="dropdown-item" href="view_data_breeding.html" data-id=""><span class="fa fa-eye text-dark"></span> View</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="edit_date_breeding.html" data-id=""><span class="fa fa-edit text-primary"></span> Edit</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item delete_data" href="" data-id=""><span class="fa fa-trash text-danger"></span> Delete</a>
+                </div>
+            </td>
+        </tr>
+        <!-- Add more rows here -->
+    </tbody>
+</table>
+
+<script>
+    function filterTable() {
+        // Get input values for filtering
+        let pooch1Input = document.getElementById('filterPooch1').value.toUpperCase();
+        let pooch2Input = document.getElementById('filterPooch2').value.toUpperCase();
+        let jumnanInput = document.getElementById('filterJumnan').value.toUpperCase();
+        
+        let table = document.getElementById('dataTable');
+        let tr = table.getElementsByTagName('tr');
+        
+        // Loop through all rows and filter based on input fields
+        for (let i = 1; i < tr.length; i++) {
+            let tdPooch1 = tr[i].getElementsByTagName('td')[1]; // ពូជទី១ column
+            let tdPooch2 = tr[i].getElementsByTagName('td')[2]; // ពូជទី២ column
+            let tdJumnan = tr[i].getElementsByTagName('td')[3]; // ជំនាន់ column
+            
+            let pooch1Match = tdPooch1 ? tdPooch1.innerText.toUpperCase().indexOf(pooch1Input) > -1 : false;
+            let pooch2Match = tdPooch2 ? tdPooch2.innerText.toUpperCase().indexOf(pooch2Input) > -1 : false;
+            let jumnanMatch = tdJumnan ? tdJumnan.innerText.toUpperCase().indexOf(jumnanInput) > -1 : false;
+            
+            // Show row if all filters match
+            if (pooch1Match && pooch2Match && jumnanMatch) {
+                tr[i].style.display = '';
+            } else {
+                tr[i].style.display = 'none';
+            }
+        }
+    }
+</script>
+
+</body>
+</html>
