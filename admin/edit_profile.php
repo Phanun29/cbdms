@@ -204,7 +204,7 @@ $user = $user_result->fetch_assoc();
                     <!-- DataTales Example -->
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <a class="btn btn-secondary" href="profile.php?id=<?= $User_id ?>"><i class="fa fa-arrow-circle-left" aria-hidden="true"></i> ថយក្រោយ</a>
+                            <a class="btn btn-secondary" href="javascript:history.back()"><i class="fa fa-arrow-circle-left" aria-hidden="true"></i> ថយក្រោយ</a>
 
 
                         </div>

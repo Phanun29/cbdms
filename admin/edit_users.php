@@ -209,7 +209,7 @@ $user = $user_result->fetch_assoc();
                     <!-- DataTales Example -->
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <a class="btn btn-secondary" href="list_users.php"><i class="fa fa-arrow-circle-left" aria-hidden="true"></i> ថយក្រោយ</a>
+                            <a class="btn btn-secondary" href="javascript:history.back()"><i class="fa fa-arrow-circle-left" aria-hidden="true"></i> ថយក្រោយ</a>
 
                             <button type="button" id="changePasswordBtn" class="btn btn-primary" data-toggle="modal"
                                 data-target="#myModal">

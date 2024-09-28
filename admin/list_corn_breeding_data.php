@@ -40,7 +40,27 @@
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
                         <h1 class="h3 mb-0 text-gray-800">បញ្ជីទិន្នន័យបង្កាត់ពូជពោត</h1>
+                        <?php
+                        if (isset($_SESSION['success_message_cbd'])) {
+                            echo "<div class='alert alert-success alert-dismissible fade show mb-0' role='alert'>
+                                        <strong>{$_SESSION['success_message_cbd']}</strong>
+                                        <button type='button' class='close' data-dismiss='modal' aria-label='Close' onclick='this.parentElement.style.display=\"none\";'>
+                                            <span aria-hidden='true'>&times;</span>
+                                        </button>
+                                    </div>";
+                            unset($_SESSION['success_message_cbd']); // Clear the message after displaying
+                        }
 
+                        if (isset($_SESSION['error_message_cbd'])) {
+                            echo "<div class='alert alert-danger alert-dismissible fade show mb-0' role='alert'>
+                                        <strong>{$_SESSION['error_message_cbd']}</strong>
+                                        <button type='button' class='close' data-dismiss='modal' aria-label='Close' onclick='this.parentElement.style.display=\"none\";'>
+                                            <span aria-hidden='true'>&times;</span>
+                                        </button>
+                                    </div>";
+                            unset($_SESSION['error_message_cbd']); // Clear the message after displaying
+                        }
+                        ?>
                     </div>
 
                     <!-- DataTales Example -->
@@ -125,13 +145,13 @@
                                         <?php
 
                                         $corn_breeding_data_query = "SELECT  *FROM tbl_corn_breeding_data
-                                            ORDER BY id DESC
+                                            ORDER BY cbd_id DESC
                                             ";
                                         $cbd_result = $conn->query($corn_breeding_data_query);
                                         $i = 1;
                                         if ($cbd_result->num_rows > 0) {
                                             while ($cbd = $cbd_result->fetch_assoc()) {
-                                                echo "<tr class=''  id='user-" . $cbd['id'] . "'>";
+                                                echo "<tr class=''  id='user-" . $cbd['cbd_id'] . "'>";
                                                 echo "<td class='py-2'>" . $i++ . "</td>";
                                                 echo "<td class='py-2'>" . $cbd['first_corn_variety'] . "</td>";
                                                 echo "<td class='py-2'>" . $cbd['second_corn_variety'] . "</td>";
@@ -149,14 +169,14 @@
                                                     <span class='sr-only'>Toggle Dropdown</span>
                                                 </button>
                                                 <div class='dropdown-menu' role='menu'>
-                                                    <a class='dropdown-item' href='view_corn_breeding_data.php?id={$cbd['id']}'
+                                                    <a class='dropdown-item' href='view_corn_breeding_data.php?id={$cbd['cbd_id']}&name_of_cut_corn_variety={$cbd['name_of_cut_corn_variety']}'
                                                         ><span class='fa fa-eye text-dark'></span> View</a>
                                                     <div class='dropdown-divider'></div>
-                                                    <a class='dropdown-item' href='edit_corn_breeding_data.php?id={$cbd['id']}''
+                                                    <a class='dropdown-item' href='edit_corn_breeding_data.php?id={$cbd['cbd_id']}''
                                                         ><span class='fa fa-edit text-primary'></span>
                                                         Edit</a>
                                                     <div class='dropdown-divider'></div>
-                                                    <button data-id='" . $cbd['id'] . "' class='dropdown-item btn text-danger  delete-btn'><i class='fa-solid fa-trash'></i> លុប</button>
+                                                    <button data-id='" . $cbd['cbd_id'] . "' class='dropdown-item btn text-danger  delete-btn'><i class='fa-solid fa-trash'></i> លុប</button>
                                                 </div>
                                             </td>";
 

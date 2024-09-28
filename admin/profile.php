@@ -106,7 +106,7 @@ $user = $user_result->fetch_assoc();
                     <!-- DataTales  -->
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <a class="btn btn-secondary mb-2" href="index.php"><i class="fa fa-arrow-circle-left" aria-hidden="true"></i> ថយក្រោយ</a>
+                            <a class="btn btn-secondary mb-2" href="javascript:history.back()"><i class="fa fa-arrow-circle-left" aria-hidden="true"></i> ថយក្រោយ</a>
                             <a class="btn btn-success mb-2" href="edit_profile.php?id=<?= $user['user_id'] ?>"><i class="fas fa-user-edit    "></i> កែ Profile</a>
                             <button type="button" id="changePasswordBtn" class="btn btn-primary mb-2" data-toggle="modal"
                                 data-target="#myModal">

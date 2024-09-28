@@ -94,7 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
 
-                            <a class="btn btn-secondary" href="list_users.php"><i class="fa fa-arrow-circle-left" aria-hidden="true"></i> ថយក្រោយ</a>
+                            <a class="btn btn-secondary" href="javascript:history.back()"><i class="fa fa-arrow-circle-left" aria-hidden="true"></i> ថយក្រោយ</a>
                         </div>
                         <form method="POST" enctype="multipart/form-data" class="mt-3 row">
                             <div class="col-12 col-md-4">

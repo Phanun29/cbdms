@@ -15,12 +15,24 @@ if ($result->num_rows > 0) {
 }
 
 // Query to get the count of corn varieties
-$sql = "SELECT COUNT(*) AS total_corn_varieties FROM tbl_corn_varieties";
+$sql = "SELECT COUNT(*) AS total_corn_varieties FROM tbl_corn_varieties WHERE status = 0 ";
 $result = $conn->query($sql);
 
 if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
     $totalCornVarieties = $row['total_corn_varieties'];
+} else {
+    echo "No corn varieties found.";
+}
+
+
+// Query to get the count of corn varieties
+$sql = "SELECT COUNT(*) AS total_corn_varieties_cut FROM tbl_corn_varieties WHERE status = 1";
+$result = $conn->query($sql);
+
+if ($result->num_rows > 0) {
+    $row = $result->fetch_assoc();
+    $totalCornVarietiesCut = $row['total_corn_varieties_cut'];
 } else {
     echo "No corn varieties found.";
 }
@@ -90,10 +102,10 @@ $conn->close();
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">
                                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                               <h6>ទិន្នន័យបង្កាត់ពូជពោតទាំងអស់</h6>
+                                                <h6>ទិន្នន័យបង្កាត់ពូជពោតទាំងអស់</h6>
 
                                             </div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800"><?= $totalCornBreedingData?></div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800"><?= $totalCornBreedingData ?></div>
                                         </div>
                                         <div class="col-auto">
                                             <i class="fa fa-database fa-2x  text-gray-300" aria-hidden="true"></i>
@@ -110,7 +122,7 @@ $conn->close();
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">
                                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                               <h6> ពូជពោតទាំងអស់ </h6>
+                                                <h6> ពូជពោតទាំងអស់ </h6>
                                             </div>
                                             <div class="h5 mb-0 font-weight-bold text-gray-800"><?= $totalCornVarieties ?></div>
                                         </div>
@@ -125,12 +137,30 @@ $conn->close();
 
                         <!--  Card Example -->
                         <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-warning shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                                ពូជពោតបង្កាត់ទាំងអស់</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800"><?= $totalCornVarietiesCut ?></div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-database fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--  Card Example -->
+                        <div class="col-xl-3 col-md-6 mb-4">
                             <div class="card border-left-info shadow h-100 py-2">
                                 <div class="card-body">
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">
                                             <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                              <h6>  អ្នកប្រើប្រាស់ទាំងអស់</h6>
+                                                <h6> អ្នកប្រើប្រាស់ទាំងអស់</h6>
                                             </div>
                                             <div class="row no-gutters align-items-center">
                                                 <div class="col-auto">
@@ -148,23 +178,7 @@ $conn->close();
                             </div>
                         </div>
 
-                        <!--  Card Example -->
-                        <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-warning shadow h-100 py-2">
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                                Pending Requests</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">18</div>
-                                        </div>
-                                        <div class="col-auto">
-                                            <i class="fas fa-comments fa-2x text-gray-300"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+
                     </div>
 
                 </div>
