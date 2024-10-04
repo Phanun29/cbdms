@@ -1,22 +1,14 @@
-<?php
-include "../inc/script_header.php";
+<?php include "../inc/script_header.php";
+// $cbd_id = $_GET['id'];
+$name_of_cut_corn_variety = $_GET['name_of_cut_corn_variety'];
 
-// Validate and sanitize input
-$cbd_id = isset($_GET['id']) ? intval($_GET['id']) : null;
-$name_of_cut_corn_variety = isset($_GET['name_of_cut_corn_variety']) ? $conn->real_escape_string($_GET['name_of_cut_corn_variety']) : null;
-
-// Prepared statement to prevent SQL injection
-$cbd_query = $conn->prepare("SELECT t.*, GROUP_CONCAT(ti.image_path SEPARATOR ',') AS image_paths
-                             FROM tbl_corn_breeding_data t 
-                             LEFT JOIN tbl_corn_breeding_data_images ti 
-                             ON t.name_of_cut_corn_variety = ti.name_of_cut_corn_variety
-                             WHERE cbd_id = ? OR t.name_of_cut_corn_variety = ?
-                             GROUP BY t.name_of_cut_corn_variety");
-$cbd_query->bind_param('is', $cbd_id, $name_of_cut_corn_variety);
-$cbd_query->execute();
-$cbd_result = $cbd_query->get_result();
+$cbd_query = "SELECT  t.*, GROUP_CONCAT(ti.image_path SEPARATOR ',') AS image_paths
+              FROM tbl_corn_breeding_data t 
+              LEFT JOIN tbl_corn_breeding_data_images ti ON t.name_of_cut_corn_variety = ti.name_of_cut_corn_variety
+              WHERE   t.name_of_cut_corn_variety = '$name_of_cut_corn_variety'
+              GROUP BY t.name_of_cut_corn_variety";
+$cbd_result = $conn->query($cbd_query);
 $cbd = $cbd_result->fetch_assoc();
-
 $image_paths = !empty($cbd['image_paths']) ? explode(',', $cbd['image_paths']) : [];
 ?>
 <!DOCTYPE html>
@@ -63,12 +55,8 @@ $image_paths = !empty($cbd['image_paths']) ? explode(',', $cbd['image_paths']) :
           <div class="card shadow mb-4">
             <div class="card-header py-3 bg-primary">
 
-              <a class="btn btn-secondary" href="javascript:history.back()">
-                <i class="fa fa-arrow-circle-left" aria-hidden="true"></i> ថយក្រោយ
-              </a>
+              <a class="btn btn-secondary" href="javascript:history.back()"><i class="fa fa-arrow-circle-left" aria-hidden="true"></i> ថយក្រោយ</a>
               <p class="btn text-white"><?= $cbd['name_of_cut_corn_variety'] ?></p>
-
-
             </div>
             <form action="" class="row mt-3 px-3">
               <div class="col-12 col-md-6 row">
@@ -83,13 +71,14 @@ $image_paths = !empty($cbd['image_paths']) ? explode(',', $cbd['image_paths']) :
                 $status = $fcv['status'];
 
                 if ($status) {
-                  echo " <a href='view_corn_breeding_data_more.php?id={$cbd['cbd_id']}&name_of_cut_corn_variety={$cbd['first_corn_variety']}' class='form-control col-6 text-primary mb-3'>{$cbd['first_corn_variety']}</a>";
+                  echo " <a href='view_corn_breeding_data_more.php?name_of_cut_corn_variety={$cbd['first_corn_variety']}' class='form-control col-6 text-primary mb-3'>{$cbd['first_corn_variety']}</a>";
                 } else {
                   echo " <p class='form-control col-6'>{$cbd['first_corn_variety']}</p>";
                 }
-                ?>
-              </div>
 
+                ?>
+
+              </div>
               <div class="col-12 col-md-6 row">
                 <label for="" class="col-6">ពូជទី២ </label>
                 <?php
@@ -101,12 +90,13 @@ $image_paths = !empty($cbd['image_paths']) ? explode(',', $cbd['image_paths']) :
                 $status = $scv['status'];
 
                 if ($status) {
-                  echo " <a href='view_corn_breeding_data_more.php?id={$cbd['cbd_id']}&name_of_cut_corn_variety={$cbd['second_corn_variety']}' class='form-control col-6 text-primary mb-3'>{$cbd['second_corn_variety']}</a>";
+                  echo " <a href='view_corn_breeding_data_more.php?name_of_cut_corn_variety={$cbd['second_corn_variety']}' class='form-control col-6 text-primary mb-3'>{$cbd['second_corn_variety']}</a>";
                 } else {
                   echo " <p class='form-control col-6'>{$cbd['second_corn_variety']}</p>";
                 }
 
                 ?>
+
               </div>
               <div class="col-12 col-md-6 row">
                 <label for="" class="col-6">ជំនាន់</label>
