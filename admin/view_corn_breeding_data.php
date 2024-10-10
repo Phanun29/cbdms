@@ -263,7 +263,7 @@ $image_paths = !empty($cbd['image_paths']) ? explode(',', $cbd['image_paths']) :
                       // Image
                       echo '<div class="image-container col-4 col-md-1" style="">';
                       echo '<img style="width:100%;" src="' . ($image_path) . '" alt="Issue Image" class="issue-image">';
-                      echo '<button type="button" class="close-button btn-sm delete-image" data-image="' . ($image_path) . '">&times;</button>';
+                    
                       echo '</div>';
                     }
                   }
@@ -273,9 +273,7 @@ $image_paths = !empty($cbd['image_paths']) ? explode(',', $cbd['image_paths']) :
                 <div class="col-12 row mt-3" id="imagePreview">
                 </div>
               </div>
-              <div class="col-12 py-3">
-                <button class="btn btn-primary">submit</button>
-              </div>
+             
             </form>
 
           </div>

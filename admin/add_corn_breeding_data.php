@@ -44,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $total = $_POST['total'];
 
 
-    $name_of_cut_corn_variety = $first_corn_variety . $second_corn_variety ."V". $version;
+    $name_of_cut_corn_variety = $first_corn_variety . $second_corn_variety . "V" . $version;
 
     // Handle file uploads
     $uploaded_images = [];
@@ -77,14 +77,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         foreach ($uploaded_images as $target_file) {
             $query_media = "INSERT INTO tbl_corn_breeding_data_images (name_of_cut_corn_variety, image_path) VALUES ('$name_of_cut_corn_variety', '$target_file')";
             if ($conn->query($query_media) == true) {
-             //   echo "success";
+                //   echo "success";
             } else {
-             //   echo "error" . $query_media . $conn->error;
+                //   echo "error" . $query_media . $conn->error;
             }
         }
         $query_corn_varieties = "INSERT INTO tbl_corn_varieties (corn_varieties_name, status) VALUES ('$name_of_cut_corn_variety', '1   ')";
         if ($conn->query($query_corn_varieties) == true) {
-           // echo "success";
+            // echo "success";
         } else {
             //echo "error" . $query_corn_varieties . $conn->error;
         }
@@ -363,7 +363,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     </a>
 
 
-
     <!-- Bootstrap core JavaScript-->
     <script src="../assets/vendor/jquery/jquery.min.js"></script>
     <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -374,8 +373,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <!-- Custom scripts for all pages-->
     <script src="../assets/js/sb-admin-2.min.js"></script>
 
-    <script src="../scripts/PreViewImage.js"></script>
-
+    <!-- preview images -->
+    <script src="../assets/js/PreViewImage.js"></script>
+ 
 
 
 </body>

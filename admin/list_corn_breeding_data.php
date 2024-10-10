@@ -81,32 +81,38 @@
                                 <div class="col-12 col-md-6">
                                     <form action="" class="row">
                                         <div class="col-3">
-                                            <!-- Three inputs for Name, Gender, and Age filtering -->
-                                            <select id="filterPooch1" class="form-control" onchange="filterTable()">
+                                        
+                                            <select name="" id="filterPooch1" class="form-control" onchange="filterTable()">
+                                                <option value="" disabled selected>--ជ្រើសរើស--</option>
+                                                <?php
+                                                $query_corn_varieties = "SELECT *FROM tbl_corn_varieties";
+                                                $result = $conn->query($query_corn_varieties);
 
-                                                <option value="">--Select--</option>
-
-                                                <option value="Pumpoy">Pumpoy</option>
-                                                <option value="Violet">Violet</option>
-                                                <option value="Namvang">Namvang</option>
-                                                <option value="Samly">Samly</option>
-                                                <option value="Bigwhith">Bigwhith</option>
-                                                <option value="8 Pew">8 Pew</option>
+                                                if ($result->num_rows > 0) {
+                                                    while ($corn_varieties = $result->fetch_assoc()) {
+                                                        echo " <option value='{$corn_varieties['corn_varieties_name']}'>{$corn_varieties['corn_varieties_name']} </option>";
+                                                    }
+                                                }
+                                                ?>
                                             </select>
 
 
                                         </div>
                                         <div class="col-3">
 
-                                            <select id="filterPooch2" class="form-control" onchange="filterTable()">
+                                      
+                                            <select name="" id="filterPooch2" class="form-control" onchange="filterTable()">
+                                                <option value="" disabled selected>--ជ្រើសរើស--</option>
+                                                <?php
+                                                $query_corn_varieties = "SELECT *FROM tbl_corn_varieties";
+                                                $result = $conn->query($query_corn_varieties);
 
-                                                <option value="">--Select--</option>
-                                                <option value="Pumpoy">Pumpoy</option>
-                                                <option value="Violet">Violet</option>
-                                                <option value="Namvang">Namvang</option>
-                                                <option value="Samly">Samly</option>
-                                                <option value="Bigwhith">Bigwhith</option>
-                                                <option value="8 Pew">8 Pew</option>
+                                                if ($result->num_rows > 0) {
+                                                    while ($corn_varieties = $result->fetch_assoc()) {
+                                                        echo " <option value='{$corn_varieties['corn_varieties_name']}'>{$corn_varieties['corn_varieties_name']} </option>";
+                                                    }
+                                                }
+                                                ?>
                                             </select>
 
                                         </div>
@@ -138,7 +144,7 @@
                                             <th>កម្ពស់ដើម</th>
                                             <th>ថ្ងៃចេញផ្កាញី​ ៥០%</th>
                                             <th>ថ្ងៃចេញផ្កាឈ្មោល​ ៥០%</th>
-                                            <th>Action</th>
+                                            <th>សកម្មភាព</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -247,49 +253,10 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 
     <!-- delete corn varieties -->
-    <script>
-        $(document).ready(function() {
-            // Handle delete button click
-            $(document).on('click', '.delete-btn', function() {
-                var userId = $(this).data('id');
-                Swal.fire({
-                    title: 'តើអ្នកប្រាកដទេ?',
-                    text: 'អ្នក​នឹង​មិន​អាច​ស្តា​ពូជ​ពោត​នេះឡើង​វិញទេ​!',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'បាទ លុបវាចោល!',
-                    cancelButtonText: 'បោះបង់'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            url: 'delete_corn_breeding_data.php', // Adjust URL to your delete script
-                            type: 'POST',
-                            data: {
-                                id: userId
-                            },
-                            success: function(response) {
-                                console.log('Response:', response); // Debugging: Log the response
-                                if (response === 'success') {
-                                    console.log('Removing row with ID: #user-' + userId); // Log the row being removed
-                                    $('#user-' + userId).remove(); // Remove the row from the table
-                                    Swal.fire('បានលុប!', 'ឈ្មោះពូជត្រូវបានលុប.', 'success');
-                                } else {
-                                    Swal.fire('Error!', 'មានបញ្ហាពេលលុប.', 'error');
-                                }
-                            },
-                            error: function(xhr, status, error) {
-                                console.error('AJAX Error:', status, error); // Debugging: Log AJAX errors
-                                Swal.fire('Error!', 'An error occurred while deleting the user.', 'error');
-                            }
-                        });
-                    }
-                });
-            });
-        });
-    </script>
+    <script src="../assets/js/deletecCBD.js"></script>
 
+    <!-- auto close session -->
+    <script src="../assets/js/auto_close_alert.js"></script>
 
     <!-- filter -->
     <script>

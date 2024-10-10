@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bar Charts with Data from Paragraphs</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .chart-container {
+            width: 50%;
+            margin: 20px auto;
+        }
+
+        .data-container {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="data-container">
+     
+        <p id="data1">12</p>
+        <p id="data2">19</p>
+        <p id="data3">3</p>
+        <p id="data4">5</p>
+        <p id="data5">10</p>
+        <p id="data6">7</p>
+    </div>
+
+    <!-- Graph 1 with two values -->
+    <div class="chart-container">
+        <canvas id="chart1"></canvas>
+    </div>
+
+    <!-- Graph 2 -->
+    <div class="chart-container">
+        <canvas id="chart2"></canvas>
+    </div>
+
+    <!-- Graph 3 -->
+    <div class="chart-container">
+        <canvas id="chart3"></canvas>
+    </div>
+
+    <!-- Graph 4 -->
+    <div class="chart-container">
+        <canvas id="chart4"></canvas>
+    </div>
+
+    <script>
+        // Function to get data from <p> elements
+        function getDataFromParagraph(id) {
+            return parseInt(document.getElementById(id).innerText, 10);
+        }
+
+        // Fetching data from <p> elements
+        const data1 = getDataFromParagraph('data1');
+        const data2 = getDataFromParagraph('data2');
+        const data3 = getDataFromParagraph('data3');
+        const data4 = getDataFromParagraph('data4');
+        const data5 = getDataFromParagraph('data5');
+        const data6 = getDataFromParagraph('data6');
+
+
+
+
+        // Graph 1 (with two values)
+        var ctx1 = document.getElementById('chart1').getContext('2d');
+        var chart1 = new Chart(ctx1, {
+            type: 'bar',
+            data: {
+                labels: ['Label 1', 'Label 2',],
+                datasets: [{
+                    label: 'Value 1',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    data: [data1, data2, data3]
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Graph 2
+        var ctx2 = document.getElementById('chart2').getContext('2d');
+        var chart2 = new Chart(ctx2, {
+            type: 'bar',
+            data: {
+                labels: ['January', 'February', 'March'],
+                datasets: [{
+                    label: 'Dataset',
+                    backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                    borderColor: 'rgba(255, 159, 64, 1)',
+                    data: [data1, data2, data3]
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Graph 3
+        var ctx3 = document.getElementById('chart3').getContext('2d');
+        var chart3 = new Chart(ctx3, {
+            type: 'bar',
+            data: {
+                labels: ['Red', 'Blue', 'Yellow'],
+                datasets: [{
+                    label: 'Dataset',
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    data: [data1, data2, data3]
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Graph 4
+        var ctx4 = document.getElementById('chart4').getContext('2d');
+        var chart4 = new Chart(ctx4, {
+            type: 'bar',
+            data: {
+                labels: ['Green', 'Purple', 'Orange'],
+                datasets: [{
+                    label: 'Dataset',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    data: [data4, data5, data6]
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+
+</body>
+
+</html>

@@ -1,10 +1,15 @@
-
 <?php include "../inc/script_header.php"; ?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .chart-container {
+            width: 100%;
+            /* margin: 20px auto; */
+        }
+    </style>
     <?php include "../inc/head.php"; ?>
     <style>
         #dataTable_filter {
@@ -46,30 +51,27 @@
 
                     <!-- DataTales Example -->
                     <div class="card shadow mb-4 overflow-hidden">
-                       
+
                         <div class="card-header py-3">
 
 
                             <div class="row">
                                 <div class="col-12 col-md-6 row">
-                                    <div class="col-4 pb-3">
-                                        <button class="btn btn-secondary">Export</button>
-                                    </div>
-                                </div>
-                                <div class="col-12 col-md-6">
                                     <form action="" class="row">
                                         <div class="col-3">
                                             <!-- Three inputs for Name, Gender, and Age filtering -->
                                             <select id="filterPooch1" class="form-control" onchange="filterTable()">
+                                                <option value="" disabled selected>--ជ្រើសរើស--</option>
+                                                <?php
+                                                $query_corn_varieties = "SELECT *FROM tbl_corn_varieties";
+                                                $result = $conn->query($query_corn_varieties);
 
-                                                <option value="">--Select--</option>
-
-                                                <option value="Pumpoy">Pumpoy</option>
-                                                <option value="Violet">Violet</option>
-                                                <option value="Namvang">Namvang</option>
-                                                <option value="Samly">Samly</option>
-                                                <option value="Bigwhith">Bigwhith</option>
-                                                <option value="8 Pew">8 Pew</option>
+                                                if ($result->num_rows > 0) {
+                                                    while ($corn_varieties = $result->fetch_assoc()) {
+                                                        echo " <option value='{$corn_varieties['corn_varieties_name']}'>{$corn_varieties['corn_varieties_name']} </option>";
+                                                    }
+                                                }
+                                                ?>
                                             </select>
 
 
@@ -79,13 +81,67 @@
 
                                             <select id="filterPooch2" class="form-control" onchange="filterTable()">
 
-                                                <option value="">--Select--</option>
-                                                <option value="Pumpoy">Pumpoy</option>
-                                                <option value="Violet">Violet</option>
-                                                <option value="Namvang">Namvang</option>
-                                                <option value="Samly">Samly</option>
-                                                <option value="Bigwhith">Bigwhith</option>
-                                                <option value="8 Pew">8 Pew</option>
+                                                <option value="" disabled selected>--ជ្រើសរើស--</option>
+                                                <?php
+                                                $query_corn_varieties = "SELECT *FROM tbl_corn_varieties";
+                                                $result = $conn->query($query_corn_varieties);
+
+                                                if ($result->num_rows > 0) {
+                                                    while ($corn_varieties = $result->fetch_assoc()) {
+                                                        echo " <option value='{$corn_varieties['corn_varieties_name']}'>{$corn_varieties['corn_varieties_name']} </option>";
+                                                    }
+                                                }
+                                                ?>
+                                            </select>
+
+                                        </div>
+                                        <div class="col-3">
+
+
+                                            <input type="text" id="filterJumnan" class="form-control"
+                                                onkeyup="filterTable()" placeholder="ជំនាន់">
+                                        </div>
+
+
+                                    </form>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <form action="" class="row">
+                                        <div class="col-3">
+                                            <!-- Three inputs for Name, Gender, and Age filtering -->
+                                            <select id="filterPooch1" class="form-control" onchange="filterTable()">
+
+                                                <option value="" disabled selected>--ជ្រើសរើស--</option>
+                                                <?php
+                                                $query_corn_varieties = "SELECT *FROM tbl_corn_varieties";
+                                                $result = $conn->query($query_corn_varieties);
+
+                                                if ($result->num_rows > 0) {
+                                                    while ($corn_varieties = $result->fetch_assoc()) {
+                                                        echo " <option value='{$corn_varieties['corn_varieties_name']}'>{$corn_varieties['corn_varieties_name']} </option>";
+                                                    }
+                                                }
+                                                ?>
+                                            </select>
+
+
+                                        </div>
+                                        <div class="col-3">
+
+
+                                            <select id="filterPooch2" class="form-control" onchange="filterTable()">
+
+                                                <option value="" disabled selected>--ជ្រើសរើស--</option>
+                                                <?php
+                                                $query_corn_varieties = "SELECT *FROM tbl_corn_varieties";
+                                                $result = $conn->query($query_corn_varieties);
+
+                                                if ($result->num_rows > 0) {
+                                                    while ($corn_varieties = $result->fetch_assoc()) {
+                                                        echo " <option value='{$corn_varieties['corn_varieties_name']}'>{$corn_varieties['corn_varieties_name']} </option>";
+                                                    }
+                                                }
+                                                ?>
                                             </select>
 
                                         </div>
@@ -104,57 +160,116 @@
                             </div>
                         </div>
                         <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-bordered text-nowrap" id="dataTable" width="100%"
-                                    cellspacing="0">
-                                    <thead>
-                                        <tr>
-                                            <th>#</th>
-                                            <th>ពូជទី១</th>
-                                            <th>ពូជទី២</th>
-                                            <th>ជំនាន់</th>
-                                            <th>កម្ពស់ផ្លែ</th>
-                                            <th>កម្ពស់ដើម</th>
-                                            <th>ថ្ងៃចេញផ្កាញី​ ៥០%</th>
-                                            <th>ថ្ងៃចេញផ្កាឈ្មោល​ ៥០%</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>1</td>
-                                            <td>Pumpoy</td>
-                                            <td>Violet</td>
-                                            <td>1</td>
-                                            <td>2</td>
-                                            <td>3</td>
-                                            <td>4</td>
-                                            <td>2</td>
-                                            <td align="center">
-                                                <button type="button"
-                                                    class="btn btn-flat btn-default btn-sm dropdown-toggle dropdown-icon"
-                                                    data-toggle="dropdown">
-                                                    Action
-                                                    <span class="sr-only">Toggle Dropdown</span>
-                                                </button>
-                                                <div class="dropdown-menu" role="menu">
-                                                    <a class="dropdown-item" href="view_data_breeding.html"
-                                                        data-id=""><span class="fa fa-eye text-dark"></span> View</a>
-                                                    <div class="dropdown-divider"></div>
-                                                    <a class="dropdown-item" href="edit_date_breeding.html"
-                                                        data-id=""><span class="fa fa-edit text-primary"></span>
-                                                        Edit</a>
-                                                    <div class="dropdown-divider"></div>
-                                                    <a class="dropdown-item delete_data" href="" data-id=""><span
-                                                            class="fa fa-trash text-danger"></span> Delete</a>
-                                                </div>
-                                            </td>
-                                        </tr>
+                            <div class="row ">
+                                <!-- Graph 1 with two values -->
+                                <div class="chart-container col-12 col-md-6">
+                                    <canvas id="chart1"></canvas>
+                                </div>
 
+                                <!-- Graph 2 -->
+                                <div class="chart-container col-12 col-md-6">
+                                    <canvas id="chart2"></canvas>
+                                </div>
 
-                                        <!-- Add more rows here -->
-                                    </tbody>
-                                </table>
+                                <!-- Graph 3 -->
+                                <div class="chart-container col-12 col-md-6">
+                                    <canvas id="chart3"></canvas>
+                                </div>
+
+                                <!-- Graph 4 -->
+                                <div class="chart-container col-12 col-md-6">
+                                    <canvas id="chart4"></canvas>
+                                </div>
+
+                                <script>
+                                    // Graph 1 (with two values)
+                                    var ctx1 = document.getElementById('chart1').getContext('2d');
+                                    var chart1 = new Chart(ctx1, {
+                                        type: 'bar',
+                                        data: {
+                                            labels: ['Label 1', 'Label 2'],
+                                            datasets: [{
+                                                label: 'កម្ពស់ផ្លែ',
+                                                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                                borderColor: 'rgba(75, 192, 192, 1)',
+                                                data: [12, 19, 3]
+                                            }]
+                                        },
+                                        options: {
+                                            scales: {
+                                                y: {
+                                                    beginAtZero: true
+                                                }
+                                            }
+                                        }
+                                    });
+
+                                    // Graph 2
+                                    var ctx2 = document.getElementById('chart2').getContext('2d');
+                                    var chart2 = new Chart(ctx2, {
+                                        type: 'bar',
+                                        data: {
+                                            labels: ['January', 'February'],
+                                            datasets: [{
+                                                label: 'កម្ពស់ដើម',
+                                                backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                                                borderColor: 'rgba(255, 159, 64, 1)',
+                                                data: [10, 20, 30]
+                                            }]
+                                        },
+                                        options: {
+                                            scales: {
+                                                y: {
+                                                    beginAtZero: true
+                                                }
+                                            }
+                                        }
+                                    });
+
+                                    // Graph 3
+                                    var ctx3 = document.getElementById('chart3').getContext('2d');
+                                    var chart3 = new Chart(ctx3, {
+                                        type: 'bar',
+                                        data: {
+                                            labels: ['Red', 'Blue', ],
+                                            datasets: [{
+                                                label: 'ថ្ងៃចេញផ្កាញី​ ៥០%',
+                                                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                                                borderColor: 'rgba(255, 99, 132, 1)',
+                                                data: [12, 19, 7]
+                                            }]
+                                        },
+                                        options: {
+                                            scales: {
+                                                y: {
+                                                    beginAtZero: true
+                                                }
+                                            }
+                                        }
+                                    });
+
+                                    // Graph 4
+                                    var ctx4 = document.getElementById('chart4').getContext('2d');
+                                    var chart4 = new Chart(ctx4, {
+                                        type: 'bar',
+                                        data: {
+                                            labels: ['Green', 'Purple'],
+                                            datasets: [{
+                                                label: 'ថ្ងៃចេញផ្កាឈ្មោល​ ៥០%',
+                                                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                                borderColor: 'rgba(75, 192, 192, 1)',
+                                                data: [8, 15, 10]
+                                            }]
+                                        },
+                                        options: {
+                                            scales: {
+                                                y: {
+                                                    beginAtZero: true
+                                                }
+                                            }
+                                        }
+                                    });
+                                </script>
 
                             </div>
                         </div>
@@ -204,9 +319,6 @@
     <script src="../assets/js/demo/datatables-demo.js"></script>
 
 
-    <!-- Page level plugins -->
-    <script src="../assets/vendor/datatables/jquery.dataTables.min.js"></script>
-    <script src="../assets/vendor/datatables/dataTables.bootstrap4.min.js"></script>
 
 
 </body>
