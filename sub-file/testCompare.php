@@ -7,7 +7,6 @@
     <style>
         .chart-container {
             width: 100%;
-            /* margin: 20px auto; */
         }
     </style>
     <?php include "../inc/head.php"; ?>
@@ -24,7 +23,6 @@
     <div id="wrapper">
 
         <!-- Sidebar -->
-
         <?php include "../inc/sidebar.php"; ?>
         <!-- End of Sidebar -->
 
@@ -35,10 +33,8 @@
             <div id="content">
 
                 <!-- Topbar -->
-
                 <?php include "../inc/topbar.php"; ?>
                 <!-- End of Topbar -->
-
 
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
@@ -46,7 +42,6 @@
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
                         <h1 class="h3 mb-0 text-gray-800">ប្រៀបធៀបពូជពោត</h1>
-
                     </div>
 
                     <!-- DataTales Example -->
@@ -134,6 +129,44 @@
                             </div>
                         </div>
                         <div class="card-body">
+                            <div class="table-responsive">
+                                <!-- First Table -->
+                                <table style="display:none ;" class="table table-bordered text-nowrap" id="dataTable1" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>ពូជទី១</th>
+                                            <th>ពូជទី២</th>
+                                            <th>ជំនាន់</th>
+                                            <th>កម្ពស់ផ្លែ</th>
+                                            <th>កម្ពស់ដើម</th>
+                                            <th>ថ្ងៃចេញផ្កាញី ៥០%</th>
+                                            <th>ថ្ងៃចេញផ្កាឈ្មោល ៥០%</th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tableBody1"></tbody>
+                                </table>
+
+                                <!-- Second Table -->
+                                <table style="display: none;" class="table table-bordered text-nowrap" id="dataTable2" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>ពូជទី១</th>
+                                            <th>ពូជទី២</th>
+                                            <th>ជំនាន់</th>
+                                            <th>កម្ពស់ផ្លែ</th>
+                                            <th>កម្ពស់ដើម</th>
+                                            <th>ថ្ងៃចេញផ្កាញី ៥០%</th>
+                                            <th>ថ្ងៃចេញផ្កាឈ្មោល ៥០%</th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tableBody2"></tbody>
+                                </table>
+                            </div>
+
                             <div class="row ">
                                 <!-- Graph 1 with two values -->
                                 <div class="chart-container col-12 col-md-6">
@@ -247,20 +280,16 @@
                             </div>
                         </div>
                     </div>
-
                 </div>
                 <!-- /.container-fluid -->
-
             </div>
             <!-- End of Main Content -->
 
             <!-- Footer -->
             <?php include "../inc/footer.php"; ?>
             <!-- End of Footer -->
-
         </div>
         <!-- End of Content Wrapper -->
-
     </div>
     <!-- End of Page Wrapper -->
 
@@ -269,32 +298,160 @@
         <i class="fas fa-angle-up"></i>
     </a>
 
-
-
-    <!-- Bootstrap core JavaScript-->
+    <!-- Scripts -->
     <script src="../assets/vendor/jquery/jquery.min.js"></script>
     <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/vendor/datatables/jquery.dataTables.min.js"></script>
+    <script src="../assets/vendor/datatables/dataTables.bootstrap4.min.js"></script>
 
-    <!-- Core plugin JavaScript-->
-    <script src="../assets/vendor/jquery-easing/jquery.easing.min.js"></script>
+    <!-- <script>
+        $(document).ready(function() {
+            $("#applyFiltersBtn").click(function() {
+                var filterBreed1A = $("#filterBreedA1").val();
+                var filterBreed1B = $("#filterBreedB1").val();
+                var version1 = $("#version1").val();
 
-    <!-- Custom scripts for all pages-->
-    <script src="../assets/js/sb-admin-2.min.js"></script>
+                var filterBreed2A = $("#filterBreedA2").val();
+                var filterBreed2B = $("#filterBreedB2").val();
+                var version2 = $("#version2").val();
 
-    <!-- Page level plugins -->
-    <script src="../assets/vendor/chart.js/Chart.min.js"></script>
+                // Ajax request for table 1
+                if (filterBreed1A || filterBreed1B || version1) {
+                    $.ajax({
+                        type: "POST",
+                        url: "retrieveData.php",
+                        data: {
+                            filterBreedA: filterBreed1A,
+                            filterBreedB: filterBreed1B,
+                            version: version1
+                        },
+                        success: function(response) {
+                            $("#tableBody1").html(response);
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("Error occurred while fetching data for Table 1:", error);
+                            // Optionally handle the error (e.g., display a message)
+                        }
+                    });
+                }
 
-    <!-- Page level custom scripts -->
-    <script src="../assets/js/demo/chart-area-demo.js"></script>
-    <script src="../assets/js/demo/chart-pie-demo.js"></script>
-
-    <!-- Page level custom scripts -->
-    <script src="../assets/js/demo/datatables-demo.js"></script>
-
-
-
-    <!-- data chart -->
+                // Ajax request for table 2
+                if (filterBreed2A || filterBreed2B || version2) {
+                    $.ajax({
+                        type: "POST",
+                        url: "retrieveData.php",
+                        data: {
+                            filterBreedA: filterBreed2A,
+                            filterBreedB: filterBreed2B,
+                            version: version2
+                        },
+                        success: function(response) {
+                            $("#tableBody2").html(response);
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("Error occurred while fetching data for Table 2:", error);
+                            // Optionally handle the error (e.g., display a message)
+                        }
+                    });
+                }
+            });
+        });
+    </script> -->
     <script>
+        // $(document).ready(function() {
+        //     let averageFruitHeight1 = null; // State for average from table 1
+        //     let averageFruitHeight2 = null; // State for average from table 2
+
+        //     $("#applyFiltersBtn").click(function() {
+        //         var filterBreed1A = $("#filterBreedA1").val();
+        //         var filterBreed1B = $("#filterBreedB1").val();
+        //         var version1 = $("#version1").val();
+
+        //         var filterBreed2A = $("#filterBreedA2").val();
+        //         var filterBreed2B = $("#filterBreedB2").val();
+        //         var version2 = $("#version2").val();
+
+        //         // Ajax request for table 1
+        //         if (filterBreed1A || filterBreed1B || version1) {
+        //             $.ajax({
+        //                 type: "POST",
+        //                 url: "retrieveData.php",
+        //                 data: {
+        //                     filterBreedA: filterBreed1A,
+        //                     filterBreedB: filterBreed1B,
+        //                     version: version1
+        //                 },
+        //                 success: function(response) {
+        //                     $("#tableBody1").html(response.tableHtml);
+        //                     averageFruitHeight1 = parseFloat(response.averageFruitHeight);
+        //                     updateChart(); // Update chart with new averages
+        //                 },
+        //                 error: function(xhr, status, error) {
+        //                     console.error("Error occurred while fetching data for Table 1:", error);
+        //                 }
+        //             });
+        //         }
+
+        //         // Ajax request for table 2
+        //         if (filterBreed2A || filterBreed2B || version2) {
+        //             $.ajax({
+        //                 type: "POST",
+        //                 url: "retrieveData.php",
+        //                 data: {
+        //                     filterBreedA: filterBreed2A,
+        //                     filterBreedB: filterBreed2B,
+        //                     version: version2
+        //                 },
+        //                 success: function(response) {
+        //                     $("#tableBody2").html(response.tableHtml);
+        //                     averageFruitHeight2 = parseFloat(response.averageFruitHeight);
+        //                     updateChart(); // Update chart with new averages
+        //                 },
+        //                 error: function(xhr, status, error) {
+        //                     console.error("Error occurred while fetching data for Table 2:", error);
+        //                 }
+        //             });
+        //         }
+        //     });
+
+        //     function updateChart() {
+        //         var labels = ['ពូជទី១', 'ពូជទី២'];
+        //         var data = {
+        //             labels: labels,
+        //             datasets: [{
+        //                 label: 'Average Fruit Height',
+        //                 backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        //                 borderColor: 'rgba(75, 192, 192, 1)',
+        //                 data: [
+        //                     averageFruitHeight1 || 0, // Use the tracked average from table 1
+        //                     averageFruitHeight2 || 0 // Use the tracked average from table 2
+        //                 ]
+        //             }]
+        //         };
+
+        //         // Check if the chart already exists
+        //         if (chart1) {
+        //             chart1.data.datasets[0].data = data.datasets[0].data; // Update the data
+        //             chart1.update(); // Update the chart
+        //         } else {
+        //             var ctx1 = document.getElementById('chart1').getContext('2d');
+        //             chart1 = new Chart(ctx1, {
+        //                 type: 'bar',
+        //                 data: data,
+        //                 options: {
+        //                     scales: {
+        //                         y: {
+        //                             beginAtZero: true
+        //                         }
+        //                     }
+        //                 }
+        //             });
+        //         }
+        //     }
+
+
+        // });
+
         $(document).ready(function() {
             // State for averages from the tables
             let averageFruitHeight1 = null;
@@ -413,9 +570,6 @@
             }
         });
     </script>
-
-
-
 
 </body>
 
