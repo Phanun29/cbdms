@@ -489,8 +489,8 @@ $name_of_cut_corn_variety = $cbd['name_of_cut_corn_variety'];
                     // Determine if the file is an image or video
                     if (in_array($file_extension, ['jpeg', 'jpg', 'png', 'gif', 'bmp', 'webp'])) {
                       // Image
-                      echo '<div class="image-container col-4 col-md-1" style="">';
-                      echo '<img style="width:100%;" src="' . ($image_path) . '" alt="Issue Image" class="issue-image">';
+                      echo '<div class="image-container col-4 col-md-3" style="">';
+                      echo '<img style="width:100%;" src="' . ($image_path) . '" alt="Image" class="issue-image">';
                       echo '<button type="button" class="close-button btn-sm delete-image" data-image="' . ($image_path) . '">&times;</button>';
                       echo '</div>';
                     }

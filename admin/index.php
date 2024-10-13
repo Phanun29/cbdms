@@ -58,6 +58,34 @@ $conn->close();
 
     include_once "../inc/head.php";
     ?>
+    <style>
+        .small-box {
+            border-radius: .25rem;
+            box-shadow: 0 0 1px rgba(0, 0, 0, .125), 0 1px 3px rgba(0, 0, 0, .2);
+            display: block;
+            /* margin-bottom: 20px; */
+            position: relative;
+            overflow: hidden;
+        }
+
+        .small-box-footer {
+            background-color: rgba(0 0 0 /42%);
+            color: rgba(255, 255, 255, .8);
+            display: block;
+            padding: 3px 0;
+            position: relative;
+            text-align: center;
+            text-decoration: none;
+            z-index: 10;
+
+        }
+
+        .small-box-footer:hover {
+            text-decoration: none;
+            color: rgba(255, 255, 255, .8);
+            background-color: rgba(0 0 0 /62%);
+        }
+    </style>
 </head>
 
 <body id="page-top">
@@ -97,12 +125,12 @@ $conn->close();
 
                         <!--  Card Example -->
                         <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-primary shadow h-100 py-2">
+                            <div class="card border-left-primary shadow h-100 small-box">
                                 <div class="card-body">
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">
                                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                                <h6>ទិន្នន័យបង្កាត់ពូជពោតទាំងអស់</h6>
+                                                <h6>ទិន្នន័យបង្កាត់ពូជពោតសរុប</h6>
 
                                             </div>
                                             <div class="h5 mb-0 font-weight-bold text-gray-800"><?= $totalCornBreedingData ?></div>
@@ -112,17 +140,18 @@ $conn->close();
                                         </div>
                                     </div>
                                 </div>
+                                <a href="list_corn_breeding_data.php" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
                             </div>
                         </div>
 
                         <!--  Card Example -->
                         <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-success shadow h-100 py-2">
+                            <div class="card border-left-success shadow h-100 small-box">
                                 <div class="card-body">
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">
                                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                                <h6> ពូជពោតទាំងអស់ </h6>
+                                                <h6> ពូជពោតសរុប</h6>
                                             </div>
                                             <div class="h5 mb-0 font-weight-bold text-gray-800"><?= $totalCornVarieties ?></div>
                                         </div>
@@ -132,17 +161,18 @@ $conn->close();
                                         </div>
                                     </div>
                                 </div>
+                                <a href="list_corn_varieties.php" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
                             </div>
                         </div>
 
                         <!--  Card Example -->
                         <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-warning shadow h-100 py-2">
+                            <div class="card border-left-warning shadow h-100 small-box">
                                 <div class="card-body">
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">
                                             <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                                <h6>ពូជពោតបង្កាត់ទាំងអស់</h6>
+                                                <h6>ពូជពោតបង្កាត់សរុប</h6>
                                             </div>
                                             <div class="h5 mb-0 font-weight-bold text-gray-800"><?= $totalCornVarietiesCut ?></div>
                                         </div>
@@ -151,17 +181,18 @@ $conn->close();
                                         </div>
                                     </div>
                                 </div>
+                                <a href="list_corn_varieties.php" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
                             </div>
                         </div>
 
                         <!--  Card Example -->
                         <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-info shadow h-100 py-2">
+                            <div class="card border-left-info shadow h-100 small-box">
                                 <div class="card-body">
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">
                                             <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                                <h6> អ្នកប្រើប្រាស់ទាំងអស់</h6>
+                                                <h6> អ្នកប្រើប្រាស់សរុប</h6>
                                             </div>
                                             <div class="row no-gutters align-items-center">
                                                 <div class="col-auto">
@@ -176,6 +207,7 @@ $conn->close();
                                         </div>
                                     </div>
                                 </div>
+                                <a href="list_users.php" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
                             </div>
                         </div>
 

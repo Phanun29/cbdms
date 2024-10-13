@@ -127,7 +127,7 @@
                                             <input type="text" id="version2" class="form-control" placeholder="ជំនាន់">
                                         </div>
                                         <div class="col-3">
-                                            <button id="applyFiltersBtn" class="btn btn-primary" type="button">Filter</button>
+                                            <button id="applyFiltersBtn" class="btn btn-primary" type="button">   <i class="fa-solid fa-code-compare"></i> ប្រៀបធៀប</button>
                                         </div>
                                     </form>
                                 </div>
@@ -288,8 +288,7 @@
     <script src="../assets/js/demo/chart-area-demo.js"></script>
     <script src="../assets/js/demo/chart-pie-demo.js"></script>
 
-    <!-- Page level custom scripts -->
-    <script src="../assets/js/demo/datatables-demo.js"></script>
+
 
 
 

@@ -79,52 +79,40 @@
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-6">
-                                    <form action="" class="row">
+                                    <form action="" id="filterForm" class="row">
                                         <div class="col-3">
-                                        
-                                            <select name="" id="filterPooch1" class="form-control" onchange="filterTable()">
+                                            <select name="filterPooch1" id="filterPooch1" class="form-control">
                                                 <option value="" disabled selected>--ជ្រើសរើស--</option>
                                                 <?php
-                                                $query_corn_varieties = "SELECT *FROM tbl_corn_varieties";
+                                                $query_corn_varieties = "SELECT * FROM tbl_corn_varieties";
                                                 $result = $conn->query($query_corn_varieties);
 
                                                 if ($result->num_rows > 0) {
                                                     while ($corn_varieties = $result->fetch_assoc()) {
-                                                        echo " <option value='{$corn_varieties['corn_varieties_name']}'>{$corn_varieties['corn_varieties_name']} </option>";
+                                                        echo "<option value='{$corn_varieties['corn_varieties_name']}'>{$corn_varieties['corn_varieties_name']}</option>";
                                                     }
                                                 }
                                                 ?>
                                             </select>
-
-
                                         </div>
                                         <div class="col-3">
-
-                                      
-                                            <select name="" id="filterPooch2" class="form-control" onchange="filterTable()">
+                                            <select name="filterPooch2" id="filterPooch2" class="form-control">
                                                 <option value="" disabled selected>--ជ្រើសរើស--</option>
                                                 <?php
-                                                $query_corn_varieties = "SELECT *FROM tbl_corn_varieties";
                                                 $result = $conn->query($query_corn_varieties);
-
                                                 if ($result->num_rows > 0) {
                                                     while ($corn_varieties = $result->fetch_assoc()) {
-                                                        echo " <option value='{$corn_varieties['corn_varieties_name']}'>{$corn_varieties['corn_varieties_name']} </option>";
+                                                        echo "<option value='{$corn_varieties['corn_varieties_name']}'>{$corn_varieties['corn_varieties_name']}</option>";
                                                     }
                                                 }
                                                 ?>
                                             </select>
-
                                         </div>
                                         <div class="col-3">
-
-
-                                            <input type="text" id="filterJumnan" class="form-control"
-                                                onkeyup="filterTable()" placeholder="ជំនាន់">
+                                            <input type="text" id="filterJumnan" class="form-control" placeholder="ជំនាន់">
                                         </div>
-
                                         <div class="col-3">
-                                            <button class="btn btn-primary ">Filter</button>
+                                            <button class="btn btn-primary" id="filterBtn"><i class="fas fa-filter    "></i> Filter</button>
                                         </div>
                                     </form>
                                 </div>
@@ -147,7 +135,7 @@
                                             <th>សកម្មភាព</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody id="cornBreedingData">
                                         <?php
 
                                         $corn_breeding_data_query = "SELECT  *FROM tbl_corn_breeding_data
@@ -258,44 +246,31 @@
     <!-- auto close session -->
     <script src="../assets/js/auto_close_alert.js"></script>
 
-    <!-- filter -->
     <script>
-        function filterTable() {
-            let pooch1Select = document.getElementById('filterPooch1').value.toUpperCase();
-            let pooch2Select = document.getElementById('filterPooch2').value.toUpperCase();
-            let jumnanSelect = document.getElementById('filterJumnan').value.toUpperCase();
+        document.getElementById('filterBtn').addEventListener('click', function(e) {
+            e.preventDefault(); // Prevent form submission
 
-            let table = document.getElementById('dataTable');
-            let tr = table.getElementsByTagName('tr');
-            let noResults = document.getElementById('noResults');
-            let noMatchCount = 0;
+            // Get filter values
+            var pooch1 = document.getElementById('filterPooch1').value;
+            var pooch2 = document.getElementById('filterPooch2').value;
+            var jumnan = document.getElementById('filterJumnan').value;
 
-            for (let i = 1; i < tr.length; i++) {
-                let tdPooch1 = tr[i].getElementsByTagName('td')[1]; // ពូជទី១ column
-                let tdPooch2 = tr[i].getElementsByTagName('td')[2]; // ពូជទី២ column
-                let tdJumnan = tr[i].getElementsByTagName('td')[3]; // ជំនាន់ column
-
-                let pooch1Match = tdPooch1 ? tdPooch1.innerText.toUpperCase().indexOf(pooch1Select) > -1 || pooch1Select === "" : false;
-                let pooch2Match = tdPooch2 ? tdPooch2.innerText.toUpperCase().indexOf(pooch2Select) > -1 || pooch2Select === "" : false;
-                let jumnanMatch = tdJumnan ? tdJumnan.innerText.toUpperCase().indexOf(jumnanSelect) > -1 || jumnanSelect === "" : false;
-
-                // Show row if all filters match
-                if (pooch1Match && pooch2Match && jumnanMatch) {
-                    tr[i].style.display = '';
-                } else {
-                    tr[i].style.display = 'none';
-                    noMatchCount++;
+            // Send AJAX request to fetch filtered data
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', 'filter_corn_breeding_data.php', true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.onreadystatechange = function() {
+                if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+                    document.getElementById('cornBreedingData').innerHTML = this.responseText;
                 }
-            }
+            };
 
-            // Show "No results found" if all rows are hidden
-            if (noMatchCount === tr.length - 1) {
-                noResults.style.display = 'block';
-            } else {
-                noResults.style.display = 'none';
-            }
-        }
+            // Send filter values
+            xhr.send('pooch1=' + pooch1 + '&pooch2=' + pooch2 + '&jumnan=' + jumnan);
+        });
     </script>
+
+
 
 
 

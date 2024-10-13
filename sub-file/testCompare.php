@@ -286,7 +286,7 @@
             <!-- End of Main Content -->
 
             <!-- Footer -->
-            <?php include "../inc/footer.php"; ?>
+            <?php include "../inc/footer.php"; ?>   
             <!-- End of Footer -->
         </div>
         <!-- End of Content Wrapper -->
