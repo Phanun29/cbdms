@@ -2,29 +2,47 @@
 include "../inc/script_header.php";
 
 $User_id = $_GET['id'];
-// Check if the form was submitted for updating user information
 if (isset($_POST['change_password'])) {
-    // Get the new password and confirm password from the form
+    // Get the form data
+    $currentPassword = $_POST['current_password'];
     $newPassword = $_POST['new_password'];
     $confirmPassword = $_POST['confirm_password'];
 
-    // Verify if the new password matches the confirm password
-    if ($newPassword === $confirmPassword) {
-        // Hash the new password
-        $hashedNewPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+    // Query to get the current hashed password from the database for the user
+    $stmt = $conn->prepare("SELECT password FROM tbl_users WHERE users_id = ?");
+    $stmt->bind_param('i', $User_id);
+    $stmt->execute();
+    $stmt->bind_result($storedHashedPassword);
+    $stmt->fetch();
+    $stmt->close();
 
-        // Prepare and execute the SQL query to update the user's password
-        $updateSql = "UPDATE tbl_users SET password = '$hashedNewPassword' WHERE user_id = $User_id";
-        if ($conn->query($updateSql) === TRUE) {
-            // Password updated successfully
-            $_SESSION['success_message_user'] = 'បានផ្លាស់ប្តូរពាក្យសម្ងាត់ដោយជោគជ័យ.';
+    // Verify the current password
+    if (password_verify($currentPassword, $storedHashedPassword)) {
+        // Check if the new password matches the confirm password
+        if ($newPassword === $confirmPassword) {
+            // Hash the new password
+            $hashedNewPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+
+            // Prepare and execute the SQL query to update the user's password
+            $updateStmt = $conn->prepare("UPDATE tbl_users SET password = ? WHERE users_id = ?");
+            $updateStmt->bind_param('si', $hashedNewPassword, $User_id);
+
+            if ($updateStmt->execute()) {
+                // Password updated successfully
+                $_SESSION['success_message_user'] = 'បានផ្លាស់ប្តូរពាក្យសម្ងាត់ដោយជោគជ័យ.';
+            } else {
+                // Error updating password
+                $_SESSION['error_message_user'] = 'កំហុសបានកើតឡើងខណៈពេលផ្លាស់ប្តូរពាក្យសម្ងាត់.';
+            }
+
+            $updateStmt->close();
         } else {
-            // Error updating password
-            $_SESSION['error_message_user'] = 'កំហុសបានកើតឡើងខណៈពេលផ្លាស់ប្តូរពាក្យសម្ងាត់.';
+            // New password and confirm password do not match
+            $_SESSION['error_message_user'] = 'ពាក្យសម្ងាត់ថ្មី និងបញ្ជាក់ពាក្យសម្ងាត់មិនត្រូវគ្នាទេ.';
         }
     } else {
-        // New password and confirm password do not match
-        $_SESSION['error_message_user'] = 'ពាក្យសម្ងាត់ថ្មី និងបញ្ជាក់ពាក្យសម្ងាត់មិនត្រូវគ្នាទេ.';
+        // Current password does not match
+        $_SESSION['error_message_user'] = 'ពាក្យសម្ងាត់បច្ចុប្បន្នមិនត្រូវគ្នាទេ.';
     }
 
     // Redirect back to the same page to display the alert message
@@ -35,7 +53,8 @@ if (isset($_POST['change_password'])) {
 
 
 
-$user_query = "SELECT * FROM tbl_users WHERE user_id = '$User_id' ";
+
+$user_query = "SELECT * FROM tbl_users WHERE users_id = '$User_id' ";
 $user_result = $conn->query($user_query);
 $user = $user_result->fetch_assoc();
 ?>
@@ -107,7 +126,7 @@ $user = $user_result->fetch_assoc();
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
                             <a class="btn btn-secondary mb-2" href="javascript:history.back()"><i class="fa fa-arrow-circle-left" aria-hidden="true"></i> ថយក្រោយ</a>
-                            <a class="btn btn-success mb-2" href="edit_profile.php?id=<?= $user['user_id'] ?>"><i class="fas fa-user-edit    "></i> កែ Profile</a>
+                            <a class="btn btn-success mb-2" href="edit_profile.php?id=<?= $user['users_id'] ?>"><i class="fas fa-user-edit    "></i> កែ Profile</a>
                             <button type="button" id="changePasswordBtn" class="btn btn-primary mb-2" data-toggle="modal"
                                 data-target="#myModal">
                                 <i class="fas fa-lock"></i> ​ប្តូរពាក្យសម្ងាត់
@@ -195,6 +214,16 @@ $user = $user_result->fetch_assoc();
                 <!-- Modal Body -->
                 <div class="modal-body">
                     <form action="" method="POST" onsubmit="return checkPasswordMatch();">
+                        <!-- New Password -->
+                        <div class="form-group">
+                            <label for="current_password">ពាក្យសម្ងាត់បច្ចុប្បន្ន <span class="text-danger">*</span></label>
+                            <div class="d-flex justify-content-between">
+                                <input class="form-control" type="password" id="current_password" name="current_password" required>
+                                <button type="button" class="show-current-password btn btn-sm" onclick="togglePasswordVisibility('current_password', 'togglePasswordIconCurrent')">
+                                    <i class="fas fa-eye" id="togglePasswordIconCurrent"></i>
+                                </button>
+                            </div>
+                        </div>
 
                         <!-- New Password -->
                         <div class="form-group">
@@ -250,7 +279,7 @@ $user = $user_result->fetch_assoc();
 
     <!-- show password -->
     <style>
-        .show-password {
+        .show-current-password {
             position: absolute;
             top: 70px;
             right: 25px;
@@ -263,9 +292,22 @@ $user = $user_result->fetch_assoc();
             cursor: pointer;
         }
 
-        .show-password-confirm {
+        .show-password {
             position: absolute;
             top: 155px;
+            right: 25px;
+            /* Adjust to fit within your input field */
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #495057;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .show-password-confirm {
+            position: absolute;
+            top: 242px;
             right: 25px;
             /* Adjust to fit within your input field */
             transform: translateY(-50%);
@@ -282,8 +324,8 @@ $user = $user_result->fetch_assoc();
     </style>
     <script>
         // Toggle password visibility for any password input field
-        function togglePasswordVisibility(inputId, iconId) {
-            var passwordInput = document.getElementById(inputId);
+        function togglePasswordVisibility(fieldId, iconId) {
+            var passwordInput = document.getElementById(fieldId);
             var toggleIcon = document.getElementById(iconId);
 
             if (passwordInput.type === 'password') {

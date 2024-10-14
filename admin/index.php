@@ -140,7 +140,7 @@ $conn->close();
                                         </div>
                                     </div>
                                 </div>
-                                <a href="list_corn_breeding_data.php" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                                <a href="list_corn_breeding_data.php" class="small-box-footer">ព័ត៌មានបន្ថែម <i class="fas fa-arrow-circle-right"></i></a>
                             </div>
                         </div>
 
@@ -161,7 +161,7 @@ $conn->close();
                                         </div>
                                     </div>
                                 </div>
-                                <a href="list_corn_varieties.php" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                                <a href="list_corn_varieties.php" class="small-box-footer">ព័ត៌មានបន្ថែម <i class="fas fa-arrow-circle-right"></i></a>
                             </div>
                         </div>
 
@@ -181,7 +181,7 @@ $conn->close();
                                         </div>
                                     </div>
                                 </div>
-                                <a href="list_corn_varieties.php" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                                <a href="list_corn_varieties.php" class="small-box-footer">ព័ត៌មានបន្ថែម <i class="fas fa-arrow-circle-right"></i></a>
                             </div>
                         </div>
 
@@ -207,7 +207,7 @@ $conn->close();
                                         </div>
                                     </div>
                                 </div>
-                                <a href="list_users.php" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                                <a href="list_users.php" class="small-box-footer">ព័ត៌មានបន្ថែម <i class="fas fa-arrow-circle-right"></i></a>
                             </div>
                         </div>
 

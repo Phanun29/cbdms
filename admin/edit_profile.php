@@ -14,7 +14,7 @@ if (isset($_POST['change_password'])) {
         $hashedNewPassword = password_hash($newPassword, PASSWORD_DEFAULT);
 
         // Prepare and execute the SQL query to update the user's password
-        $updateSql = "UPDATE tbl_users SET password = '$hashedNewPassword' WHERE user_id = $User_id";
+        $updateSql = "UPDATE tbl_users SET password = '$hashedNewPassword' WHERE users_id = $User_id";
         if ($conn->query($updateSql) === TRUE) {
             // Password updated successfully
             $_SESSION['success_message_user'] = 'បានផ្លាស់ប្តូរពាក្យសម្ងាត់ដោយជោគជ័យ.';
@@ -43,7 +43,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $phone_number = $_POST['phone_number'] ?? null;
 
     // Fetch current data from the database
-    $query = "SELECT first_name, last_name, username, email, phone_number, image FROM tbl_users WHERE user_id = ?";
+    $query = "SELECT first_name, last_name, username, email, phone_number, image FROM tbl_users WHERE users_id = ?";
     $stmt = $conn->prepare($query);
     $stmt->bind_param("i", $User_id);
     $stmt->execute();
@@ -79,7 +79,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Check if the username already exists
-    $check_query = "SELECT user_id FROM tbl_users WHERE username = ? AND user_id != ?";
+    $check_query = "SELECT users_id FROM tbl_users WHERE username = ? AND users_id != ?";
     $stmt = $conn->prepare($check_query);
     $stmt->bind_param("si", $username, $User_id);
     $stmt->execute();
@@ -110,7 +110,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Update user query if changes are made
-    $update_user_query = "UPDATE tbl_users SET first_name = ?, last_name = ?, username = ?, email = ?, phone_number = ?, image = ? WHERE user_id = ?";
+    $update_user_query = "UPDATE tbl_users SET first_name = ?, last_name = ?, username = ?, email = ?, phone_number = ?, image = ? WHERE users_id = ?";
     $stmt = $conn->prepare($update_user_query);
     $stmt->bind_param("ssssssi", $first_name, $last_name, $username, $email, $phone_number, $image_path, $User_id);
 
@@ -133,7 +133,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 
 
-$user_query = "SELECT * FROM tbl_users WHERE user_id = '$User_id' ";
+$user_query = "SELECT * FROM tbl_users WHERE users_id = '$User_id' ";
 $user_result = $conn->query($user_query);
 $user = $user_result->fetch_assoc();
 ?>
@@ -283,55 +283,7 @@ $user = $user_result->fetch_assoc();
     </a>
 
 
-    <!-- model chang password -->
-    <!-- Modal Change Password -->
-    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <!-- Modal Header -->
-                <div class="modal-header">
-                    <h4 class="modal-title">ប្តូរពាក្យសម្ងាត់</h4>
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                </div>
-                <!-- Modal Body -->
-                <div class="modal-body">
-                    <form action="" method="POST" onsubmit="return checkPasswordMatch();">
-
-                        <!-- New Password -->
-                        <div class="form-group">
-                            <label for="new_password">ពាក្យសម្ងាត់ថ្មី <span class="text-danger">*</span></label>
-                            <div class="d-flex justify-content-between">
-                                <input class="form-control" type="password" id="new_password" name="new_password" required>
-                                <button type="button" class="show-password btn btn-sm" onclick="togglePasswordVisibility('new_password', 'togglePasswordIcon')">
-                                    <i class="fas fa-eye" id="togglePasswordIcon"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Confirm Password -->
-                        <div class="form-group">
-                            <label for="confirm_password">បញ្ជាក់ពាក្យសម្ងាត់ <span class="text-danger">*</span></label>
-                            <div class="d-flex justify-content-between">
-                                <input class="form-control" type="password" id="confirm_password" name="confirm_password" required>
-                                <button type="button" class="show-password-confirm btn btn-sm" onclick="togglePasswordVisibility('confirm_password', 'togglePasswordIconConfirm')">
-                                    <i class="fas fa-eye" id="togglePasswordIconConfirm"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <!-- Error message displayed here -->
-                        <small id="passwordError" class="form-text text-danger" style="display: none;">ពាក្យសម្ងាត់មិនត្រូវគ្នាទេ, សូមពិនិត្យម្តងទៀត!</small>
-                        <!-- Submit Button -->
-                        <div class="col-12" style="text-align: right;">
-                            <button class="btn btn-success  mt-3" type="submit" name="change_password">
-                                <i class="fa fa-check-circle" aria-hidden="true"></i> យល់ព្រម
-                            </button>
-                        </div>
-
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
+   
 
 
     <!-- Bootstrap core JavaScript-->

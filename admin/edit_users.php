@@ -14,7 +14,7 @@ if (isset($_POST['change_password'])) {
         $hashedNewPassword = password_hash($newPassword, PASSWORD_DEFAULT);
 
         // Prepare and execute the SQL query to update the user's password
-        $updateSql = "UPDATE tbl_users SET password = '$hashedNewPassword' WHERE user_id = $User_id";
+        $updateSql = "UPDATE tbl_users SET password = '$hashedNewPassword' WHERE users_id = $User_id";
         if ($conn->query($updateSql) === TRUE) {
             // Password updated successfully
             $_SESSION['success_message_user'] = 'បានផ្លាស់ប្តូរពាក្យសម្ងាត់ដោយជោគជ័យ.';
@@ -45,7 +45,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $status = $_POST['status'];
 
     // Fetch current image from the database
-    $query = "SELECT first_name, last_name, username, email, phone_number, user_type, status, image FROM tbl_users WHERE user_id = ?";
+    $query = "SELECT first_name, last_name, username, email, phone_number, user_type, status, image FROM tbl_users WHERE users_id = ?";
     $stmt = $conn->prepare($query);
     $stmt->bind_param("i", $User_id);
     $stmt->execute();
@@ -81,7 +81,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Check if the username already exists
-    $check_query = "SELECT user_id FROM tbl_users WHERE username = ? AND user_id != ?";
+    $check_query = "SELECT users_id FROM tbl_users WHERE username = ? AND users_id != ?";
     $stmt = $conn->prepare($check_query);
     $stmt->bind_param("si", $username, $User_id);
     $stmt->execute();
@@ -115,7 +115,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 
     // Update user query if changes are made
-    $update_user_query = "UPDATE tbl_users SET first_name = ?, last_name = ?, username = ?, email = ?, phone_number = ?, image = ?, status = ?, user_type = ? WHERE user_id = ?";
+    $update_user_query = "UPDATE tbl_users SET first_name = ?, last_name = ?, username = ?, email = ?, phone_number = ?, image = ?, status = ?, user_type = ? WHERE users_id = ?";
     $stmt = $conn->prepare($update_user_query);
     $stmt->bind_param("ssssssssi", $first_name, $last_name, $username, $email, $phone_number, $image_path, $status, $user_type, $User_id);
 
@@ -138,7 +138,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 
 
-$user_query = "SELECT * FROM tbl_users WHERE user_id = '$User_id' ";
+$user_query = "SELECT * FROM tbl_users WHERE users_id = '$User_id' ";
 $user_result = $conn->query($user_query);
 $user = $user_result->fetch_assoc();
 ?>

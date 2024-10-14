@@ -92,13 +92,13 @@ include "../inc/script_header.php";
                                         <?php
 
                                         $user_query = "SELECT  *FROM tbl_users
-                                                        ORDER BY user_id DESC
+                                                        ORDER BY users_id DESC
                                                         ";
                                         $user_result = $conn->query($user_query);
                                         $i = 1;
                                         if ($user_result->num_rows > 0) {
                                             while ($user = $user_result->fetch_assoc()) {
-                                                echo "<tr class=''  id='user-" . $user['user_id'] . "'>";
+                                                echo "<tr class=''  id='user-" . $user['users_id'] . "'>";
                                                 echo "<td class='py-2'>" . $i++ . "</td>";
                                                 echo "<td class='py-2'>" . $user['last_name'] . "</td>";
                                                 echo "<td class='py-2'>" . $user['first_name'] . "</td>";
@@ -109,7 +109,7 @@ include "../inc/script_header.php";
                                                 echo "<td class='py-1'>" . $user['status'] . "</td>";
 
                                                 echo "<td class='py-1' align='center'>                                   
-                                                    <a class='btn text-primary' href='edit_users.php?id={$user['user_id']}' data-id=''>
+                                                    <a class='btn text-primary' href='edit_users.php?id={$user['users_id']}' data-id=''>
                                                         <i class='fas fa-user-edit'></i> កែ
                                                     </a>                                                
                                                     </td>";

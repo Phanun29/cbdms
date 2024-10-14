@@ -65,22 +65,18 @@ if ($result->num_rows > 0) {
         echo '<td>' . $row['flower_day'] . '</td>';
 
         echo "<td align='center'>
-        <button type='button' class='btn btn-flat btn-default btn-sm dropdown-toggle dropdown-icon' data-toggle='dropdown'>
-            Action
-            <span class='sr-only'>Toggle Dropdown</span>
-        </button>
-        <div class='dropdown-menu' role='menu'>
-            <a class='dropdown-item' href='view_corn_breeding_data.php?id={$row['cbd_id']}&name_of_cut_corn_variety={$row['name_of_cut_corn_variety']}'><span class='fa fa-eye text-dark'></span> View</a>
-            <div class='dropdown-divider'></div>
-            <a class='dropdown-item' href='edit_corn_breeding_data.php?id={$row['cbd_id']}'><span class='fa fa-edit text-primary'></span> Edit</a>
-            <div class='dropdown-divider'></div>
-            <button data-id='" . $row['cbd_id'] . "' class='dropdown-item btn text-danger delete-btn'><i class='fa-solid fa-trash'></i> លុប</button>
-        </div>
-    </td>";
-?>
-  
-        
-<?php
+                <button type='button' class='btn btn-flat btn-default btn-sm dropdown-toggle dropdown-icon' data-toggle='dropdown'>
+                    Action
+                    <span class='sr-only'>Toggle Dropdown</span>
+                </button>
+                <div class='dropdown-menu' role='menu'>
+                    <a class='dropdown-item' href='view_corn_breeding_data.php?id={$row['cbd_id']}&name_of_cut_corn_variety={$row['name_of_cut_corn_variety']}'><span class='fa fa-eye text-dark'></span> View</a>
+                    <div class='dropdown-divider'></div>
+                    <a class='dropdown-item' href='edit_corn_breeding_data.php?id={$row['cbd_id']}'><span class='fa fa-edit text-primary'></span> Edit</a>
+                    <div class='dropdown-divider'></div>
+                    <button data-id='" . $row['cbd_id'] . "' class='dropdown-item btn text-danger delete-btn'><i class='fa-solid fa-trash'></i> លុប</button>
+                </div>
+            </td>";
 
         echo "  </td>";
         echo '</tr>';
