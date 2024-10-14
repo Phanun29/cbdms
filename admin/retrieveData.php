@@ -3,8 +3,6 @@
 session_start();
 include "config.php";
 
-
-
 // Initialize filter variables
 $filterBreedA = isset($_POST['filterBreedA']) ? $_POST['filterBreedA'] : '';
 $filterBreedB = isset($_POST['filterBreedB']) ? $_POST['filterBreedB'] : '';
@@ -55,7 +53,7 @@ if ($result->num_rows > 0) {
         echo '<td>' . $row['stem_height'] . '</td>';
         echo '<td>' . $row['male_flowering_day'] . '</td>';
         echo '<td>' . $row['flower_day'] . '</td>';
-        echo "  </td>";
+        echo "</td>";
         echo '</tr>';
     }
     // Calculate the average of each column

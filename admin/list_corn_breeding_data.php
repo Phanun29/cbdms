@@ -75,7 +75,7 @@
                             <div class="row">
                                 <div class="col-12 col-md-6 row">
                                     <div class="col-4 pb-3">
-                                        <button class="btn btn-secondary">Export</button>
+                                        <button class="btn btn-secondary" onclick="exportToExcel()"><i class="fas fa-file-export    "></i> Export</button>
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-6">
@@ -184,6 +184,116 @@
 
                                     </tbody>
                                 </table>
+                                <table
+                                    class="table table-bordered text-nowrap"
+                                    style="display: none;"
+                                    id="tableForExport"
+                                    width="100%"
+                                    cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>ពូជទី១</th>
+                                            <th>ពូជទី២</th>
+                                            <th>ជំនាន់</th>
+                                            <th>កម្ពស់ផ្លែ</th>
+                                            <th>កម្ពស់ដើម</th>
+                                            <th>ថ្ងៃចេញផ្កាញី​ ៥០%</th>
+                                            <th>ថ្ងៃចេញផ្កាឈ្មោល​ ៥០%</th>
+
+                                            <th>គម្លាតអាយុចេញផ្កា</th>
+                                            <th>ចំនួនទងផ្កាញី</th>
+                                            <th>ចំនួនផ្កាឈ្មោល</th>
+                                            <th>អាយុចេញផ្កាឈ្មោល</th>
+                                            <th>អាយុចេញផ្កាញី</th>
+                                            <th>មុំស្លឹក</th>
+                                            <th>ភាពមានកន្ទុយលើចុងផ្លែ</th>
+                                            <th>ប្រវែងផ្លែ</th>
+                                            <th>ភាពជាប់ផ្លែ</th>
+                                            <th>ទំហំដើម</th>
+                                            <th>ប្រវែងគល់ផ្លែ</th>
+                                            <th>ប្រព័ន្ធឫស</th>
+                                            <th>អត្រាដំណុះ</th>
+                                            <th>កម្រិតកើត Albino</th>
+
+                                            <th>កម្រិតបំផ្លាញរបស់ដង្កូវ</th>
+                                            <th>ភាពរឹងមាំ</th>
+                                            <th>គម្លាតអាយុផ្កាញីនិងឈ្មោល</th>
+                                            <th>កើតជំងឺ(Seuthern Rast)</th>
+                                            <th>អង្កត់ផ្ចិតផ្លែបកសំបក</th>
+                                            <th>កម្រិតការកើតជំងឺ</th>
+                                            <th>ប្រវែងផ្លែបកសំបក</th>
+                                            <th>ចំនួនជួរគ្រាប់ក្នុងមួយផ្លែ</th>
+                                            <th>សំបកផ្លែ</th>
+                                            <th>ទម្ងន់</th>
+                                            <th>ដង្កូវ</th>
+                                            <th>ភាពរឹងមាំរបស់កូន</th>
+                                            <th>ការរៀងជួររបស់គ្រាប់</th>
+                                            <th>ចំនួនឫស</th>
+                                            <th>ប្រវែងចុងស្នៀត</th>
+                                            <th>សរុប</th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody id="cornBreedingData2">
+                                        <?php
+
+                                        $corn_breeding_data_query = "SELECT  *FROM tbl_corn_breeding_data
+                                            ORDER BY cbd_id DESC
+                                            ";
+                                        $cbd_result = $conn->query($corn_breeding_data_query);
+                                        $i = 1;
+                                        if ($cbd_result->num_rows > 0) {
+                                            while ($cbd = $cbd_result->fetch_assoc()) {
+                                                echo "<tr class=''  id='user-" . $cbd['cbd_id'] . "'>";
+                                                echo "<td class='py-2'>" . $i++ . "</td>";
+                                                echo "<td class='py-2'>" . $cbd['first_corn_variety'] . "</td>";
+                                                echo "<td class='py-2'>" . $cbd['second_corn_variety'] . "</td>";
+                                                echo "<td class='py-1'>" . $cbd['version'] . "</td>";
+                                                echo "<td class='py-1'>" . $cbd['fruit_height'] . "</td>";
+                                                echo "<td class='py-1'>" . $cbd['stem_height'] . "</td>";
+                                                echo "<td class='py-1'>" . $cbd['flower_day'] . "</td>";
+                                                echo "<td class='py-1'>" . $cbd['male_flowering_day'] . "</td>";
+                                                echo "<td class='py-2'>" . $cbd['flowering_age_gap'] . "</td>";
+                                                echo "<td class='py-2'>" . $cbd['number_of_stalks'] . "</td>";
+                                                echo "<td class='py-1'>" . $cbd['number_of_male_flower_stalks'] . "</td>";
+                                                echo "<td class='py-1'>" . $cbd['male_flowering_age'] . "</td>";
+                                                echo "<td class='py-1'>" . $cbd['flowering_age'] . "</td>";
+                                                echo "<td class='py-1'>" . $cbd['leaf_angle'] . "</td>";
+                                                echo "<td class='py-1'>" . $cbd['the_tail_on_the_end_of_the_fruit'] . "</td>";
+                                                echo "<td class='py-2'>" . $cbd['fruit_length'] . "</td>";
+                                                echo "<td class='py-2'>" . $cbd['fertility'] . "</td>";
+                                                echo "<td class='py-1'>" . $cbd['original_size'] . "</td>";
+                                                echo "<td class='py-1'>" . $cbd['stem_length'] . "</td>";
+                                                echo "<td class='py-1'>" . $cbd['root_system'] . "</td>";
+                                                echo "<td class='py-1'>" . $cbd['germination_rate'] . "</td>";
+                                                echo "<td class='py-1'>" . $cbd['albino_birth_level'] . "</td>";
+                                                echo "<td class='py-2'>" . $cbd['worm_damage_level'] . "</td>";
+                                                echo "<td class='py-2'>" . $cbd['strength'] . "</td>";
+                                                echo "<td class='py-1'>" . $cbd['age_gap_between_male_and_female_flowers'] . "</td>";
+                                                echo "<td class='py-1'>" . $cbd['seuthern_rast'] . "</td>";
+                                                echo "<td class='py-1'>" . $cbd['peeled_fruit_diameter'] . "</td>";
+                                                echo "<td class='py-1'>" . $cbd['disease_level'] . "</td>";
+                                                echo "<td class='py-1'>" . $cbd['peel_length'] . "</td>";
+                                                echo "<td class='py-2'>" . $cbd['number_of_rows_of_seeds_per_fruit'] . "</td>";
+                                                echo "<td class='py-2'>" . $cbd['fruit_peel'] . "</td>";
+                                                echo "<td class='py-2'>" . $cbd['weight'] . "</td>";
+                                                echo "<td class='py-1'>" . $cbd['worm'] . "</td>";
+                                                echo "<td class='py-1'>" . $cbd['seedling_vigor'] . "</td>";
+                                                echo "<td class='py-1'>" . $cbd['row_of_corn_kernels'] . "</td>";
+                                                echo "<td class='py-1'>" . $cbd['number_of_roots'] . "</td>";
+                                                echo "<td class='py-1'>" . $cbd['tip_length'] . "</td>";
+                                                echo "<td class='py-2'>" . $cbd['total'] . "</td>";
+                                                echo "</tr>";
+                                            }
+                                        } else {
+                                            echo "<tr><td class='text-center' colspan='9'>No corn breeding data found!</td></tr>";
+                                        }
+
+                                        ?>
+
+                                    </tbody>
+                                </table>
 
                             </div>
                         </div>
@@ -245,7 +355,7 @@
 
     <!-- auto close session -->
     <script src="../assets/js/auto_close_alert.js"></script>
-
+    <!-- filter -->
     <script>
         document.getElementById('filterBtn').addEventListener('click', function(e) {
             e.preventDefault(); // Prevent form submission
@@ -254,6 +364,11 @@
             var pooch1 = document.getElementById('filterPooch1').value;
             var pooch2 = document.getElementById('filterPooch2').value;
             var jumnan = document.getElementById('filterJumnan').value;
+
+
+            if (!pooch1 && !pooch2 && !jumnan) {
+                return; // Exit the function if all filters are empty
+            }
 
             // Send AJAX request to fetch filtered data
             var xhr = new XMLHttpRequest();
@@ -268,6 +383,93 @@
             // Send filter values
             xhr.send('pooch1=' + pooch1 + '&pooch2=' + pooch2 + '&jumnan=' + jumnan);
         });
+        document.getElementById('filterBtn').addEventListener('click', function(e) {
+            e.preventDefault(); // Prevent form submission
+
+            // Get filter values (allow empty values)
+            var pooch1 = document.getElementById('filterPooch1').value || '';
+            var pooch2 = document.getElementById('filterPooch2').value || '';
+            var jumnan = document.getElementById('filterJumnan').value || '';
+
+
+            if (!pooch1 && !pooch2 && !jumnan) {
+                return; // Exit the function if all filters are empty
+            }
+
+            // Send AJAX request to fetch data for export (or all data if filters are empty)
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', 'filter_for_export.php', true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.onreadystatechange = function() {
+                if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+                    document.getElementById('cornBreedingData2').innerHTML = this.responseText;
+                }
+            };
+
+            // Send filter values (empty if not selected)
+            xhr.send('pooch1=' + pooch1 + '&pooch2=' + pooch2 + '&jumnan=' + jumnan);
+        });
+    </script>
+    <!-- export to excel -->
+    <script>
+        function exportToExcel() {
+            // Create a new HTML table with only the relevant columns
+            var exportTable = document.createElement('table');
+            var exportTableBody = document.createElement('tbody');
+
+            // Get the header row from the HTML table
+            var headerRow = document.querySelector('#tableForExport thead tr');
+
+            // Create a new row for the export table and add the header cells
+            var exportHeaderRow = document.createElement('tr');
+            headerRow.querySelectorAll('th').forEach(function(cell) {
+                var exportCell = document.createElement('td');
+                exportCell.textContent = cell.textContent;
+                exportCell.style.border = '1px solid black'; // Add border
+                exportHeaderRow.appendChild(exportCell);
+            });
+            exportTableBody.appendChild(exportHeaderRow);
+
+            // Iterate over each row of the HTML table and add the data rows
+            var tableRows = document.querySelectorAll('#tableForExport tbody tr');
+            tableRows.forEach(function(row) {
+                // Create a new row for the export table
+                var exportRow = document.createElement('tr');
+
+                // Iterate over each cell of the row and create corresponding cells in the export table
+                row.querySelectorAll('td').forEach(function(cell) {
+                    var exportCell = document.createElement('td');
+                    exportCell.textContent = cell.textContent;
+                    exportCell.style.border = '1px solid black'; // Add border
+                    exportRow.appendChild(exportCell);
+                });
+
+                // Append the row to the export table body
+                exportTableBody.appendChild(exportRow);
+            });
+
+            // Append the table body to the export table
+            exportTable.appendChild(exportTableBody);
+
+            // Create a Blob object containing the HTML table
+            var blob = new Blob(['\ufeff', exportTable.outerHTML], {
+                type: 'application/vnd.ms-excel'
+            });
+
+            // Create a link element to download the Blob
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement("a");
+            a.href = url;
+            a.download = "data_corn.xls";
+            document.body.appendChild(a);
+            a.click();
+
+            // Cleanup
+            setTimeout(function() {
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            }, 0);
+        }
     </script>
 
 

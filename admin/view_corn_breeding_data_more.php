@@ -173,6 +173,7 @@ $image_paths = !empty($cbd['image_paths']) ? explode(',', $cbd['image_paths']) :
               <div class="col-12 col-md-6 row">
                 <label for="" class="col-6">កម្រិតកើត Albino</label>
                 <p class="form-control col-6"><?= $cbd['albino_birth_level'] ?></p>
+                <!-- to this -->
               </div>
               <div class="col-12 col-md-6 row">
                 <label for="" class="col-6">កម្រិតបំផ្លាញរបស់ដង្កូវ</label>
@@ -253,7 +254,7 @@ $image_paths = !empty($cbd['image_paths']) ? explode(',', $cbd['image_paths']) :
                       // Image
                       echo '<div class="image-container col-4 col-md-3" style="">';
                       echo '<img style="width:100%;" src="' . ($image_path) . '" alt="Issue Image" class="issue-image">';
-                   
+
                       echo '</div>';
                     }
                   }
@@ -263,7 +264,7 @@ $image_paths = !empty($cbd['image_paths']) ? explode(',', $cbd['image_paths']) :
                 <div class="col-12 row mt-3" id="imagePreview">
                 </div>
               </div>
-             
+
             </form>
 
           </div>
