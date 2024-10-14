@@ -116,7 +116,7 @@ $conn->close();
 
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+                        <h1 class="h3 mb-0 text-gray-800">Dasshboard</h1>
 
                     </div>
 
@@ -151,7 +151,7 @@ $conn->close();
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">
                                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                                <h6> ពូជពោតសរុប</h6>
+                                                <h6> ពូជពោតដើមសរុប</h6>
                                             </div>
                                             <div class="h5 mb-0 font-weight-bold text-gray-800"><?= $totalCornVarieties ?></div>
                                         </div>
@@ -161,7 +161,7 @@ $conn->close();
                                         </div>
                                     </div>
                                 </div>
-                                <a href="list_corn_varieties.php" class="small-box-footer">ព័ត៌មានបន្ថែម <i class="fas fa-arrow-circle-right"></i></a>
+                                <a href="list_of_original_corn_varieties.php" class="small-box-footer">ព័ត៌មានបន្ថែម <i class="fas fa-arrow-circle-right"></i></a>
                             </div>
                         </div>
 
@@ -181,7 +181,7 @@ $conn->close();
                                         </div>
                                     </div>
                                 </div>
-                                <a href="list_corn_varieties.php" class="small-box-footer">ព័ត៌មានបន្ថែម <i class="fas fa-arrow-circle-right"></i></a>
+                                <a href="list_of_hybrid_corn_varieties.php" class="small-box-footer">ព័ត៌មានបន្ថែម <i class="fas fa-arrow-circle-right"></i></a>
                             </div>
                         </div>
 
@@ -236,7 +236,6 @@ $conn->close();
     </a>
 
 
-
     <!-- Bootstrap core JavaScript-->
     <script src="../assets/vendor/jquery/jquery.min.js"></script>
     <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -247,12 +246,7 @@ $conn->close();
     <!-- Custom scripts for all pages-->
     <script src="../assets/js/sb-admin-2.min.js"></script>
 
-    <!-- Page level plugins -->
-    <script src="../assets/vendor/chart.js/Chart.min.js"></script>
 
-    <!-- Page level custom scripts -->
-    <script src="../assets/js/demo/chart-area-demo.js"></script>
-    <script src="../assets/js/demo/chart-pie-demo.js"></script>
 
 </body>
 

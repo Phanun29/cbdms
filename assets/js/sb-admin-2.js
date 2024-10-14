@@ -1,56 +1,58 @@
-(function($) {
-  "use strict"; // Start of use strict
+!function (l) {
+  "use strict";
 
-  // Toggle the side navigation
-  $("#sidebarToggle, #sidebarToggleTop").on('click', function(e) {
-    $("body").toggleClass("sidebar-toggled");
-    $(".sidebar").toggleClass("toggled");
-    if ($(".sidebar").hasClass("toggled")) {
-      $('.sidebar .collapse').collapse('hide');
-    };
+  // Toggle the sidebar on button click
+  l("#sidebarToggle, #sidebarToggleTop").on("click", function (e) {
+    l("body").toggleClass("sidebar-toggled"); // Toggle class on body
+    l(".sidebar").toggleClass("toggled"); // Toggle class on sidebar
+
+    // If the sidebar is toggled, hide any open collapsible elements
+    if (l(".sidebar").hasClass("toggled")) {
+      l(".sidebar .;;").collapse("hide");
+    }
   });
 
-  // Close any open menu accordions when window is resized below 768px
-  $(window).resize(function() {
-    if ($(window).width() < 768) {
-      $('.sidebar .collapse').collapse('hide');
-    };
-    
-    // Toggle the side navigation when window is resized below 480px
-    if ($(window).width() < 480 && !$(".sidebar").hasClass("toggled")) {
-      $("body").addClass("sidebar-toggled");
-      $(".sidebar").addClass("toggled");
-      $('.sidebar .collapse').collapse('hide');
-    };
+  // Handle window resize events
+  l(window).resize(function () {
+    // Hide collapsible elements if the window width is less than 768 pixels
+    if (l(window).width() < 768) {
+      l(".sidebar .collapse").collapse("hide");
+    }
+
+    // If window width is less than 480 pixels and sidebar is not toggled, toggle it
+    if (l(window).width() < 480 && !l(".sidebar").hasClass("toggled")) {
+      l("body").addClass("sidebar-toggled");
+      l(".sidebar").addClass("toggled");
+      l(".sidebar .collapse").collapse("hide");
+    }
   });
 
-  // Prevent the content wrapper from scrolling when the fixed side navigation hovered over
-  $('body.fixed-nav .sidebar').on('mousewheel DOMMouseScroll wheel', function(e) {
-    if ($(window).width() > 768) {
-      var e0 = e.originalEvent,
-        delta = e0.wheelDelta || -e0.detail;
-      this.scrollTop += (delta < 0 ? 1 : -1) * 30;
+  // Enable smooth scrolling for fixed navigation
+  l("body.fixed-nav .sidebar").on("mousewheel DOMMouseScroll wheel", function (e) {
+    var o;
+    if (768 < l(window).width()) {
+      o = (o = e.originalEvent).wheelDelta || -o.detail;
+      this.scrollTop += 30 * (o < 0 ? 1 : -1);
       e.preventDefault();
     }
   });
 
-  // Scroll to top button appear
-  $(document).on('scroll', function() {
-    var scrollDistance = $(this).scrollTop();
-    if (scrollDistance > 100) {
-      $('.scroll-to-top').fadeIn();
+  // Show/hide scroll-to-top button based on scroll position
+  l(document).on("scroll", function () {
+    if (100 < l(this).scrollTop()) {
+      l(".scroll-to-top").fadeIn();
     } else {
-      $('.scroll-to-top').fadeOut();
+      l(".scroll-to-top").fadeOut();
     }
   });
 
-  // Smooth scrolling using jQuery easing
-  $(document).on('click', 'a.scroll-to-top', function(e) {
-    var $anchor = $(this);
-    $('html, body').stop().animate({
-      scrollTop: ($($anchor.attr('href')).offset().top)
-    }, 1000, 'easeInOutExpo');
+  // Smooth scroll to the top when the button is clicked
+  l(document).on("click", "a.scroll-to-top", function (e) {
+    var o = l(this);
+    l("html, body").stop().animate({
+      scrollTop: l(o.attr("href")).offset().top
+    }, 1000, "easeInOutExpo");
     e.preventDefault();
   });
-
-})(jQuery); // End of use strict
+}(jQuery);
+// 

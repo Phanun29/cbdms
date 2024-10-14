@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collapsible Sidebar Example</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Font Awesome (for icons) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <style>
+        /* Custom styles for the sidebar */
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background: #f8f9fa;
+            padding-top: 20px;
+        }
+
+        .nav-item.active {
+            background-color: #e9ecef;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="sidebar">
+        <ul class="navbar-nav">
+                <!-- Nav Item - Pages Collapse Menu -->
+                <li class="nav-item active">
+                    <a class="nav-link" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true"
+                        aria-controls="collapseTwo">
+                        <i class="fas fa-fw fa-cog"></i>
+                        <span>Components</span>
+                    </a>
+                    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                        <div class="bg-white py-2 collapse-inner rounded">
+                            <h6 class="collapse-header">Custom Components:</h6>
+                            <a class="collapse-item" href="buttons.html">Buttons</a>
+                            <a class="collapse-item active" href="button.php">Cards</a>
+                        </div>
+                    </div>
+                </li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container" style="margin-left: 260px; padding: 20px;">
+        <h1>Welcome to the Dashboard</h1>
+        <p>Content goes here.</p>
+    </div>
+
+    <!-- jQuery and Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Get the current URL
+            var currentUrl = window.location.pathname.split("/").pop();
+            // Show the collapse menu if the current page is 'list_of_hybrid_corn_varieties.php'
+            if (currentUrl === 'list_of_hybrid_corn_varieties.php') {
+                $('#collapseTwo').addClass('show');
+                // Optionally, set the parent li item as active
+                $('.nav-item.active').removeClass('active');
+                $('.collapse-item.active').closest('.nav-item').addClass('active');
+            }
+        });
+    </script>
+</body>
+
+</html>
