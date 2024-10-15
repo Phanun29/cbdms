@@ -1,5 +1,10 @@
 <?php
 include "../inc/script_header.php";
+$user_type = $fetch_info['user_type'];
+if ($user_type == "user") {
+    header("Location: 404.php");
+    exit();
+}
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $first_name = $_POST['first_name'] ?? null;
     $last_name = $_POST['last_name'] ?? null;
@@ -148,7 +153,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
                                 <div class="col-12 row mt-3">
                                     <label class="col-4" for="username">Username <span class="text-danger">*</span></label>
-                                    <input type="text" name="username" id="username" class="form-control col-8" placeholder="">
+                                    <input type="text" name="username" id="username" class="form-control col-8" placeholder="" required>
                                 </div>
                                 <div class="col-12 row mt-3">
                                     <label class="col-4" for="password">Password <span class="text-danger">*</span></label>
@@ -169,23 +174,23 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                                 </div>
                                 <div class="col-12 row mt-3">
                                     <label class="col-4" for="user_type">User Type <span class="text-danger">*</span></label>
-                                    <select class="form-control col-8" name="user_type" id="user_type">
+                                    <select class="form-control col-8" name="user_type" id="user_type" required>
                                         <option value="">--Select--</option>
                                         <option value="admin">admin</option>
                                         <option value="user">user</option>
-                                    </select>
+                                    </select required>
                                 </div>
                                 <div class="col-12 row mt-3">
                                     <label class="col-4" for="status">Status<span class="text-danger">*</span></label>
-                                    <select class="form-control col-8" name="status" id="status">
+                                    <select class="form-control col-8" name="status" id="status" required>
                                         <option value="">--Select--</option>
                                         <option value="active">Active</option>
                                         <option value="inactive">Inactive</option>
-                                    </select>
+                                    </select required>
                                 </div>
 
                                 <div class="col-12 my-3" style="text-align: end;">
-                                    <button class="btn btn-success">    </button>
+                                    <button class="btn btn-success"><i class="fa fa-check-circle" aria-hidden="true"></i> រក្សាទុក</button>
                                 </div>
                             </div>
                         </form>

@@ -29,20 +29,20 @@ if (isset($_POST['change_password'])) {
 
             if ($updateStmt->execute()) {
                 // Password updated successfully
-                $_SESSION['success_message_user'] = 'បានផ្លាស់ប្តូរពាក្យសម្ងាត់ដោយជោគជ័យ.';
+                $_SESSION['success_message_profile'] = 'បានផ្លាស់ប្តូរពាក្យសម្ងាត់ដោយជោគជ័យ.';
             } else {
                 // Error updating password
-                $_SESSION['error_message_user'] = 'កំហុសបានកើតឡើងខណៈពេលផ្លាស់ប្តូរពាក្យសម្ងាត់.';
+                $_SESSION['error_message_profile'] = 'កំហុសបានកើតឡើងខណៈពេលផ្លាស់ប្តូរពាក្យសម្ងាត់.';
             }
 
             $updateStmt->close();
         } else {
             // New password and confirm password do not match
-            $_SESSION['error_message_user'] = 'ពាក្យសម្ងាត់ថ្មី និងបញ្ជាក់ពាក្យសម្ងាត់មិនត្រូវគ្នាទេ.';
+            $_SESSION['error_message_profile'] = 'ពាក្យសម្ងាត់ថ្មី និងបញ្ជាក់ពាក្យសម្ងាត់មិនត្រូវគ្នាទេ.';
         }
     } else {
         // Current password does not match
-        $_SESSION['error_message_user'] = 'ពាក្យសម្ងាត់បច្ចុប្បន្នមិនត្រូវគ្នាទេ.';
+        $_SESSION['error_message_profile'] = 'ពាក្យសម្ងាត់បច្ចុប្បន្នមិនត្រូវគ្នាទេ.';
     }
 
     // Redirect back to the same page to display the alert message
@@ -100,24 +100,24 @@ $user = $user_result->fetch_assoc();
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
                         <h1 class="h3 mb-0 text-gray-800">Profile</h1>
                         <?php
-                        if (isset($_SESSION['success_message_user'])) {
+                        if (isset($_SESSION['success_message_profile'])) {
                             echo "<div class='alert alert-success alert-dismissible fade show mb-0' role='alert'>
-                                        <strong>{$_SESSION['success_message_user']}</strong>
+                                        <strong>{$_SESSION['success_message_profile']}</strong>
                                         <button type='button' class='close' data-dismiss='modal' aria-label='Close' onclick='this.parentElement.style.display=\"none\";'>
                                             <span aria-hidden='true'>&times;</span>
                                         </button>
                                     </div>";
-                            unset($_SESSION['success_message_user']); // Clear the message after displaying
+                            unset($_SESSION['success_message_profile']); // Clear the message after displaying
                         }
 
-                        if (isset($_SESSION['error_message_user'])) {
+                        if (isset($_SESSION['error_message_profile'])) {
                             echo "<div class='alert alert-danger alert-dismissible fade show mb-0' role='alert'>
-                                        <strong>{$_SESSION['error_message_user']}</strong>
+                                        <strong>{$_SESSION['error_message_profile']}</strong>
                                         <button type='button' class='close' data-dismiss='modal' aria-label='Close' onclick='this.parentElement.style.display=\"none\";'>
                                             <span aria-hidden='true'>&times;</span>
                                         </button>
                                     </div>";
-                            unset($_SESSION['error_message_user']); // Clear the message after displaying
+                            unset($_SESSION['error_message_profile']); // Clear the message after displaying
                         }
                         ?>
                     </div>

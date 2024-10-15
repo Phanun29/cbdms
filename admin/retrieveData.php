@@ -4,20 +4,20 @@ session_start();
 include "config.php";
 
 // Initialize filter variables
-$filterBreedA = isset($_POST['filterBreedA']) ? $_POST['filterBreedA'] : '';
-$filterBreedB = isset($_POST['filterBreedB']) ? $_POST['filterBreedB'] : '';
+$first_corn_variety = isset($_POST['first_corn_variety']) ? $_POST['first_corn_variety'] : '';
+$second_corn_variety = isset($_POST['second_corn_variety']) ? $_POST['second_corn_variety'] : '';
 $version = isset($_POST['version']) ? $_POST['version'] : '';
 
 // Construct the SQL query based on filters
 $query = "SELECT * FROM tbl_corn_breeding_data WHERE 1=1"; // Change 'your_table_name' to your actual table name
 
 // Add filters to the query if they are set
-if (!empty($filterBreedA)) {
-    $query .= " AND first_corn_variety = '" . $conn->real_escape_string($filterBreedA) . "'"; // Change 'breed_column_a' to your actual column name
+if (!empty($first_corn_variety)) {
+    $query .= " AND first_corn_variety = '" . $conn->real_escape_string($first_corn_variety) . "'"; // Change 'breed_column_a' to your actual column name
 }
 
-if (!empty($filterBreedB)) {
-    $query .= " AND second_corn_variety = '" . $conn->real_escape_string($filterBreedB) . "'"; // Change 'breed_column_b' to your actual column name
+if (!empty($second_corn_variety)) {
+    $query .= " AND second_corn_variety = '" . $conn->real_escape_string($second_corn_variety) . "'"; // Change 'breed_column_b' to your actual column name
 }
 
 if (!empty($version)) {

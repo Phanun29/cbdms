@@ -17,14 +17,14 @@ if (isset($_POST['change_password'])) {
         $updateSql = "UPDATE tbl_users SET password = '$hashedNewPassword' WHERE users_id = $User_id";
         if ($conn->query($updateSql) === TRUE) {
             // Password updated successfully
-            $_SESSION['success_message_user'] = 'បានផ្លាស់ប្តូរពាក្យសម្ងាត់ដោយជោគជ័យ.';
+            $_SESSION['success_message_profile'] = 'បានផ្លាស់ប្តូរពាក្យសម្ងាត់ដោយជោគជ័យ.';
         } else {
             // Error updating password
-            $_SESSION['error_message_user'] = 'កំហុសបានកើតឡើងខណៈពេលផ្លាស់ប្តូរពាក្យសម្ងាត់.';
+            $_SESSION['error_message_profile'] = 'កំហុសបានកើតឡើងខណៈពេលផ្លាស់ប្តូរពាក្យសម្ងាត់.';
         }
     } else {
         // New password and confirm password do not match
-        $_SESSION['error_message_user'] = 'ពាក្យសម្ងាត់ថ្មី និងបញ្ជាក់ពាក្យសម្ងាត់មិនត្រូវគ្នាទេ.';
+        $_SESSION['error_message_profile'] = 'ពាក្យសម្ងាត់ថ្មី និងបញ្ជាក់ពាក្យសម្ងាត់មិនត្រូវគ្នាទេ.';
     }
 
     // Redirect back to the same page to display the alert message
@@ -70,7 +70,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (move_uploaded_file($image['tmp_name'], $upload_file)) {
             $image_path = $upload_file; // Store the image path for database insertion
         } else {
-            $_SESSION['error_message_user'] = "Error uploading image.";
+            $_SESSION['error_message_profile'] = "Error uploading image.";
             header('Location: users.php');
             exit();
         }
@@ -86,7 +86,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->store_result();
 
     if ($stmt->num_rows > 0) {
-        $_SESSION['error_message_user'] = "Username already exists. Please choose a different username.";
+        $_SESSION['error_message_profile'] = "Username already exists. Please choose a different username.";
         $stmt->close();
         header("Location: edit_profile.php?id=$User_id");
         exit();
@@ -115,9 +115,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->bind_param("ssssssi", $first_name, $last_name, $username, $email, $phone_number, $image_path, $User_id);
 
     if ($stmt->execute()) {
-        $_SESSION['success_message_user'] = "កែ​ Profile បានជោគជ័យ.";
+        $_SESSION['success_message_profile'] = "កែ​ Profile បានជោគជ័យ.";
     } else {
-        $_SESSION['error_message_user'] = "Error updating user: " . $stmt->error;
+        $_SESSION['error_message_profile'] = "Error updating user: " . $stmt->error;
     }
 
     $stmt->close();
@@ -189,14 +189,14 @@ $user = $user_result->fetch_assoc();
                             unset($_SESSION['success_message_user']); // Clear the message after displaying
                         }
 
-                        if (isset($_SESSION['error_message_user'])) {
+                        if (isset($_SESSION['error_message_profile'])) {
                             echo "<div class='alert alert-danger alert-dismissible fade show mb-0' role='alert'>
-                                        <strong>{$_SESSION['error_message_user']}</strong>
+                                        <strong>{$_SESSION['error_message_profile']}</strong>
                                         <button type='button' class='close' data-dismiss='modal' aria-label='Close' onclick='this.parentElement.style.display=\"none\";'>
                                             <span aria-hidden='true'>&times;</span>
                                         </button>
                                     </div>";
-                            unset($_SESSION['error_message_user']); // Clear the message after displaying
+                            unset($_SESSION['error_message_profile']); // Clear the message after displaying
                         }
                         ?>
                     </div>

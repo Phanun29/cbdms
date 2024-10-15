@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$(document).ready(function () {
     let averageFruitHeight1 = null;
     let averageFruitHeight2 = null;
     let averageStemHeight1 = null;
@@ -10,64 +10,64 @@ $(document).ready(function() {
 
     let combinedChart;
 
-    $("#applyFiltersBtn").click(function() {
-        var filterBreed1A = $("#filterBreedA1").val();
-        var filterBreed1B = $("#filterBreedB1").val();
+    $("#applyFiltersBtn").click(function () {
+        var first_corn_variety1 = $("#filterBreedA1").val();
+        var second_corn_variety1 = $("#filterBreedB1").val();
         var version1 = $("#version1").val();
 
-        var filterBreed2A = $("#filterBreedA2").val();
-        var filterBreedB2 = $("#filterBreedB2").val();
+        var first_corn_variety2 = $("#filterBreedA2").val();
+        var second_corn_variety2 = $("#second_corn_variety2").val();
         var version2 = $("#version2").val();
 
         // Ajax request for table 1
-        if (filterBreed1A || filterBreed1B || version1) {
+        if (first_corn_variety1 || second_corn_variety1 || version1) {
             $.ajax({
                 type: "POST",
                 url: "retrieveData.php",
                 data: {
-                    filterBreedA: filterBreed1A,
-                    filterBreedB: filterBreed1B,
+                    first_corn_variety: first_corn_variety1,
+                    second_corn_variety: second_corn_variety1,
                     version: version1
                 },
-                success: function(response) {
+                success: function (response) {
                     $("#tableBody1").html(response.tableHtml);
                     averageFruitHeight1 = parseFloat(response.averageFruitHeight);
                     averageStemHeight1 = parseFloat(response.averageStemHeight);
                     averageMaleFloweringDay1 = parseFloat(response.averageMaleFloweringDay);
                     averageFlowerDay1 = parseFloat(response.averageFlowerDay);
                     updateCombinedChart(
-                        filterBreed1A + " & " + filterBreed1B + " (v" + version1 + ")",
-                        filterBreed2A + " & " + filterBreedB2 + " (v" + version2 + ")"
+                        first_corn_variety1 + " & " + second_corn_variety1 + " (v" + version1 + ")",
+                        first_corn_variety2 + " & " + second_corn_variety2 + " (v" + version2 + ")"
                     );
                 },
-                error: function(xhr, status, error) {
+                error: function (xhr, status, error) {
                     console.error("Error occurred while fetching data for Table 1:", error);
                 }
             });
         }
 
         // Ajax request for table 2
-        if (filterBreed2A || filterBreedB2 || version2) {
+        if (first_corn_variety2 || second_corn_variety2 || version2) {
             $.ajax({
                 type: "POST",
                 url: "retrieveData.php",
                 data: {
-                    filterBreedA: filterBreed2A,
-                    filterBreedB: filterBreedB2,
+                    first_corn_variety: first_corn_variety2,
+                    second_corn_variety: second_corn_variety2,
                     version: version2
                 },
-                success: function(response) {
+                success: function (response) {
                     $("#tableBody2").html(response.tableHtml);
                     averageFruitHeight2 = parseFloat(response.averageFruitHeight);
                     averageStemHeight2 = parseFloat(response.averageStemHeight);
                     averageMaleFloweringDay2 = parseFloat(response.averageMaleFloweringDay);
                     averageFlowerDay2 = parseFloat(response.averageFlowerDay);
                     updateCombinedChart(
-                        filterBreed1A + " & " + filterBreed1B + " (v" + version1 + ")",
-                        filterBreed2A + " & " + filterBreedB2 + " (v" + version2 + ")"
+                        filterBreed1A + " & " + second_corn_variety1 + " (v" + version1 + ")",
+                        first_corn_variety2 + " & " + second_corn_variety2 + " (v" + version2 + ")"
                     );
                 },
-                error: function(xhr, status, error) {
+                error: function (xhr, status, error) {
                     console.error("Error occurred while fetching data for Table 2:", error);
                 }
             });
@@ -81,27 +81,27 @@ $(document).ready(function() {
         var data = {
             labels: labels,
             datasets: [{
-                    label: label1 || 'Breed 1', // Dynamically set based on selected Breed 1 and version
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    data: [
-                        averageFruitHeight1 || 0,
-                        averageStemHeight1 || 0,
-                        averageMaleFloweringDay1 || 0,
-                        averageFlowerDay1 || 0
-                    ]
-                },
-                {
-                    label: label2 || 'Breed 2', // Dynamically set based on selected Breed 2 and version
-                    backgroundColor: 'rgba(153, 102, 255, 0.2)',
-                    borderColor: 'rgba(153, 102, 255, 1)',
-                    data: [
-                        averageFruitHeight2 || 0,
-                        averageStemHeight2 || 0,
-                        averageMaleFloweringDay2 || 0,
-                        averageFlowerDay2 || 0
-                    ]
-                }
+                label: label1 || 'Breed 1', // Dynamically set based on selected Breed 1 and version
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                data: [
+                    averageFruitHeight1 || 0,
+                    averageStemHeight1 || 0,
+                    averageMaleFloweringDay1 || 0,
+                    averageFlowerDay1 || 0
+                ]
+            },
+            {
+                label: label2 || 'Breed 2', // Dynamically set based on selected Breed 2 and version
+                backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                borderColor: 'rgba(153, 102, 255, 1)',
+                data: [
+                    averageFruitHeight2 || 0,
+                    averageStemHeight2 || 0,
+                    averageMaleFloweringDay2 || 0,
+                    averageFlowerDay2 || 0
+                ]
+            }
             ]
         };
 

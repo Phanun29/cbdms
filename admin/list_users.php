@@ -1,5 +1,10 @@
 <?php
 include "../inc/script_header.php";
+$user_type = $fetch_info['user_type'];
+if ($user_type == "user") {
+    header("Location: 404.php");
+    exit();
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">

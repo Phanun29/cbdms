@@ -1,6 +1,10 @@
 <?php
 include "../inc/script_header.php";
-
+$user_type = $fetch_info['user_type'];
+if ($user_type == "user") {
+    header("Location: 404.php");
+    exit();
+}
 $User_id = $_GET['id'];
 // Check if the form was submitted for updating user information
 if (isset($_POST['change_password'])) {

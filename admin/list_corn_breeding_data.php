@@ -164,11 +164,11 @@
                                                 </button>
                                                 <div class='dropdown-menu' role='menu'>
                                                     <a class='dropdown-item' href='view_corn_breeding_data.php?id={$cbd['cbd_id']}&name_of_cut_corn_variety={$cbd['name_of_cut_corn_variety']}'
-                                                        ><span class='fa fa-eye text-dark'></span> View</a>
+                                                        ><span class='fa fa-eye text-dark'></span> លម្អិត</a>
                                                     <div class='dropdown-divider'></div>
                                                     <a class='dropdown-item' href='edit_corn_breeding_data.php?id={$cbd['cbd_id']}''
                                                         ><span class='fa fa-edit text-primary'></span>
-                                                        Edit</a>
+                                                        កែ</a>
                                                     <div class='dropdown-divider'></div>
                                                     <button data-id='" . $cbd['cbd_id'] . "' class='dropdown-item btn text-danger  delete-btn'><i class='fa-solid fa-trash'></i> លុប</button>
                                                 </div>

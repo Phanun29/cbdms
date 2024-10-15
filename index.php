@@ -79,7 +79,7 @@ if (isset($_POST['login'])) {
                             <div class="col-lg-6">
                                 <div class="p-5">
                                     <div class="text-center">
-                                        <h1 class="h4 text-gray-900 mb-4">ប្រព័ន្ធគ្រប់គ្រងទិន្នន័យការបង្កាត់ពូជពោត</h1>
+                                        <h2 class="h5 text-gray-900 mb-4">ប្រព័ន្ធគ្រប់គ្រងទិន្នន័យការបង្កាត់ពូជពោត</h2>
                                     </div>
                                     <form class="" method="POST">
                                         <div class="form-group">

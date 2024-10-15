@@ -11,7 +11,7 @@ $current_menu = basename($_SERVER['PHP_SELF']);
         <div>
             <img style="width: 50px;" src="../assets/img/logo_ksit.PNG" alt="">
         </div>
-        <div class="sidebar-brand-text mx-3">CBDMS</div>
+        <div class="sidebar-brand-text mx-3">KSIT</div>
     </a>
 
     <!-- Divider -->
@@ -68,20 +68,23 @@ $current_menu = basename($_SERVER['PHP_SELF']);
 
     <!-- Divider -->
     <hr class="sidebar-divider my-0">
+    <?php
+    $user_type = $fetch_info['user_type'];
+    if ($user_type == "admin") { ?>
+        <!-- Nav Item - Users -->
+        <li <?= ($current_menu == "list_users.php" || $current_menu == "edit_users.php" || $current_menu == "add_users.php") ? 'class="nav-item active"' : 'class="nav-item"' ?>>
+            <a class="nav-link" href="list_users.php">
+                <i class="fas fa-users"></i>
+                <span>បញ្ជីអ្នកប្រើប្រាស់</span>
+            </a>
+        </li>
 
-    <!-- Nav Item - Users -->
-    <li <?= ($current_menu == "list_users.php" || $current_menu == "edit_users.php" || $current_menu == "add_users.php") ? 'class="nav-item active"' : 'class="nav-item"' ?>>
-        <a class="nav-link" href="list_users.php">
-            <i class="fas fa-users"></i>
-            <span>បញ្ជីអ្នកប្រើប្រាស់</span>
-        </a>
-    </li>
-
-    <!-- Divider -->
-    <hr class="sidebar-divider d-none d-md-block">
-
+        <!-- Divider -->
+        <hr class="sidebar-divider my-0">
+        <!-- <hr class="sidebar-divider d-none d-md-block"> -->
+    <?php  } ?>
     <!-- Sidebar Toggler (Sidebar) -->
-    <div class="text-center d-none d-md-inline">
+    <div class="text-center d-none mt-2 d-md-inline">
         <button class="rounded-circle border-0" id="sidebarToggle"></button>
     </div>
 </ul>
