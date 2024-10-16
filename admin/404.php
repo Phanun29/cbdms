@@ -1,55 +1,5 @@
 <?php
 include "../inc/script_header.php";
-if ($_SERVER['REQUEST_METHOD'] == "POST") {
-    $first_name = $_POST['first_name'] ?? null;
-    $last_name = $_POST['last_name'] ?? null;
-    $username = $_POST['username'];
-    $password = password_hash($_POST['password'], PASSWORD_DEFAULT); // Hash the password
-    $email = $_POST['email'] ?? null;
-    $phone_number = $_POST['phone_number'] ?? null;
-    $user_type = $_POST['user_type'];
-    $status = $_POST['status'];
-
-
-    // Handle image upload
-    if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
-        $image = $_FILES['image'];
-        $image_name = time() . '_' . basename($image['name']); // Create a unique name for the image
-        $unique_name = uniqid() . '.' . $image_name;
-        $upload_dir = '../uploads/'; // Set the upload directory
-        $upload_file = $upload_dir . $unique_name;
-
-        // Check if the upload directory exists, if not, create it
-        if (!is_dir($upload_dir)) {
-            mkdir($upload_dir, 0777, true);
-        }
-
-        // Move the uploaded file to the specified directory
-        if (move_uploaded_file($image['tmp_name'], $upload_file)) {
-            $image_path = $upload_file; // Store the image path for database insertion
-        } else {
-            $_SESSION['error_message_user'] = "Error uploading image.";
-            header('Location: users.php');
-            exit();
-        }
-    } else {
-        $image_path = null; // Handle if no image is uploaded
-    }
-
-    // SQL query to insert the user data including the image path
-    $sql = "INSERT INTO tbl_users (first_name, last_name, username, password, email, phone_number, image, status, user_type) 
-            VALUES ('$first_name', '$last_name', '$username', '$password', '$email', '$phone_number', '$image_path', '$status', '$user_type')";
-
-    if ($conn->query($sql) === true) {
-        $_SESSION['success_message_user'] = "បន្ថែមអ្នកប្រើប្រាស់បានជោគជ័យ.";
-        header('Location: list_users.php');
-        exit();
-    } else {
-        $_SESSION['error_message_user'] = "Error updating user: " . $conn->error;
-    }
-
-    $conn->close();
-}
 
 ?>
 
