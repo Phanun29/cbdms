@@ -82,27 +82,15 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
 
                 <!-- Begin Page Content -->
-                <div class="container-fluid  " style="display: flex; justify-content:center;">
+                <div class="container-fluid">
 
-                    <div class="error-page row">
-                        <div class="col-12 col-md-6">
-                            <h2 class="headline text-warning" style="font-size: 60px;"> 404</h2>
-                        </div>
-
-
-                        <div class="error-content col-12 col-md-6">
-                            <h3><i class="fas fa-exclamation-triangle text-warning"></i> Oops! Page not found.</h3>
-
-                            <p>
-                                We could not find the page you were looking for.
-                                Meanwhile, you may <a href="index.php">return to dashboard</a>.
-                            </p>
-
-                        </div>
-                        <!-- /.error-content -->
+                    <!-- 404 Error Text -->
+                    <div class="text-center">
+                        <div class="error mx-auto" data-text="404">404</div>
+                        <p class="lead text-gray-800 mb-5">Page Not Found</p>
+                        <p class="text-gray-500 mb-0">It looks like you found a glitch in the matrix...</p>
+                        <a href="index.php">&larr; Back to Dashboard</a>
                     </div>
-                    <!-- /.error-page -->
-
 
                 </div>
                 <!-- /.container-fluid -->

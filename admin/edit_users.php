@@ -88,7 +88,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->store_result();
 
     if ($stmt->num_rows > 0) {
-        $_SESSION['error_message_user'] = "Username already exists. Please choose a different username.";
+        $_SESSION['error_message_user'] = "ឈ្មោះអ្នកប្រើប្រាស់មានរួចហើយ។ សូមជ្រើសរើសឈ្មោះអ្នកប្រើប្រាស់ផ្សេង";
         $stmt->close();
         header("Location: edit_users.php?id=$User_id");
         exit();
@@ -235,7 +235,7 @@ $user = $user_result->fetch_assoc();
 
 
                             </div>
-                            <div class="col-12 col-md-8" >
+                            <div class="col-12 col-md-8">
                                 <div class="col-12 mt-3 row">
                                     <label for="last_name" class="col-4">នាមត្រកូល</label>
                                     <input type="text" name="last_name" id="" class="form-control col-8" value="<?= $user['last_name'] ?>">

@@ -3,7 +3,8 @@
 <html lang="en">
 
 <head>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="../assets/vendor/chart.js/Chart.js"></script>
+
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Khmer&display=swap" rel="stylesheet">
 
     <?php include "../inc/head.php"; ?>
@@ -134,11 +135,10 @@
                                 <canvas id="combinedChart"></canvas>
 
 
-
-
                                 <script>
                                     // Graph 1 (with two values)
                                     var ctx1 = document.getElementById('combinedChart').getContext('2d');
+                                    //  combinedChart = new Chart(ctx, {
                                     var chart1 = new Chart(ctx1, {
                                         type: 'bar',
                                         data: {
@@ -230,6 +230,7 @@
     <!-- Page level plugins -->
     <script src="../assets/vendor/chart.js/Chart.min.js"></script>
 
+
     <!-- Page level custom scripts -->
     <script src="../assets/js/demo/chart-area-demo.js"></script>
     <script src="../assets/js/demo/chart-pie-demo.js"></script>
@@ -239,125 +240,7 @@
 
 
     <!-- data chart -->
-    <!-- <script>
-        $(document).ready(function() {
-            // State for averages from the tables
-            let averageFruitHeight1 = null;
-            let averageFruitHeight2 = null;
-            let averageStemHeight1 = null;
-            let averageStemHeight2 = null;
-            let averageMaleFloweringDay1 = null;
-            let averageMaleFloweringDay2 = null;
-            let averageFlowerDay1 = null;
-            let averageFlowerDay2 = null;
 
-            let chartFruitHeight, chartStemHeight, chartMaleFlowering, chartFlowerDay; // Chart variables
-
-            $("#applyFiltersBtn").click(function() {
-                var filterBreed1A = $("#filterBreedA1").val();
-                var filterBreed1B = $("#filterBreedB1").val();
-                var version1 = $("#version1").val();
-
-                var filterBreed2A = $("#filterBreedA2").val();
-                var filterBreed2B = $("#filterBreedB2").val();
-                var version2 = $("#version2").val();
-
-                // Ajax request for table 1
-                if (filterBreed1A || filterBreed1B || version1) {
-                    $.ajax({
-                        type: "POST",
-                        url: "retrieveData.php",
-                        data: {
-                            filterBreedA: filterBreed1A,
-                            filterBreedB: filterBreed1B,
-                            version: version1
-                        },
-                        success: function(response) {
-                            $("#tableBody1").html(response.tableHtml);
-                            averageFruitHeight1 = parseFloat(response.averageFruitHeight);
-                            averageStemHeight1 = parseFloat(response.averageStemHeight);
-                            averageMaleFloweringDay1 = parseFloat(response.averageMaleFloweringDay);
-                            averageFlowerDay1 = parseFloat(response.averageFlowerDay);
-                            updateCharts(); // Update all charts with new averages from Table 1
-                        },
-                        error: function(xhr, status, error) {
-                            console.error("Error occurred while fetching data for Table 1:", error);
-                        }
-                    });
-                }
-
-                // Ajax request for table 2
-                if (filterBreed2A || filterBreed2B || version2) {
-                    $.ajax({
-                        type: "POST",
-                        url: "retrieveData.php",
-                        data: {
-                            filterBreedA: filterBreed2A,
-                            filterBreedB: filterBreed2B,
-                            version: version2
-                        },
-                        success: function(response) {
-                            $("#tableBody2").html(response.tableHtml);
-                            averageFruitHeight2 = parseFloat(response.averageFruitHeight);
-                            averageStemHeight2 = parseFloat(response.averageStemHeight);
-                            averageMaleFloweringDay2 = parseFloat(response.averageMaleFloweringDay);
-                            averageFlowerDay2 = parseFloat(response.averageFlowerDay);
-                            updateCharts(); // Update all charts with new averages from Table 2
-                        },
-                        error: function(xhr, status, error) {
-                            console.error("Error occurred while fetching data for Table 2:", error);
-                        }
-                    });
-                }
-            });
-
-            function updateCharts() {
-                // Update Fruit Height Chart
-                updateChart('chart1', 'Average Fruit Height', [averageFruitHeight1 || 0, averageFruitHeight2 || 0]);
-
-                // Update Stem Height Chart
-                updateChart('chart2', 'Average Stem Height', [averageStemHeight1 || 0, averageStemHeight2 || 0]);
-
-                // Update Male Flowering Chart
-                updateChart('chart3', 'Average Male Flowering Day', [averageMaleFloweringDay1 || 0, averageMaleFloweringDay2 || 0]);
-
-                // Update Flower Day Chart
-                updateChart('chart4', 'Average Flower Day', [averageFlowerDay1 || 0, averageFlowerDay2 || 0]);
-            }
-
-            function updateChart(chartId, label, dataValues) {
-                const labels = ['ពូជទី១', 'ពូជទី២'];
-                const data = {
-                    labels: labels,
-                    datasets: [{
-                        label: label,
-                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                        borderColor: 'rgba(75, 192, 192, 1)',
-                        data: dataValues
-                    }]
-                };
-
-                // Check if the chart already exists
-                if (window[chartId]) {
-                    window[chartId].data.datasets[0].data = data.datasets[0].data; // Update the data
-                    window[chartId].update(); // Update the chart
-                } else {
-                    var ctx = document.getElementById(chartId).getContext('2d');
-                    window[chartId] = new Chart(ctx, {
-                        type: 'bar',
-                        data: data,
-                        options: {
-                            scales: {
-                                y: {
-                                    beginAtZero: true
-                                }
-                            }
-                        }
-                    });
-                }
-            }
-        });
-    </script> -->
     <script>
         $(document).ready(function() {
             let averageFruitHeight1 = null;
