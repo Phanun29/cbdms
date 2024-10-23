@@ -4,7 +4,7 @@ $current_menu = basename($_SERVER['PHP_SELF']);
 ?>
 
 <!-- Sidebar -->
-<ul style="background:#185519;" class="navbar-nav sidebar sidebar-dark accordion" id="accordionSidebar">
+<ul style="background:#185519; transition: 0.5s;" class="navbar-nav sidebar sidebar-dark accordion" id="accordionSidebar">
 
     <!-- Sidebar - Brand -->
     <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.php">

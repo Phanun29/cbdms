@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Export Table to Excel with Custom Styling</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.0/xlsx.full.min.js"></script>
+</head>
+<body>
+    <!-- HTML Table to Export -->
+    <table id="tableForExport" border="1">
+        <thead>
+            <tr>
+                <th>កូដ</th>
+                <th>ឈ្មោះ</th>
+                <th>អាសយដ្ឋាន</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>001</td>
+                <td>សុខ</td>
+                <td>ភ្នំពេញ</td>
+            </tr>
+            <tr>
+                <td>002</td>
+                <td>វិជ្ជា</td>
+                <td>សៀមរាប</td>
+            </tr>
+            <tr>
+                <td>003</td>
+                <td>នាគ</td>
+                <td>បាត់ដំបង</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <button onclick="exportToExcel()">Export to Excel</button>
+
+    <script>
+        function exportToExcel() {
+            // Select the HTML table
+            var table = document.getElementById('tableForExport');
+            
+            // Convert the HTML table to a worksheet
+            var wb = XLSX.utils.table_to_book(table, {sheet: "Sheet1"});
+            var ws = wb.Sheets["Sheet1"];
+
+            // Set column widths
+            var wscols = [
+                {wch: 10},  // Set width of the first column
+                {wch: 20},  // Set width of the second column
+                {wch: 30}   // Set width of the third column
+            ];
+            ws['!cols'] = wscols;
+
+            // Insert the custom header "CORN BREEDING DATA" into the first row
+            XLSX.utils.sheet_add_aoa(ws, [["CORN BREEDING DATA"]], {origin: 'A1'});
+
+            // Merge cells for the header to span across all columns (A1:C1 in this example)
+            ws['!merges'] = [{s: {r: 0, c: 0}, e: {r: 0, c: 2}}]; // Merge cells A1 to C1
+
+            // Apply style to the header row
+            var headerCell = ws['A1'];  // Access the custom header cell
+            headerCell.s = {
+                font: {bold: true, sz: 18, name: "Khmer OS Battambang", color: {rgb: "000000"}},  // Font settings
+                alignment: {horizontal: "center", vertical: "center"}  // Center align the text
+            };
+
+            // Move the table down to start from the second row (so the header doesn't overlap the table)
+            var range = XLSX.utils.decode_range(ws['!ref']);
+            range.s.r++;  // Shift down by one row
+            ws['!ref'] = XLSX.utils.encode_range(range);
+
+            // Apply styling to the header row of the table
+            for (var C = range.s.c; C <= range.e.c; ++C) {
+                var cell = ws[XLSX.utils.encode_cell({r: 1, c: C})];  // Target the first row (table header)
+                if (cell && !cell.s) {
+                    cell.s = {
+                        font: {bold: true, sz: 14, name: "Khmer OS Battambang", color: {rgb: "FF0000"}},  // Bold, 14px, red
+                        alignment: {horizontal: "center"}  // Center align header
+                    };
+                }
+            }
+
+            // Apply styling to the body cells
+            for (var R = 2; R <= range.e.r; ++R) {  // Start from the second row (first row is header)
+                for (var C = range.s.c; C <= range.e.c; ++C) {
+                    var cell = ws[XLSX.utils.encode_cell({r: R, c: C})];  // Target body cells
+                    if (cell && !cell.s) {
+                        cell.s = {
+                            font: {sz: 12, name: "Khmer OS Battambang"},     // Font size 12, Khmer OS Battambang
+                            alignment: {horizontal: "left"},                 // Left align body cells
+                            border: {                                        // Add border around each cell
+                                top: { style: "thin", color: {rgb: "000000"} },
+                                bottom: { style: "thin", color: {rgb: "000000"} },
+                                left: { style: "thin", color: {rgb: "000000"} },
+                                right: { style: "thin", color: {rgb: "000000"} }
+                            }
+                        };
+                    }
+                }
+            }
+
+            // Export the workbook as an Excel file
+            XLSX.writeFile(wb, 'data_corn.xlsx');
+        }
+    </script>
+</body>
+</html>

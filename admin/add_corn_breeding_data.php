@@ -2,7 +2,7 @@
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
-    $add_by = $fetch_info['user_id'];
+    $add_by = $fetch_info['users_id'];
 
     // Sanitize and retrieve form data
     $first_corn_variety = $_POST['first_corn_variety'];
@@ -67,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     // Insert data into the database
-    $stmt = $conn->prepare("INSERT INTO tbl_corn_breeding_data (name_of_cut_corn_variety, add_by, first_corn_variety, second_corn_variety, version, fruit_height, stem_height, flower_day, male_flowering_day, flowering_age_gap, number_of_stalks, number_of_male_flower_stalks, male_flowering_age, flowering_age, leaf_angle, the_tail_on_the_end_of_the_fruit, fruit_length, fertility, original_size, stem_length, root_system, germination_rate, albino_birth_level, worm_damage_level, strength, age_gap_between_male_and_female_flowers, seuthern_rast, peeled_fruit_diameter, disease_level, peel_length, number_of_rows_of_seeds_per_fruit, fruit_peel, weight, worm, seedling_vigor, row_of_corn_kernels, number_of_roots, tip_length, total) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt = $conn->prepare("INSERT INTO tbl_corn_breeding_data (name_of_cut_corn_variety, users_id, first_corn_variety, second_corn_variety, version, fruit_height, stem_height, flower_day, male_flowering_day, flowering_age_gap, number_of_stalks, number_of_male_flower_stalks, male_flowering_age, flowering_age, leaf_angle, the_tail_on_the_end_of_the_fruit, fruit_length, fertility, original_size, stem_length, root_system, germination_rate, albino_birth_level, worm_damage_level, strength, age_gap_between_male_and_female_flowers, seuthern_rast, peeled_fruit_diameter, disease_level, peel_length, number_of_rows_of_seeds_per_fruit, fruit_peel, weight, worm, seedling_vigor, row_of_corn_kernels, number_of_roots, tip_length, total) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
     $stmt->bind_param("sssssssssssssssssssssssssssssssssssssss", $name_of_cut_corn_variety, $add_by, $first_corn_variety, $second_corn_variety, $version, $fruit_height, $stem_height, $flower_day, $male_flowering_day, $flowering_age_gap, $number_of_stalks, $number_of_male_flower_stalks, $male_flowering_age, $flowering_age, $leaf_angle, $the_tail_on_the_end_of_the_fruit, $fruit_length, $fertility, $original_size, $stem_length, $root_system, $germination_rate, $albino_birth_level, $worm_damage_level, $strength, $age_gap_between_male_and_female_flowers, $seuthern_rast, $peeled_fruit_diameter, $disease_level, $peel_length, $number_of_rows_of_seeds_per_fruit, $fruit_peel, $weight, $worm, $seedling_vigor, $row_of_corn_kernels, $number_of_roots, $tip_length, $total);
 
@@ -89,9 +89,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             //echo "error" . $query_corn_varieties . $conn->error;
         }
 
-        $_SESSION['success_message_cbd'] = "New ticket added successfully";
+        $_SESSION['success_message_cbd'] = "បន្ងែមទិន្នន័យបង្កាត់ពូជពោតបានជោគជ័យ.";
     } else {
-        $_SESSION['error_message_cbd'] = "Ticket added, but failed to save all images.";
+        $_SESSION['error_message_cbd'] = "បន្ងែមទិន្នន័យបង្កាត់ពូជពោតបរាជ័យ.";
     }
     $stmt->close();
     // Redirect to the page ticket to display messages
@@ -142,7 +142,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                     </div>
 
-                    <!-- DataTales Example -->
+                    <!-- DataTales Corn Breeding Data -->
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
 
@@ -375,7 +375,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     <!-- preview images -->
     <script src="../assets/js/PreViewImage.js"></script>
- 
+
 
 
 </body>

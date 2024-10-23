@@ -5,6 +5,8 @@
 <head>
 
     <?php include "../inc/head.php"; ?>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.0/xlsx.full.min.js"></script>
+
     <style>
         #dataTable_filter {
             display: none;
@@ -75,11 +77,50 @@
                             <div class="row">
                                 <div class="col-12 col-md-6 row">
                                     <div class="col-4 pb-3">
-                                        <button class="btn btn-secondary" onclick="exportToExcel()"><i class="fas fa-file-export    "></i> Export</button>
+                                        <button class="btn btn-success"><i class="fas fa-file-export    "></i>&nbsp;Export</button>
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-6">
-                                    <form action="" id="filterForm" class="row">
+                                    <form action="" id="filterForm" method="GET" class="row">
+                                        <div class="col-3">
+                                            <select name="filterPooch1" id="filterPooch1" class="form-control">
+                                                <option value="" disabled selected>--ជ្រើសរើស--</option>
+                                                <?php
+                                                $query_corn_varieties = "SELECT * FROM tbl_corn_varieties";
+                                                $result = $conn->query($query_corn_varieties);
+
+                                                if ($result->num_rows > 0) {
+                                                    while ($corn_varieties = $result->fetch_assoc()) {
+                                                        $selected = (isset($_GET['filterPooch1']) && $_GET['filterPooch1'] == $corn_varieties['corn_varieties_name']) ? "selected" : "";
+                                                        echo "<option value='{$corn_varieties['corn_varieties_name']}' $selected>{$corn_varieties['corn_varieties_name']}</option>";
+                                                    }
+                                                }
+                                                ?>
+                                            </select>
+                                        </div>
+                                        <div class="col-3">
+                                            <select name="filterPooch2" id="filterPooch2" class="form-control">
+                                                <option value="" disabled selected>--ជ្រើសរើស--</option>
+                                                <?php
+                                                $result = $conn->query($query_corn_varieties);
+                                                if ($result->num_rows > 0) {
+                                                    while ($corn_varieties = $result->fetch_assoc()) {
+                                                        $selected = (isset($_GET['filterPooch2']) && $_GET['filterPooch2'] == $corn_varieties['corn_varieties_name']) ? "selected" : "";
+                                                        echo "<option value='{$corn_varieties['corn_varieties_name']}' $selected>{$corn_varieties['corn_varieties_name']}</option>";
+                                                    }
+                                                }
+                                                ?>
+                                            </select>
+                                        </div>
+                                        <div class="col-3">
+                                            <input type="text" name="filterJumnan" id="filterJumnan" class="form-control" placeholder="ជំនាន់" value="<?php echo isset($_GET['filterJumnan']) ? $_GET['filterJumnan'] : ''; ?>">
+                                        </div>
+                                        <div class="col-3">
+                                            <button type="submit" class="btn btn-primary" id="filterBtn"><i class="fas fa-filter"></i> Filter</button>
+                                        </div>
+                                    </form>
+
+                                    <!-- <form action="" id="filterForm" method="GET" class="row">
                                         <div class="col-3">
                                             <select name="filterPooch1" id="filterPooch1" class="form-control">
                                                 <option value="" disabled selected>--ជ្រើសរើស--</option>
@@ -112,15 +153,135 @@
                                             <input type="text" id="filterJumnan" class="form-control" placeholder="ជំនាន់">
                                         </div>
                                         <div class="col-3">
-                                            <button class="btn btn-primary" id="filterBtn"><i class="fas fa-filter    "></i> Filter</button>
+                                            <button type="submit" class="btn btn-primary" id="filterBtn"><i class="fas fa-filter    "></i> Filter</button>
                                         </div>
-                                    </form>
+                                    </form> -->
                                 </div>
                             </div>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table class="table table-bordered text-nowrap" id="dataTable" width="100%"
+                                <table class="table table-bordered text-nowrap" id="dataTable" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>ពូជទី១</th>
+                                            <th>ពូជទី២</th>
+                                            <th>ជំនាន់</th>
+                                            <th>កម្ពស់ផ្លែ</th>
+                                            <th>កម្ពស់ដើម</th>
+                                            <th>ថ្ងៃចេញផ្កាញី​ ៥០%</th>
+                                            <th>ថ្ងៃចេញផ្កាឈ្មោល​ ៥០%</th>
+                                            <th>សកម្មភាព</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="cornBreedingData">
+                                        <?php
+                                        // Get filter values from the form
+                                        $first_corn_variety = $_GET['filterPooch1'] ?? '';
+                                        $second_corn_variety = $_GET['filterPooch2'] ?? '';
+                                        $version = $_GET['filterJumnan'] ?? '';
+
+                                        // Initialize a flag to check if any filters are applied 
+                                        $filtersApplied = false;
+
+                                        // Construct the SQL query based on filters
+                                        $query = "SELECT * FROM tbl_corn_breeding_data WHERE 1=1";
+
+                                        // Add filters to the query if they are set
+                                        if (!empty($first_corn_variety)) {
+                                            $query .= " AND first_corn_variety = '" . $conn->real_escape_string($first_corn_variety) . "'";
+                                            $filtersApplied = true; // Set flag to true if any filter is applied
+                                        }
+                                        if (!empty($second_corn_variety)) {
+                                            $query .= " AND second_corn_variety = '" . $conn->real_escape_string($second_corn_variety) . "'";
+                                            $filtersApplied = true; // Set flag to true if any filter is applied
+                                        }
+                                        if (!empty($version)) {
+                                            $query .= " AND version = '" . $conn->real_escape_string($version) . "'";
+                                            $filtersApplied = true; // Set flag to true if any filter is applied
+                                        }
+
+
+                                        // Order the results by 'version' in descending order
+                                        $query .= " ORDER BY cbd_id DESC";
+
+                                        // Execute the query
+                                        $result = $conn->query($query);
+
+                                        // Initialize row counter and sums for averages
+                                        $i = 1;
+                                        $sumFruitHeight = 0;
+                                        $sumStemHeight = 0;
+                                        $sumMaleFloweringDay = 0;
+                                        $sumFlowerDay = 0;
+
+                                        if ($result->num_rows > 0) {
+                                            // Fetch data and display it
+                                            while ($row = $result->fetch_assoc()) {
+                                                // Output each row of data
+                                                echo '<tr class="text-center">';
+                                                echo '<td>' . $i++ . '</td>';
+                                                echo '<td>' . $row['first_corn_variety'] . '</td>';
+                                                echo '<td>' . $row['second_corn_variety'] . '</td>';
+                                                echo '<td>' . $row['version'] . '</td>';
+                                                echo '<td>' . $row['fruit_height'] . '</td>';
+                                                echo '<td>' . $row['stem_height'] . '</td>';
+                                                echo '<td>' . $row['flower_day'] . '</td>';
+                                                echo '<td>' . $row['male_flowering_day'] . '</td>';
+                                                echo "<td align='center'>
+                                                        <button type='button' class='btn btn-flat btn-default btn-sm dropdown-toggle dropdown-icon' data-toggle='dropdown'>
+                                                            Action
+                                                            <span class='sr-only'>Toggle Dropdown</span>
+                                                        </button>
+                                                        <div class='dropdown-menu' role='menu'>
+                                                            <a class='dropdown-item' href='view_corn_breeding_data.php?id={$row['cbd_id']}&name_of_cut_corn_variety={$row['name_of_cut_corn_variety']}'>
+                                                                <span class='fa fa-eye text-dark'></span> លម្អិត
+                                                            </a>
+                                                            <div class='dropdown-divider'></div>
+                                                            <a class='dropdown-item' href='edit_corn_breeding_data.php?id={$row['cbd_id']}'>
+                                                                <span class='fa fa-edit text-primary'></span> កែ
+                                                            </a>
+                                                            <div class='dropdown-divider'></div>
+                                                            <button data-id='" . $row['cbd_id'] . "' class='dropdown-item btn text-danger delete-btn'><i class='fa-solid fa-trash'></i> លុប</button>
+                                                        </div>
+                                                    </td>";
+                                                echo '</tr>';
+
+                                                // Accumulate the sums for each column
+                                                $sumFruitHeight += intval($row['fruit_height']);
+                                                $sumStemHeight += intval($row['stem_height']);
+                                                $sumMaleFloweringDay += intval($row['flower_day']);
+                                                $sumFlowerDay += intval($row['male_flowering_day']);
+                                            }
+
+                                            // Calculate and display the averages only if filters are applied
+                                            if ($filtersApplied) {
+                                                $numRows = $result->num_rows;
+                                                $averageFruitHeight = $sumFruitHeight / $numRows;
+                                                $averageStemHeight = $sumStemHeight / $numRows;
+                                                $averageMaleFloweringDay = $sumMaleFloweringDay / $numRows;
+                                                $averageFlowerDay = $sumFlowerDay / $numRows;
+
+                                                // Display the averages
+                                                echo '<tr>';
+                                                echo '<td colspan="4" class="text-center">ទិន្នន័យជាមធ្យម</td>';
+                                                echo '<td>' . number_format($averageFruitHeight, 2) . '</td>';
+                                                echo '<td>' . number_format($averageStemHeight, 2) . '</td>';
+                                                echo '<td>' . number_format($averageMaleFloweringDay, 2) . '</td>';
+                                                echo '<td>' . number_format($averageFlowerDay, 2) . '</td>';
+                                                echo '<td></td>'; // Empty cell for alignment
+                                                echo '</tr>';
+                                            }
+                                        } else {
+                                            // Display message if no data found
+                                            // echo "<tr><td class='text-center' colspan='9'>No corn breeding data found!</td></tr>";
+                                        }
+                                        ?>
+                                    </tbody>
+
+                                </table>
+                                <!-- <table class="table table-bordered text-nowrap" id="dataTable" width="100%"
                                     cellspacing="0">
                                     <thead>
                                         <tr>
@@ -183,10 +344,10 @@
                                         ?>
 
                                     </tbody>
-                                </table>
+                                </table> -->
                                 <table
                                     class="table table-bordered text-nowrap"
-                                    style="display: none;"
+                                    style="display:none ;"
                                     id="tableForExport"
                                     width="100%"
                                     cellspacing="0">
@@ -238,13 +399,43 @@
                                     <tbody id="cornBreedingData2">
                                         <?php
 
-                                        $corn_breeding_data_query = "SELECT  *FROM tbl_corn_breeding_data
-                                            ORDER BY cbd_id DESC
-                                            ";
-                                        $cbd_result = $conn->query($corn_breeding_data_query);
+                                        // Get filter values from the form
+                                        $first_corn_variety = $_GET['filterPooch1'] ?? '';
+                                        $second_corn_variety = $_GET['filterPooch2'] ?? '';
+                                        $version = $_GET['filterJumnan'] ?? '';
+
+                                        // Initialize a flag to check if any filters are applied 
+                                        $filtersApplied = false;
+
+                                        // Construct the SQL query based on filters
+                                        $query = "SELECT * FROM tbl_corn_breeding_data WHERE 1=1";
+
+                                        // Add filters to the query if they are set
+                                        if (!empty($first_corn_variety)) {
+                                            $query .= " AND first_corn_variety = '" . $conn->real_escape_string($first_corn_variety) . "'";
+                                            $filtersApplied = true; // Set flag to true if any filter is applied
+                                        }
+                                        if (!empty($second_corn_variety)) {
+                                            $query .= " AND second_corn_variety = '" . $conn->real_escape_string($second_corn_variety) . "'";
+                                            $filtersApplied = true; // Set flag to true if any filter is applied
+                                        }
+                                        if (!empty($version)) {
+                                            $query .= " AND version = '" . $conn->real_escape_string($version) . "'";
+                                            $filtersApplied = true; // Set flag to true if any filter is applied
+                                        }
+
+                                        // Execute the query
+                                        $result = $conn->query($query);
+
+                                        // Initialize row counter and sums for averages
                                         $i = 1;
-                                        if ($cbd_result->num_rows > 0) {
-                                            while ($cbd = $cbd_result->fetch_assoc()) {
+                                        $sumFruitHeight = 0;
+                                        $sumStemHeight = 0;
+                                        $sumMaleFloweringDay = 0;
+                                        $sumFlowerDay = 0;
+
+                                        if ($result->num_rows > 0) {
+                                            while ($cbd = $result->fetch_assoc()) {
                                                 echo "<tr class=''  id='user-" . $cbd['cbd_id'] . "'>";
                                                 echo "<td class='py-2'>" . $i++ . "</td>";
                                                 echo "<td class='py-2'>" . $cbd['first_corn_variety'] . "</td>";
@@ -285,6 +476,31 @@
                                                 echo "<td class='py-1'>" . $cbd['tip_length'] . "</td>";
                                                 echo "<td class='py-2'>" . $cbd['total'] . "</td>";
                                                 echo "</tr>";
+                                                // Accumulate the sums for each column
+                                                $sumFruitHeight += intval($cbd['fruit_height']);
+                                                $sumStemHeight += intval($cbd['stem_height']);
+                                                $sumMaleFloweringDay += intval($cbd['flower_day']);
+                                                $sumFlowerDay += intval($cbd['male_flowering_day']);
+                                            }
+                                            if ($filtersApplied) {
+                                                $numRows = $result->num_rows;
+                                                $averageFruitHeight = $sumFruitHeight / $numRows;
+                                                $averageStemHeight = $sumStemHeight / $numRows;
+                                                $averageMaleFloweringDay = $sumMaleFloweringDay / $numRows;
+                                                $averageFlowerDay = $sumFlowerDay / $numRows;
+
+                                                // Display the averages
+                                                echo '<tr>';
+                                                echo '<td></td>';
+                                                echo '<td></td>';
+                                                echo '<td></td>';
+                                                echo '<td colspan="" class="text-center">ទិន្នន័យជាមធ្យម</td>';
+                                                echo '<td>' . number_format($averageFruitHeight, 2) . '</td>';
+                                                echo '<td>' . number_format($averageStemHeight, 2) . '</td>';
+                                                echo '<td>' . number_format($averageMaleFloweringDay, 2) . '</td>';
+                                                echo '<td>' . number_format($averageFlowerDay, 2) . '</td>';
+
+                                                echo '</tr>';
                                             }
                                         } else {
                                             echo "<tr><td class='text-center' colspan='9'>No corn breeding data found!</td></tr>";
@@ -332,16 +548,8 @@
     <!-- Custom scripts for all pages-->
     <script src="../assets/js/sb-admin-2.min.js"></script>
 
-    <!-- Page level plugins -->
-    <script src="../assets/vendor/chart.js/Chart.min.js"></script>
-
-    <!-- Page level custom scripts -->
-    <script src="../assets/js/demo/chart-area-demo.js"></script>
-    <script src="../assets/js/demo/chart-pie-demo.js"></script>
-
     <!-- Page level custom scripts -->
     <script src="../assets/js/demo/datatables-demo.js"></script>
-
 
     <!-- Page level plugins -->
     <script src="../assets/vendor/datatables/jquery.dataTables.min.js"></script>
@@ -355,124 +563,27 @@
 
     <!-- auto close session -->
     <script src="../assets/js/auto_close_alert.js"></script>
-    <!-- filter -->
-    <script>
-        document.getElementById('filterBtn').addEventListener('click', function(e) {
-            e.preventDefault(); // Prevent form submission
 
+    <!-- export excel -->
+    <script src="../assets/js/ExportExcel.js"></script>
+
+
+    <!-- if not select or input when filter -->
+    <script>
+        document.getElementById('filterForm').addEventListener('submit', function(e) {
             // Get filter values
-            var pooch1 = document.getElementById('filterPooch1').value;
-            var pooch2 = document.getElementById('filterPooch2').value;
-            var jumnan = document.getElementById('filterJumnan').value;
+            var filterPooch1 = document.getElementById('filterPooch1').value;
+            var filterPooch2 = document.getElementById('filterPooch2').value;
+            var filterJumnan = document.getElementById('filterJumnan').value;
 
-
-            if (!pooch1 && !pooch2 && !jumnan) {
-                return; // Exit the function if all filters are empty
+            // Check if all filters are empty
+            if (filterPooch1 === "" && filterPooch2 === "" && filterJumnan === "") {
+                // Prevent form submission if no filters are applied
+                e.preventDefault();
+                //  alert("Please select or enter at least one filter before submitting.");
             }
-
-            // Send AJAX request to fetch filtered data
-            var xhr = new XMLHttpRequest();
-            xhr.open('POST', 'filter_corn_breeding_data.php', true);
-            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-            xhr.onreadystatechange = function() {
-                if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-                    document.getElementById('cornBreedingData').innerHTML = this.responseText;
-                }
-            };
-
-            // Send filter values
-            xhr.send('pooch1=' + pooch1 + '&pooch2=' + pooch2 + '&jumnan=' + jumnan);
-        });
-        document.getElementById('filterBtn').addEventListener('click', function(e) {
-            e.preventDefault(); // Prevent form submission
-
-            // Get filter values (allow empty values)
-            var pooch1 = document.getElementById('filterPooch1').value || '';
-            var pooch2 = document.getElementById('filterPooch2').value || '';
-            var jumnan = document.getElementById('filterJumnan').value || '';
-
-
-            if (!pooch1 && !pooch2 && !jumnan) {
-                return; // Exit the function if all filters are empty
-            }
-
-            // Send AJAX request to fetch data for export (or all data if filters are empty)
-            var xhr = new XMLHttpRequest();
-            xhr.open('POST', 'filter_for_export.php', true);
-            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-            xhr.onreadystatechange = function() {
-                if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-                    document.getElementById('cornBreedingData2').innerHTML = this.responseText;
-                }
-            };
-
-            // Send filter values (empty if not selected)
-            xhr.send('pooch1=' + pooch1 + '&pooch2=' + pooch2 + '&jumnan=' + jumnan);
         });
     </script>
-    <!-- export to excel -->
-    <script>
-        function exportToExcel() {
-            // Create a new HTML table with only the relevant columns
-            var exportTable = document.createElement('table');
-            var exportTableBody = document.createElement('tbody');
-
-            // Get the header row from the HTML table
-            var headerRow = document.querySelector('#tableForExport thead tr');
-
-            // Create a new row for the export table and add the header cells
-            var exportHeaderRow = document.createElement('tr');
-            headerRow.querySelectorAll('th').forEach(function(cell) {
-                var exportCell = document.createElement('td');
-                exportCell.textContent = cell.textContent;
-                exportCell.style.border = '1px solid black'; // Add border
-                exportHeaderRow.appendChild(exportCell);
-            });
-            exportTableBody.appendChild(exportHeaderRow);
-
-            // Iterate over each row of the HTML table and add the data rows
-            var tableRows = document.querySelectorAll('#tableForExport tbody tr');
-            tableRows.forEach(function(row) {
-                // Create a new row for the export table
-                var exportRow = document.createElement('tr');
-
-                // Iterate over each cell of the row and create corresponding cells in the export table
-                row.querySelectorAll('td').forEach(function(cell) {
-                    var exportCell = document.createElement('td');
-                    exportCell.textContent = cell.textContent;
-                    exportCell.style.border = '1px solid black'; // Add border
-                    exportRow.appendChild(exportCell);
-                });
-
-                // Append the row to the export table body
-                exportTableBody.appendChild(exportRow);
-            });
-
-            // Append the table body to the export table
-            exportTable.appendChild(exportTableBody);
-
-            // Create a Blob object containing the HTML table
-            var blob = new Blob(['\ufeff', exportTable.outerHTML], {
-                type: 'application/vnd.ms-excel'
-            });
-
-            // Create a link element to download the Blob
-            var url = URL.createObjectURL(blob);
-            var a = document.createElement("a");
-            a.href = url;
-            a.download = "data_corn.xls";
-            document.body.appendChild(a);
-            a.click();
-
-            // Cleanup
-            setTimeout(function() {
-                document.body.removeChild(a);
-                window.URL.revokeObjectURL(url);
-            }, 0);
-        }
-    </script>
-
-
 
 
 

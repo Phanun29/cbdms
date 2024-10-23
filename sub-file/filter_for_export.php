@@ -107,7 +107,6 @@ if ($result->num_rows > 0) {
     $totalAverage = ($averageFruitHeight + $averageStemHeight + $averageMaleFloweringDay + $averageFlowerDay) / 4;
 
     // Display the total average
-    // Display the total average
     echo '<tr>';
     echo '<td colspan="4" class="text-center">Average of Data</td>';
     echo "<td></td>";

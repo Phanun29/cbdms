@@ -253,7 +253,7 @@ $image_paths = !empty($cbd['image_paths']) ? explode(',', $cbd['image_paths']) :
                     if (in_array($file_extension, ['jpeg', 'jpg', 'png', 'gif', 'bmp', 'webp'])) {
                       // Image
                       echo '<div class="image-container col-4 col-md-3" style="">';
-                      echo '<img style="width:100%;" src="' . ($image_path) . '" alt="Issue Image" class="issue-image">';
+                      echo '<img style="width:100%;" src="' . ($image_path) . '" alt="Image" class="issue-image">';
 
                       echo '</div>';
                     }

@@ -203,14 +203,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
   if ($stmt_update->execute()) {
 
-    $_SESSION['success_message_cbd'] = "cbd Updated Successfully.";
+    $_SESSION['success_message_cbd'] = "ទិន្នន័យបង្កាត់ពូជពោតត្រូវបានធ្វើបច្ចុប្បន្នភាពជោគជ័យ.";
     $stmt_update->close();
     header("Location: list_corn_breeding_data.php");
     exit();
   } else {
     // Log the error
     error_log("Database error: " . $stmt_update->error);
-    $_SESSION['error_message_cbd'] = "There was an error updating the data. Please try again.";
+    $_SESSION['error_message_cbd'] = "មាន​បញ្ហា​ក្នុង​ការ​ធ្វើ​បច្ចុប្បន្នភាព​ទិន្នន័យ។ សូមព្យាយាមម្តងទៀត.";
   }
 
   $stmt_update->close();
@@ -280,7 +280,7 @@ $name_of_cut_corn_variety = $cbd['name_of_cut_corn_variety'];
           <div class="card shadow mb-4">
             <div class="card-header py-3">
 
-              <a class="btn btn-secondary" href="list_corn_breeding_data.php"><i class="fa fa-arrow-circle-left" aria-hidden="true"></i> ថយក្រោយ</a>
+              <a class="btn btn-secondary" href="javascript:history.back()"><i class="fa fa-arrow-circle-left" aria-hidden="true"></i> ថយក្រោយ</a>
             </div>
             <form METHOD="POST" class="row mt-3 px-3" enctype="multipart/form-data" id="editCBDForm">
               <div class="col-12 col-md-6 row mt-2">

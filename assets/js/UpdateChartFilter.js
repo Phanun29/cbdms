@@ -16,14 +16,14 @@ $(document).ready(function () {
         var version1 = $("#version1").val();
 
         var first_corn_variety2 = $("#filterBreedA2").val();
-        var second_corn_variety2 = $("#second_corn_variety2").val();
+        var second_corn_variety2 = $("#filterBreedB2").val();
         var version2 = $("#version2").val();
 
         // Ajax request for table 1
         if (first_corn_variety1 || second_corn_variety1 || version1) {
             $.ajax({
                 type: "POST",
-                url: "retrieveData.php",
+                url: "retrieveDataForCompare.php",
                 data: {
                     first_corn_variety: first_corn_variety1,
                     second_corn_variety: second_corn_variety1,
@@ -63,7 +63,7 @@ $(document).ready(function () {
                     averageMaleFloweringDay2 = parseFloat(response.averageMaleFloweringDay);
                     averageFlowerDay2 = parseFloat(response.averageFlowerDay);
                     updateCombinedChart(
-                        filterBreed1A + " & " + second_corn_variety1 + " (v" + version1 + ")",
+                        first_corn_variety1 + " & " + second_corn_variety1 + " (v" + version1 + ")",
                         first_corn_variety2 + " & " + second_corn_variety2 + " (v" + version2 + ")"
                     );
                 },

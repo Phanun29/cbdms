@@ -46,25 +46,25 @@
                         }
                         ?>
                         <?php
-                        // if (isset($_SESSION['success_message_user'])) {
-                        //     echo "<div class='alert alert-success alert-dismissible fade show mb-0' role='alert'>
-                        //         <strong>{$_SESSION['success_message_user']}</strong>
-                        //         <button type='button' class='close' data-dismiss='modal' aria-label='Close' onclick='this.parentElement.style.display=\"none\";'>
-                        //             <span aria-hidden='true'>&times;</span>
-                        //         </button>
-                        //     </div>";
-                        //     unset($_SESSION['success_message_user']); // Clear the message after displaying
-                        // }
+                        if (isset($_SESSION['success_message'])) {
+                            echo "<div class='alert alert-success alert-dismissible fade show mb-0' role='alert'>
+                                <strong>{$_SESSION['success_message']}</strong>
+                                <button type='button' class='close' data-dismiss='modal' aria-label='Close' onclick='this.parentElement.style.display=\"none\";'>
+                                    <span aria-hidden='true'>&times;</span>
+                                </button>
+                            </div>";
+                            unset($_SESSION['success_message']); // Clear the message after displaying
+                        }
 
-                        // if (isset($_SESSION['error_message_user'])) {
-                        //     echo "<div class='alert alert-danger alert-dismissible fade show mb-0' role='alert'>
-                        //         <strong>{$_SESSION['error_message_user']}</strong>
-                        //         <button type='button' class='close' data-dismiss='modal' aria-label='Close' onclick='this.parentElement.style.display=\"none\";'>
-                        //             <span aria-hidden='true'>&times;</span>
-                        //         </button>
-                        //     </div>";
-                        //     unset($_SESSION['error_message_user']); // Clear the message after displaying
-                        // }
+                        if (isset($_SESSION['error_message_user'])) {
+                            echo "<div class='alert alert-danger alert-dismissible fade show mb-0' role='alert'>
+                                <strong>{$_SESSION['error_message_user']}</strong>
+                                <button type='button' class='close' data-dismiss='modal' aria-label='Close' onclick='this.parentElement.style.display=\"none\";'>
+                                    <span aria-hidden='true'>&times;</span>
+                                </button>
+                            </div>";
+                            unset($_SESSION['error_message_user']); // Clear the message after displaying
+                        }
                         ?>
                     </div>
 
@@ -198,10 +198,6 @@
 
 
 
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-
-
     <!-- Bootstrap core JavaScript-->
     <script src="../assets/vendor/jquery/jquery.min.js"></script>
     <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -211,7 +207,6 @@
 
     <!-- Custom scripts for all pages-->
     <script src="../assets/js/sb-admin-2.min.js"></script>
-
 
     <!-- Page level custom scripts -->
     <script src="../assets/js/demo/datatables-demo.js"></script>
