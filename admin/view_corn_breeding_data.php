@@ -6,12 +6,28 @@ $cbd_id = isset($_GET['id']) ? intval($_GET['id']) : null;
 $name_of_cut_corn_variety = isset($_GET['name_of_cut_corn_variety']) ? $conn->real_escape_string($_GET['name_of_cut_corn_variety']) : null;
 
 // Prepared statement to prevent SQL injection
-$cbd_query = $conn->prepare("SELECT t.*, GROUP_CONCAT(ti.image_path SEPARATOR ',') AS image_paths
+$cbd_query = $conn->prepare("SELECT t.*, GROUP_CONCAT(ti.image_path SEPARATOR ',') AS image_paths,
+                                cv1.corn_varieties_name AS first_corn_variety_name, 
+                                cv2.corn_varieties_name AS second_corn_variety_name
                              FROM tbl_corn_breeding_data t 
                              LEFT JOIN tbl_corn_breeding_data_images ti 
+                             
                              ON t.name_of_cut_corn_variety = ti.name_of_cut_corn_variety
+                             LEFT JOIN tbl_corn_varieties cv1 ON t.first_corn_variety = cv1.id
+                              LEFT JOIN tbl_corn_varieties cv2 ON t.second_corn_variety = cv2.id
                              WHERE cbd_id = ? OR t.name_of_cut_corn_variety = ?
                              GROUP BY t.name_of_cut_corn_variety");
+
+
+$query = "
+SELECT cbd.*, 
+       cv1.corn_varieties_name AS first_corn_variety_name, 
+       cv2.corn_varieties_name AS second_corn_variety_name
+FROM tbl_corn_breeding_data cbd
+LEFT JOIN tbl_corn_varieties cv1 ON cbd.first_corn_variety = cv1.id
+LEFT JOIN tbl_corn_varieties cv2 ON cbd.second_corn_variety = cv2.id
+WHERE 1=1
+";
 $cbd_query->bind_param('is', $cbd_id, $name_of_cut_corn_variety);
 $cbd_query->execute();
 $cbd_result = $cbd_query->get_result();
@@ -66,7 +82,7 @@ $image_paths = !empty($cbd['image_paths']) ? explode(',', $cbd['image_paths']) :
               <a class="btn btn-secondary" href="javascript:history.back()">
                 <i class="fa fa-arrow-circle-left" aria-hidden="true"></i> ថយក្រោយ
               </a>
-              <p class="btn text-white"><?= $cbd['name_of_cut_corn_variety'] ?></p>
+              <!-- <p class="btn text-white"><?= $cbd['name_of_cut_corn_variety'] ?></p> -->
 
 
             </div>
@@ -75,38 +91,90 @@ $image_paths = !empty($cbd['image_paths']) ? explode(',', $cbd['image_paths']) :
                 <label for="" class="col-6">ពូជទី១ </label>
                 <?php
                 $first_corn_variety =  $cbd['first_corn_variety'];
-                // query select corn variety
-                $query_first_corn_variety = "SELECT *FROM tbl_corn_varieties WHERE corn_varieties_name = '$first_corn_variety' ";
+                // Retrieve corn variety names based on the selected IDs
+                $query_first_variety = "SELECT corn_varieties_name FROM tbl_corn_varieties WHERE id = ?";
+
+
+                // Prepare statements
+                $stmt1 = $conn->prepare($query_first_variety);
+
+
+                // Bind parameters and execute
+                $stmt1->bind_param('s', $first_corn_variety);
+                $stmt1->execute();
+                $result1 = $stmt1->get_result();
+                $first_variety_name = $result1->fetch_assoc()['corn_varieties_name'];
+
+
+                // Query to select corn variety
+                $query_first_corn_variety = "SELECT * FROM tbl_corn_varieties WHERE corn_varieties_name = '$first_variety_name'";
                 $fcv_result = $conn->query($query_first_corn_variety);
-                $fcv = $fcv_result->fetch_assoc();
 
-                $status = $fcv['status'];
+                // Check if the query returns any rows
+                if ($fcv_result && $fcv_result->num_rows > 0) {
+                  // Fetch the result
+                  $fcv = $fcv_result->fetch_assoc();
+                  $status = $fcv['status'];
 
-                if ($status) {
-                  echo " <a href='view_corn_breeding_data_more.php?id={$cbd['cbd_id']}&name_of_cut_corn_variety={$cbd['first_corn_variety']}' class='form-control col-6 text-primary mb-3'>{$cbd['first_corn_variety']}</a>";
+                  if ($status) {
+                    echo " <a href='view_corn_breeding_data_more.php?id={$cbd['cbd_id']}&name_of_cut_corn_variety={$first_variety_name}' class='form-control col-6 text-primary mb-3'>{$first_variety_name}</a>";
+                  } else {
+                    echo " <p class='form-control col-6'>{$cbd['first_corn_variety']}</p>";
+                  }
                 } else {
-                  echo " <p class='form-control col-6'>{$cbd['first_corn_variety']}</p>";
+                  // Handle case where no data was found
+                  echo "<p class='form-control col-6 text-danger'>Corn variety not found</p>";
                 }
+
                 ?>
+                <!-- <p class='form-control col-6'><?= $cbd['first_corn_variety_name'] ?></p> -->
               </div>
 
               <div class="col-12 col-md-6 row">
                 <label for="" class="col-6">ពូជទី២ </label>
                 <?php
-                $second_corn_variety =  $cbd['second_corn_variety'];
-                $query_second_corn_variety = "SELECT *FROM tbl_corn_varieties WHERE corn_varieties_name = '$second_corn_variety' ";
-                $scv_result = $conn->query($query_second_corn_variety);
-                $scv = $scv_result->fetch_assoc();
+              
+              $second_corn_variety =  $cbd['second_corn_variety'];
 
+
+              // Retrieve corn variety names based on the selected IDs
+
+              $query_second_variety = "SELECT corn_varieties_name FROM tbl_corn_varieties WHERE id = ?";
+
+              // Prepare statements
+
+              $stmt2 = $conn->prepare($query_second_variety);
+
+
+              $stmt2->bind_param('s', $second_corn_variety);
+              $stmt2->execute();
+              $result2 = $stmt2->get_result();
+              $second_variety_name = $result2->fetch_assoc()['corn_varieties_name'];
+
+              $query_second_corn_variety = "SELECT *FROM tbl_corn_varieties WHERE corn_varieties_name = '$second_variety_name' ";
+              $scv_result = $conn->query($query_second_corn_variety);
+
+
+
+              // Check if the query returns any rows
+              if ($scv_result && $scv_result->num_rows > 0) {
+                // Fetch the result
+                $scv = $scv_result->fetch_assoc();
                 $status = $scv['status'];
 
                 if ($status) {
-                  echo " <a href='view_corn_breeding_data_more.php?id={$cbd['cbd_id']}&name_of_cut_corn_variety={$cbd['second_corn_variety']}' class='form-control col-6 text-primary mb-3'>{$cbd['second_corn_variety']}</a>";
+                  echo " <a href='view_corn_breeding_data_more.php?name_of_cut_corn_variety={$second_variety_name}' class='form-control col-6 text-primary mb-3'>{$second_variety_name}</a>";
                 } else {
-                  echo " <p class='form-control col-6'>{$cbd['second_corn_variety']}</p>";
+                  echo " <p class='form-control col-6'>{$second_variety_name}</p>";
                 }
+              } else {
+                // Handle case where no data was found
+                echo "<p class='form-control col-6 text-danger'>Corn variety not found</p>";
+              }
 
                 ?>
+                <!-- <p class='form-control col-6'><?= $cbd['second_corn_variety_name'] ?></p> -->
+
               </div>
               <div class="col-12 col-md-6 row">
                 <label for="" class="col-6">ជំនាន់</label>
@@ -263,7 +331,7 @@ $image_paths = !empty($cbd['image_paths']) ? explode(',', $cbd['image_paths']) :
                       // Image
                       echo '<div class="image-container col-4 col-md-3" style="">';
                       echo '<img style="width:100%;" src="' . ($image_path) . '" alt="Image" class="issue-image">';
-                    
+
                       echo '</div>';
                     }
                   }
@@ -273,7 +341,7 @@ $image_paths = !empty($cbd['image_paths']) ? explode(',', $cbd['image_paths']) :
                 <div class="col-12 row mt-3" id="imagePreview">
                 </div>
               </div>
-             
+
             </form>
 
           </div>

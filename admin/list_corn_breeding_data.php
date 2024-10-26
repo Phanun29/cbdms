@@ -77,8 +77,12 @@
                             <div class="row">
                                 <div class="col-12 col-md-6 row">
                                     <div class="col-4 pb-3">
-                                        <button class="btn btn-success"><i class="fas fa-file-export    "></i>&nbsp;Export</button>
+                                        <button class="btn btn-success" onclick="exportToExcel()">
+                                            <i class="fas fa-file-export"></i>&nbsp;Export
+                                        </button>
+
                                     </div>
+
                                 </div>
                                 <div class="col-12 col-md-6">
                                     <form action="" id="filterForm" method="GET" class="row">
@@ -86,76 +90,52 @@
                                             <select name="filterPooch1" id="filterPooch1" class="form-control">
                                                 <option value="" disabled selected>--ជ្រើសរើស--</option>
                                                 <?php
+                                                // Fetch corn varieties only once
                                                 $query_corn_varieties = "SELECT * FROM tbl_corn_varieties";
                                                 $result = $conn->query($query_corn_varieties);
 
                                                 if ($result->num_rows > 0) {
-                                                    while ($corn_varieties = $result->fetch_assoc()) {
-                                                        $selected = (isset($_GET['filterPooch1']) && $_GET['filterPooch1'] == $corn_varieties['corn_varieties_name']) ? "selected" : "";
-                                                        echo "<option value='{$corn_varieties['corn_varieties_name']}' $selected>{$corn_varieties['corn_varieties_name']}</option>";
+                                                    // Store corn varieties in an array for reuse
+                                                    $corn_varieties_array = [];
+                                                    while ($row = $result->fetch_assoc()) {
+                                                        $corn_varieties_array[] = $row;
+                                                    }
+
+                                                    // Populate the first dropdown
+                                                    foreach ($corn_varieties_array as $corn_varieties) {
+                                                        $selected = (isset($_GET['filterPooch1']) && $_GET['filterPooch1'] == $corn_varieties['id']) ? "selected" : "";
+                                                        echo "<option value='{$corn_varieties['id']}' $selected>{$corn_varieties['corn_varieties_name']}</option>";
                                                     }
                                                 }
                                                 ?>
                                             </select>
                                         </div>
+
                                         <div class="col-3">
                                             <select name="filterPooch2" id="filterPooch2" class="form-control">
                                                 <option value="" disabled selected>--ជ្រើសរើស--</option>
                                                 <?php
-                                                $result = $conn->query($query_corn_varieties);
-                                                if ($result->num_rows > 0) {
-                                                    while ($corn_varieties = $result->fetch_assoc()) {
-                                                        $selected = (isset($_GET['filterPooch2']) && $_GET['filterPooch2'] == $corn_varieties['corn_varieties_name']) ? "selected" : "";
-                                                        echo "<option value='{$corn_varieties['corn_varieties_name']}' $selected>{$corn_varieties['corn_varieties_name']}</option>";
+                                                // Populate the second dropdown from the same array
+                                                if (!empty($corn_varieties_array)) {
+                                                    foreach ($corn_varieties_array as $corn_varieties) {
+                                                        $selected = (isset($_GET['filterPooch2']) && $_GET['filterPooch2'] == $corn_varieties['id']) ? "selected" : "";
+                                                        echo "<option value='{$corn_varieties['id']}' $selected>{$corn_varieties['corn_varieties_name']}</option>";
                                                     }
                                                 }
                                                 ?>
                                             </select>
                                         </div>
+
                                         <div class="col-3">
                                             <input type="text" name="filterJumnan" id="filterJumnan" class="form-control" placeholder="ជំនាន់" value="<?php echo isset($_GET['filterJumnan']) ? $_GET['filterJumnan'] : ''; ?>">
                                         </div>
+
                                         <div class="col-3">
                                             <button type="submit" class="btn btn-primary" id="filterBtn"><i class="fas fa-filter"></i> Filter</button>
                                         </div>
                                     </form>
 
-                                    <!-- <form action="" id="filterForm" method="GET" class="row">
-                                        <div class="col-3">
-                                            <select name="filterPooch1" id="filterPooch1" class="form-control">
-                                                <option value="" disabled selected>--ជ្រើសរើស--</option>
-                                                <?php
-                                                $query_corn_varieties = "SELECT * FROM tbl_corn_varieties";
-                                                $result = $conn->query($query_corn_varieties);
 
-                                                if ($result->num_rows > 0) {
-                                                    while ($corn_varieties = $result->fetch_assoc()) {
-                                                        echo "<option value='{$corn_varieties['corn_varieties_name']}'>{$corn_varieties['corn_varieties_name']}</option>";
-                                                    }
-                                                }
-                                                ?>
-                                            </select>
-                                        </div>
-                                        <div class="col-3">
-                                            <select name="filterPooch2" id="filterPooch2" class="form-control">
-                                                <option value="" disabled selected>--ជ្រើសរើស--</option>
-                                                <?php
-                                                $result = $conn->query($query_corn_varieties);
-                                                if ($result->num_rows > 0) {
-                                                    while ($corn_varieties = $result->fetch_assoc()) {
-                                                        echo "<option value='{$corn_varieties['corn_varieties_name']}'>{$corn_varieties['corn_varieties_name']}</option>";
-                                                    }
-                                                }
-                                                ?>
-                                            </select>
-                                        </div>
-                                        <div class="col-3">
-                                            <input type="text" id="filterJumnan" class="form-control" placeholder="ជំនាន់">
-                                        </div>
-                                        <div class="col-3">
-                                            <button type="submit" class="btn btn-primary" id="filterBtn"><i class="fas fa-filter    "></i> Filter</button>
-                                        </div>
-                                    </form> -->
                                 </div>
                             </div>
                         </div>
@@ -182,11 +162,125 @@
                                         $second_corn_variety = $_GET['filterPooch2'] ?? '';
                                         $version = $_GET['filterJumnan'] ?? '';
 
+                                        // Construct the base SQL query
+                                        $query = "
+                                            SELECT cbd.*, 
+                                                cv1.corn_varieties_name AS first_corn_variety_name, 
+                                                cv2.corn_varieties_name AS second_corn_variety_name
+                                            FROM tbl_corn_breeding_data cbd
+                                            LEFT JOIN tbl_corn_varieties cv1 ON cbd.first_corn_variety = cv1.id
+                                            LEFT JOIN tbl_corn_varieties cv2 ON cbd.second_corn_variety = cv2.id
+                                            WHERE 1=1
+                                            ";
+
+                                        // Add filters to the query if they are set
+                                        if (!empty($first_corn_variety)) {
+                                            $query .= " AND first_corn_variety = '" . $conn->real_escape_string($first_corn_variety) . "'";
+                                        }
+                                        if (!empty($second_corn_variety)) {
+                                            $query .= " AND second_corn_variety = '" . $conn->real_escape_string($second_corn_variety) . "'";
+                                        }
+                                        if (!empty($version)) {
+                                            $query .= " AND version = '" . $conn->real_escape_string($version) . "'";
+                                        }
+
+                                        // Order the results by 'cbd_id' in descending order
+                                        $query .= " ORDER BY cbd_id DESC";
+
+                                        // Execute the query
+                                        $result = $conn->query($query);
+
+                                        // Initialize row counter and sums for averages
+                                        $i = 1;
+                                        $sumFruitHeight = 0;
+                                        $sumStemHeight = 0;
+                                        $sumMaleFloweringDay = 0;
+                                        $sumFlowerDay = 0;
+
+                                        if ($result && $result->num_rows > 0) {
+                                            while ($row = $result->fetch_assoc()) {
+                                                // Output each row of data
+                                                echo "<tr id='user-" . $row['cbd_id'] . "'>";
+                                                echo '<td>' . $i++ . '</td>';
+                                                echo '<td>' . $row['first_corn_variety_name'] . '</td>';
+                                                echo '<td>' . $row['second_corn_variety_name'] . '</td>';
+                                                echo '<td>' . $row['version'] . '</td>';
+                                                echo '<td>' . $row['fruit_height'] . '</td>';
+                                                echo '<td>' . $row['stem_height'] . '</td>';
+                                                echo '<td>' . $row['flower_day'] . '</td>';
+                                                echo '<td>' . $row['male_flowering_day'] . '</td>';
+                                                echo "<td align='center'>
+                                                    <button type='button' class='btn btn-flat btn-default btn-sm dropdown-toggle dropdown-icon' data-toggle='dropdown'>
+                                                        Action
+                                                        <span class='sr-only'>Toggle Dropdown</span>
+                                                    </button>
+                                                    <div class='dropdown-menu' role='menu'>
+                                                        <a class='dropdown-item' href='view_corn_breeding_data.php?id={$row['cbd_id']}'>
+                                                            <span class='fa fa-eye text-dark'></span> លម្អិត
+                                                        </a>
+                                                        <div class='dropdown-divider'></div>
+                                                        <a class='dropdown-item' href='edit_corn_breeding_data.php?id={$row['cbd_id']}'>
+                                                            <span class='fa fa-edit text-primary'></span> កែ
+                                                        </a>
+                                                        <div class='dropdown-divider'></div>
+                                                        <button data-id='" . $row['cbd_id'] . "' class='dropdown-item  delete-btn'><span class='fa-solid fa-trash  text-danger'></span> លុប</button>
+                                                    </div>
+                                                </td>";
+                                                echo '</tr>';
+
+                                                // Accumulate the sums for averages
+                                                $sumFruitHeight += intval($row['fruit_height']);
+                                                $sumStemHeight += intval($row['stem_height']);
+                                                $sumMaleFloweringDay += intval($row['flower_day']);
+                                                $sumFlowerDay += intval($row['male_flowering_day']);
+                                            }
+
+                                            // Display averages if filters are applied
+                                            if ($first_corn_variety || $second_corn_variety || $version) {
+                                                $numRows = $result->num_rows;
+                                                $averageFruitHeight = $sumFruitHeight / $numRows;
+                                                $averageStemHeight = $sumStemHeight / $numRows;
+                                                $averageMaleFloweringDay = $sumMaleFloweringDay / $numRows;
+                                                $averageFlowerDay = $sumFlowerDay / $numRows;
+
+                                                echo '<tr>';
+                                                echo '<td colspan="4" class="text-center">ទិន្នន័យជាមធ្យម</td>';
+                                                echo '<td>' . number_format($averageFruitHeight, 2) . '</td>';
+                                                echo '<td>' . number_format($averageStemHeight, 2) . '</td>';
+                                                echo '<td>' . number_format($averageMaleFloweringDay, 2) . '</td>';
+                                                echo '<td>' . number_format($averageFlowerDay, 2) . '</td>';
+                                                echo '<td></td>'; // Empty cell for alignment
+                                                echo '</tr>';
+                                            }
+                                        } else {
+                                            // Display a message if no data is found
+                                            //  echo "<tr><td class='text-center' colspan='9'>No corn breeding data found!</td></tr>";
+                                        }
+                                        ?>
+                                    </tbody>
+
+                                    <!-- <tbody id="cornBreedingData">
+                                        <?php
+                                        // Get filter values from the form
+                                        $first_corn_variety = $_GET['filterPooch1'] ?? '';
+                                        $second_corn_variety = $_GET['filterPooch2'] ?? '';
+                                        $version = $_GET['filterJumnan'] ?? '';
+
                                         // Initialize a flag to check if any filters are applied 
                                         $filtersApplied = false;
 
                                         // Construct the SQL query based on filters
-                                        $query = "SELECT * FROM tbl_corn_breeding_data WHERE 1=1";
+                                        //$query = "SELECT * FROM tbl_corn_breeding_data WHERE 1=1";
+
+                                        $query = "
+                                        SELECT cbd.*, 
+                                               cv1.corn_varieties_name AS first_corn_variety_name, 
+                                               cv2.corn_varieties_name AS second_corn_variety_name
+                                        FROM tbl_corn_breeding_data cbd
+                                        LEFT JOIN tbl_corn_varieties cv1 ON cbd.first_corn_variety = cv1.id
+                                        LEFT JOIN tbl_corn_varieties cv2 ON cbd.second_corn_variety = cv2.id
+                                        WHERE 1=1
+                                            ";
 
                                         // Add filters to the query if they are set
                                         if (!empty($first_corn_variety)) {
@@ -220,10 +314,11 @@
                                             // Fetch data and display it
                                             while ($row = $result->fetch_assoc()) {
                                                 // Output each row of data
-                                                echo '<tr class="text-center">';
+
+                                                echo "<tr class=''  id='user-" . $row['cbd_id'] . "'>";
                                                 echo '<td>' . $i++ . '</td>';
-                                                echo '<td>' . $row['first_corn_variety'] . '</td>';
-                                                echo '<td>' . $row['second_corn_variety'] . '</td>';
+                                                echo '<td>' . $row['first_corn_variety_name'] . '</td>';
+                                                echo '<td>' . $row['second_corn_variety_name'] . '</td>';
                                                 echo '<td>' . $row['version'] . '</td>';
                                                 echo '<td>' . $row['fruit_height'] . '</td>';
                                                 echo '<td>' . $row['stem_height'] . '</td>';
@@ -243,7 +338,7 @@
                                                                 <span class='fa fa-edit text-primary'></span> កែ
                                                             </a>
                                                             <div class='dropdown-divider'></div>
-                                                            <button data-id='" . $row['cbd_id'] . "' class='dropdown-item btn text-danger delete-btn'><i class='fa-solid fa-trash'></i> លុប</button>
+                                                            <button data-id='" . $row['cbd_id'] . "' class='dropdown-item  delete-btn'><span class='fa-solid fa-trash  text-danger'></span> លុប</button>
                                                         </div>
                                                     </td>";
                                                 echo '</tr>';
@@ -278,7 +373,7 @@
                                             // echo "<tr><td class='text-center' colspan='9'>No corn breeding data found!</td></tr>";
                                         }
                                         ?>
-                                    </tbody>
+                                    </tbody> -->
 
                                 </table>
                                 <!-- <table class="table table-bordered text-nowrap" id="dataTable" width="100%"
@@ -347,7 +442,7 @@
                                 </table> -->
                                 <table
                                     class="table table-bordered text-nowrap"
-                                    style="display:none ;"
+                                    style="display: none;"
                                     id="tableForExport"
                                     width="100%"
                                     cellspacing="0">
@@ -408,7 +503,15 @@
                                         $filtersApplied = false;
 
                                         // Construct the SQL query based on filters
-                                        $query = "SELECT * FROM tbl_corn_breeding_data WHERE 1=1";
+                                        $query = "
+                                            SELECT cbd.*, 
+                                                cv1.corn_varieties_name AS first_corn_variety_name, 
+                                                cv2.corn_varieties_name AS second_corn_variety_name
+                                            FROM tbl_corn_breeding_data cbd
+                                            LEFT JOIN tbl_corn_varieties cv1 ON cbd.first_corn_variety = cv1.id
+                                            LEFT JOIN tbl_corn_varieties cv2 ON cbd.second_corn_variety = cv2.id
+                                            WHERE 1=1
+                                            ";
 
                                         // Add filters to the query if they are set
                                         if (!empty($first_corn_variety)) {
@@ -438,8 +541,8 @@
                                             while ($cbd = $result->fetch_assoc()) {
                                                 echo "<tr class=''  id='user-" . $cbd['cbd_id'] . "'>";
                                                 echo "<td class='py-2'>" . $i++ . "</td>";
-                                                echo "<td class='py-2'>" . $cbd['first_corn_variety'] . "</td>";
-                                                echo "<td class='py-2'>" . $cbd['second_corn_variety'] . "</td>";
+                                                echo "<td class='py-2'>" . $cbd['first_corn_variety_name'] . "</td>";
+                                                echo "<td class='py-2'>" . $cbd['second_corn_variety_name'] . "</td>";
                                                 echo "<td class='py-1'>" . $cbd['version'] . "</td>";
                                                 echo "<td class='py-1'>" . $cbd['fruit_height'] . "</td>";
                                                 echo "<td class='py-1'>" . $cbd['stem_height'] . "</td>";

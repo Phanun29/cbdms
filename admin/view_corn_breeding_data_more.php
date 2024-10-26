@@ -63,38 +63,83 @@ $image_paths = !empty($cbd['image_paths']) ? explode(',', $cbd['image_paths']) :
                 <label for="" class="col-6">ពូជទី១ </label>
                 <?php
                 $first_corn_variety =  $cbd['first_corn_variety'];
-                // query select corn variety
-                $query_first_corn_variety = "SELECT *FROM tbl_corn_varieties WHERE corn_varieties_name = '$first_corn_variety' ";
+                // Retrieve corn variety names based on the selected IDs
+                $query_first_variety = "SELECT corn_varieties_name FROM tbl_corn_varieties WHERE id = ?";
+
+
+                // Prepare statements
+                $stmt1 = $conn->prepare($query_first_variety);
+
+
+                // Bind parameters and execute
+                $stmt1->bind_param('s', $first_corn_variety);
+                $stmt1->execute();
+                $result1 = $stmt1->get_result();
+                $first_variety_name = $result1->fetch_assoc()['corn_varieties_name'];
+
+                // Query to select corn variety
+                $query_first_corn_variety = "SELECT * FROM tbl_corn_varieties WHERE corn_varieties_name = '$first_variety_name'";
                 $fcv_result = $conn->query($query_first_corn_variety);
-                $fcv = $fcv_result->fetch_assoc();
 
-                $status = $fcv['status'];
+                // Check if the query returns any rows
+                if ($fcv_result && $fcv_result->num_rows > 0) {
+                  // Fetch the result
+                  $fcv = $fcv_result->fetch_assoc();
+                  $status = $fcv['status'];
 
-                if ($status) {
-                  echo " <a href='view_corn_breeding_data_more.php?name_of_cut_corn_variety={$cbd['first_corn_variety']}' class='form-control col-6 text-primary mb-3'>{$cbd['first_corn_variety']}</a>";
+                  if ($status) {
+                    echo " <a href='view_corn_breeding_data_more.php?id={$cbd['cbd_id']}&name_of_cut_corn_variety={$first_variety_name}' class='form-control col-6 text-primary mb-3'>{$first_variety_name}</a>";
+                  } else {
+                    echo " <p class='form-control col-6'>{$first_variety_name}</p>";
+                  }
                 } else {
-                  echo " <p class='form-control col-6'>{$cbd['first_corn_variety']}</p>";
+                  // Handle case where no data was found
+                  echo "<p class='form-control col-6 text-danger'>Corn variety not found</p>";
                 }
-
                 ?>
 
               </div>
               <div class="col-12 col-md-6 row">
                 <label for="" class="col-6">ពូជទី២ </label>
                 <?php
+
                 $second_corn_variety =  $cbd['second_corn_variety'];
-                $query_second_corn_variety = "SELECT *FROM tbl_corn_varieties WHERE corn_varieties_name = '$second_corn_variety' ";
+
+
+                // Retrieve corn variety names based on the selected IDs
+
+                $query_second_variety = "SELECT corn_varieties_name FROM tbl_corn_varieties WHERE id = ?";
+
+                // Prepare statements
+
+                $stmt2 = $conn->prepare($query_second_variety);
+
+
+                $stmt2->bind_param('s', $second_corn_variety);
+                $stmt2->execute();
+                $result2 = $stmt2->get_result();
+                $second_variety_name = $result2->fetch_assoc()['corn_varieties_name'];
+
+                $query_second_corn_variety = "SELECT *FROM tbl_corn_varieties WHERE corn_varieties_name = '$second_variety_name' ";
                 $scv_result = $conn->query($query_second_corn_variety);
-                $scv = $scv_result->fetch_assoc();
 
-                $status = $scv['status'];
 
-                if ($status) {
-                  echo " <a href='view_corn_breeding_data_more.php?name_of_cut_corn_variety={$cbd['second_corn_variety']}' class='form-control col-6 text-primary mb-3'>{$cbd['second_corn_variety']}</a>";
+
+                // Check if the query returns any rows
+                if ($scv_result && $scv_result->num_rows > 0) {
+                  // Fetch the result
+                  $scv = $scv_result->fetch_assoc();
+                  $status = $scv['status'];
+
+                  if ($status) {
+                    echo " <a href='view_corn_breeding_data_more.php?name_of_cut_corn_variety={$second_variety_name}' class='form-control col-6 text-primary mb-3'>{$second_variety_name}</a>";
+                  } else {
+                    echo " <p class='form-control col-6'>{$second_variety_name}</p>";
+                  }
                 } else {
-                  echo " <p class='form-control col-6'>{$cbd['second_corn_variety']}</p>";
+                  // Handle case where no data was found
+                  echo "<p class='form-control col-6 text-danger'>Corn variety not found</p>";
                 }
-
                 ?>
 
               </div>

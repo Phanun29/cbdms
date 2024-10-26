@@ -46,7 +46,7 @@
 
                     </div>
 
-                    <!-- DataTales Example -->
+                    <!-- DataTales  -->
                     <div class="card shadow mb-4 overflow-hidden">
 
                         <div class="card-header py-3">
@@ -62,7 +62,7 @@
 
                                                 if ($result->num_rows > 0) {
                                                     while ($corn_varieties = $result->fetch_assoc()) {
-                                                        echo "<option value='{$corn_varieties['corn_varieties_name']}'>{$corn_varieties['corn_varieties_name']}</option>";
+                                                        echo "<option value='{$corn_varieties['id']}'>{$corn_varieties['corn_varieties_name']}</option>";
                                                     }
                                                 }
                                                 ?>
@@ -77,7 +77,7 @@
 
                                                 if ($result->num_rows > 0) {
                                                     while ($corn_varieties = $result->fetch_assoc()) {
-                                                        echo "<option value='{$corn_varieties['corn_varieties_name']}'>{$corn_varieties['corn_varieties_name']}</option>";
+                                                        echo "<option value='{$corn_varieties['id']}'>{$corn_varieties['corn_varieties_name']}</option>";
                                                     }
                                                 }
                                                 ?>
@@ -99,7 +99,7 @@
 
                                                 if ($result->num_rows > 0) {
                                                     while ($corn_varieties = $result->fetch_assoc()) {
-                                                        echo "<option value='{$corn_varieties['corn_varieties_name']}'>{$corn_varieties['corn_varieties_name']}</option>";
+                                                        echo "<option value='{$corn_varieties['id']}'>{$corn_varieties['corn_varieties_name']}</option>";
                                                     }
                                                 }
                                                 ?>
@@ -114,7 +114,7 @@
 
                                                 if ($result->num_rows > 0) {
                                                     while ($corn_varieties = $result->fetch_assoc()) {
-                                                        echo "<option value='{$corn_varieties['corn_varieties_name']}'>{$corn_varieties['corn_varieties_name']}</option>";
+                                                        echo "<option value='{$corn_varieties['id']}'>{$corn_varieties['corn_varieties_name']}</option>";
                                                     }
                                                 }
                                                 ?>

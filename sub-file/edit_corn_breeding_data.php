@@ -42,41 +42,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $number_of_roots = $_POST['number_of_roots'];
   $tip_length = $_POST['tip_length'];
   $total = $_POST['total'];
-
-
-  // Retrieve corn variety names based on the selected IDs
-  $query_first_variety = "SELECT corn_varieties_name FROM tbl_corn_varieties WHERE id = ?";
-  $query_second_variety = "SELECT corn_varieties_name FROM tbl_corn_varieties WHERE id = ?";
-
-  // Prepare statements
-  $stmt1 = $conn->prepare($query_first_variety);
-  $stmt2 = $conn->prepare($query_second_variety);
-
-  // Bind parameters and execute
-  $stmt1->bind_param('s', $first_corn_variety);
-  $stmt1->execute();
-  $result1 = $stmt1->get_result();
-  $first_variety_name = $result1->fetch_assoc()['corn_varieties_name'];
-
-  $stmt2->bind_param('s', $second_corn_variety);
-  $stmt2->execute();
-  $result2 = $stmt2->get_result();
-  $second_variety_name = $result2->fetch_assoc()['corn_varieties_name'];
-
-  // Generate name of cut corn variety
-  $name_of_cut_corn_variety = $first_variety_name . " x " . $second_variety_name . " V" . $version;
-
+  //$cbd_id = $_POST['cbd_id']; // Assuming cbd_id comes from the form too.
 
   // Dynamically generate name_of_cut_corn_variety based on first and second variety
-
-  // $name_of_cut_corn_variety = $first_corn_variety . $second_corn_variety . "V" . $version;
+  // $name_of_cut_corn_variety = $first_corn_variety . $second_corn_variety;
+  $name_of_cut_corn_variety = $first_corn_variety . $second_corn_variety . "V" . $version;
   // Check if cbd_id exists in tbl_corn_breeding_data
   $name_of_cut_corn_variety_query = "SELECT name_of_cut_corn_variety FROM tbl_corn_breeding_data WHERE cbd_id = '$cbd_id'";
   $name_of_cut_corn_variety_result = $conn->query($name_of_cut_corn_variety_query);
 
   if ($name_of_cut_corn_variety_result->num_rows > 0) {
     $row = $name_of_cut_corn_variety_result->fetch_assoc();
-    $nameCUT = $row['name_of_cut_corn_variety'];
+    echo $row['name_of_cut_corn_variety'];
     // Handle deleted images
     if (!empty($_POST['delete_images'])) {
       foreach ($_POST['delete_images'] as $deleted_image) {
@@ -218,32 +195,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     );
 
     if ($stmt_update->execute()) {
-
-
-      $query_corn_varieties = "UPDATE tbl_corn_varieties SET corn_varieties_name = '$name_of_cut_corn_variety' WHERE corn_varieties_name =  '$nameCUT'";
-
-      if ($conn->query($query_corn_varieties) == true) {
-        // echo "success";
-      } else {
-        //echo "error" . $query_corn_varieties . $conn->error;
-      }
-
-
-      $query_namecut = "UPDATE tbl_corn_breeding_data SET name_of_cut_corn_variety = '$name_of_cut_corn_variety' WHERE name_of_cut_corn_variety =  '$nameCUT'";
-
-      if ($conn->query($query_namecut) == true) {
-        // echo "success";
-      } else {
-        //echo "error" . $query_corn_varieties . $conn->error;
-      }
-
-
       $_SESSION['success_message_cbd'] = "ទិន្នន័យបង្កាត់ពូជពោតត្រូវបានធ្វើបច្ចុប្បន្នភាពជោគជ័យ.";
       $stmt_update->close();
 
       // Redirect to the previous page
       $page = $_SERVER['HTTP_REFERER'];
-      header("Location: list_corn_breeding_data.php");
+      header("Location: $page");
       exit;
     } else {
       // Log the error
@@ -256,7 +213,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     exit();
   } else {
     // Ticket not found
-    $_SESSION['error_message_cbd'] = "data not found.";
+    $_SESSION['error_message_cbd'] = "Ticket not found.";
     header("Location: 404.php");
     exit();
   }
@@ -266,17 +223,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 
 
-
-
 // Prepared statement to prevent SQL injection
-$cbd_query = $conn->prepare("SELECT t.*, GROUP_CONCAT(ti.image_path SEPARATOR ',') AS image_paths ,
-                            cv1.corn_varieties_name AS first_corn_variety_name, 
-                            cv2.corn_varieties_name AS second_corn_variety_name
+$cbd_query = $conn->prepare("SELECT t.*, GROUP_CONCAT(ti.image_path SEPARATOR ',') AS image_paths
                              FROM tbl_corn_breeding_data t 
                              LEFT JOIN tbl_corn_breeding_data_images ti 
                              ON t.name_of_cut_corn_variety = ti.name_of_cut_corn_variety
-                             LEFT JOIN tbl_corn_varieties cv1 ON t.first_corn_variety = cv1.id
-                              LEFT JOIN tbl_corn_varieties cv2 ON t.second_corn_variety = cv2.id
                              WHERE cbd_id = ? OR t.name_of_cut_corn_variety = ?
                              GROUP BY t.name_of_cut_corn_variety");
 $cbd_query->bind_param('is', $cbd_id, $name_of_cut_corn_variety);
@@ -337,10 +288,12 @@ $name_of_cut_corn_variety = $cbd['name_of_cut_corn_variety'];
             <form METHOD="POST" class="row mt-3 px-3" enctype="multipart/form-data" id="editCBDForm">
               <div class="col-12 col-md-6 row mt-2">
                 <label for="first_corn_variety" class="col-6">ពូជទី១ <span class="text-danger">*</span></label>
+
+
                 <select class="form-control col-6" name="first_corn_variety" id="first_corn_variety" required>
                   <?php
                   // Perform SELECT query
-                  $sql = "SELECT id, corn_varieties_name FROM tbl_corn_varieties";
+                  $sql = "SELECT corn_varieties_name FROM tbl_corn_varieties WHERE corn_varieties_name != '$name_of_cut_corn_variety'";
                   $result = $conn->query($sql);
 
                   // Check if the query was successful
@@ -348,35 +301,35 @@ $name_of_cut_corn_variety = $cbd['name_of_cut_corn_variety'];
                     // Fetch data and display options for the first dropdown
                     while ($row = $result->fetch_assoc()) {
                       // Set the selected option based on the value stored in the database
-                      $selected = ($row['id'] == $cbd['first_corn_variety']) ? 'selected' : '';
-                      echo '<option value="' . $row['id'] . '" ' . $selected . '>' . $row['corn_varieties_name'] . '</option>';
+                      $selected = ($row['corn_varieties_name'] == $cbd['first_corn_variety']) ? 'selected' : '';
+                      echo '<option value="' . $row['corn_varieties_name'] . '" ' . $selected . '>' . $row['corn_varieties_name'] . '</option>';
                     }
                   }
                   ?>
                 </select>
               </div>
-
               <div class="col-12 col-md-6 row mt-2">
                 <label for="second_corn_variety" class="col-6">ពូជទី២ <span class="text-danger">*</span></label>
+
+
                 <select class="form-control col-6" name="second_corn_variety" id="second_corn_variety" required>
                   <?php
                   // Perform SELECT query
-                  $sql = "SELECT id, corn_varieties_name FROM tbl_corn_varieties";
+                  $sql = "SELECT corn_varieties_name FROM tbl_corn_varieties WHERE corn_varieties_name != '$name_of_cut_corn_variety'";
                   $result = $conn->query($sql);
 
                   // Check if the query was successful
                   if ($result) {
-                    // Fetch data and display options for the second dropdown
+                    // Fetch data and display options for the first dropdown
                     while ($row = $result->fetch_assoc()) {
                       // Set the selected option based on the value stored in the database
-                      $selected = ($row['id'] == $cbd['second_corn_variety']) ? 'selected' : '';
-                      echo '<option value="' . $row['id'] . '" ' . $selected . '>' . $row['corn_varieties_name'] . '</option>';
+                      $selected = ($row['corn_varieties_name'] == $cbd['second_corn_variety']) ? 'selected' : '';
+                      echo '<option value="' . $row['corn_varieties_name'] . '" ' . $selected . '>' . $row['corn_varieties_name'] . '</option>';
                     }
                   }
                   ?>
                 </select>
               </div>
-
               <div class="col-12 col-md-6 row mt-2">
                 <label for="version" class="col-6">ជំនាន់ <span class="text-danger">*</span></label>
 

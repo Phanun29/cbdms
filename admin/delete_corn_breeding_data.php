@@ -13,7 +13,7 @@ $name_of_cut_corn_variety = $conn->query("SELECT name_of_cut_corn_variety FROM t
 $name_of_cut_corn_variety_dir = "../uploads/$name_of_cut_corn_variety";
 
 // Delete files and directory
-if (is_dir($ticket_dir)) {
+if (is_dir($name_of_cut_corn_variety_dir)) {
     array_map('unlink', glob("$name_of_cut_corn_variety_dir/*"));
     rmdir($name_of_cut_corn_variety_dir);
 }

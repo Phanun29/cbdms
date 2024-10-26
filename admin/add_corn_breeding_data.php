@@ -44,7 +44,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $total = $_POST['total'];
 
 
-    $name_of_cut_corn_variety = $first_corn_variety . $second_corn_variety . "V" . $version;
+    // Retrieve corn variety names based on the selected IDs
+    $query_first_variety = "SELECT corn_varieties_name FROM tbl_corn_varieties WHERE id = ?";
+    $query_second_variety = "SELECT corn_varieties_name FROM tbl_corn_varieties WHERE id = ?";
+
+    // Prepare statements
+    $stmt1 = $conn->prepare($query_first_variety);
+    $stmt2 = $conn->prepare($query_second_variety);
+
+    // Bind parameters and execute
+    $stmt1->bind_param('s', $first_corn_variety);
+    $stmt1->execute();
+    $result1 = $stmt1->get_result();
+    $first_variety_name = $result1->fetch_assoc()['corn_varieties_name'];
+
+    $stmt2->bind_param('s', $second_corn_variety);
+    $stmt2->execute();
+    $result2 = $stmt2->get_result();
+    $second_variety_name = $result2->fetch_assoc()['corn_varieties_name'];
+
+    // Generate name of cut corn variety
+    $name_of_cut_corn_variety = $first_variety_name . " x " . $second_variety_name . " V" . $version;
+
 
     // Handle file uploads
     $uploaded_images = [];
@@ -52,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $target_dir = "../uploads/$name_of_cut_corn_variety/";
         if (!is_dir($target_dir)) mkdir($target_dir, 0777, true);
 
-        foreach ($_FILES['images']['name'] as $key => $image) {
+        foreach ($_FILES['images']['name'] as $key => $image) { 
             $image_extension = pathinfo($image, PATHINFO_EXTENSION);
             $unique_name = uniqid() . '.' . $image_extension;
             $target_file = $target_dir . $unique_name;
@@ -82,7 +103,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 //   echo "error" . $query_media . $conn->error;
             }
         }
-        $query_corn_varieties = "INSERT INTO tbl_corn_varieties (corn_varieties_name, status) VALUES ('$name_of_cut_corn_variety', '1   ')";
+        $query_corn_varieties = "INSERT INTO tbl_corn_varieties (corn_varieties_name, status) VALUES ('$name_of_cut_corn_variety', '1')";
         if ($conn->query($query_corn_varieties) == true) {
             // echo "success";
         } else {
@@ -160,7 +181,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                                     if ($result->num_rows > 0) {
                                         while ($corn_varieties = $result->fetch_assoc()) {
-                                            echo " <option value='{$corn_varieties['corn_varieties_name']}'>{$corn_varieties['corn_varieties_name']} </option>";
+                                            echo " <option value='{$corn_varieties['id']}'>{$corn_varieties['corn_varieties_name']} </option>";
                                         }
                                     }
                                     ?>
@@ -176,7 +197,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                                     if ($result->num_rows > 0) {
                                         while ($corn_varieties = $result->fetch_assoc()) {
-                                            echo " <option value='{$corn_varieties['corn_varieties_name']}'>{$corn_varieties['corn_varieties_name']} </option>";
+                                            echo " <option value='{$corn_varieties['id']}'>{$corn_varieties['corn_varieties_name']} </option>";
                                         }
                                     }
                                     ?>

@@ -67,16 +67,14 @@ if (isset($_POST['login'])) {
         <!-- Outer Row -->
         <div class="row justify-content-center">
 
-            <div class="col-xl-10 col-lg-12 col-md-9">
+            <div class="">
 
-                <div class="card o-hidden border-0 shadow-lg my-5">
+                <div class="card border-0 shadow-lg my-5">
                     <div class="card-body p-0">
                         <!-- Nested Row within Card Body -->
-                        <div class="row">
-                            <div class="col-lg-6 d-none d-lg-block bg-login-image">
-                                <img class="p-3" src="assets/img/logo_ksit.png" alt="" style="width: 90%;">
-                            </div>
-                            <div class="col-lg-6">
+                        <div class="">
+
+                            <div class="">
                                 <div class="p-5">
                                     <div class="text-center">
                                         <h2 class="h5 text-gray-900 mb-4">ប្រព័ន្ធគ្រប់គ្រងទិន្នន័យការបង្កាត់ពូជពោត</h2>
@@ -93,7 +91,7 @@ if (isset($_POST['login'])) {
                                             <div class="custom-control custom-checkbox small">
                                                 <input type="checkbox" class="custom-control-input" id="ShowPassword">
                                                 <label class="custom-control-label" for="ShowPassword">
-                                                    Show Password
+                                                    បង្ហាញពាក្យសម្ងាត់
                                                 </label>
                                             </div>
                                         </div>
@@ -111,7 +109,7 @@ if (isset($_POST['login'])) {
                                         }
                                         ?>
 
-                                        <button name="login" class="btn btn-primary btn-user btn-block">Login</button>
+                                        <button name="login" class="btn btn-primary btn-user btn-block">ចូល</button>
 
                                     </form>
 

@@ -23,25 +23,35 @@ $(document).ready(function () {
         if (first_corn_variety1 || second_corn_variety1 || version1) {
             $.ajax({
                 type: "POST",
-                url: "retrieveDataForCompare.php",
-                data: {
-                    first_corn_variety: first_corn_variety1,
-                    second_corn_variety: second_corn_variety1,
-                    version: version1
-                },
-                success: function (response) {
-                    $("#tableBody1").html(response.tableHtml);
-                    averageFruitHeight1 = parseFloat(response.averageFruitHeight);
-                    averageStemHeight1 = parseFloat(response.averageStemHeight);
-                    averageMaleFloweringDay1 = parseFloat(response.averageMaleFloweringDay);
-                    averageFlowerDay1 = parseFloat(response.averageFlowerDay);
-                    updateCombinedChart(
-                        first_corn_variety1 + " & " + second_corn_variety1 + " (v" + version1 + ")",
-                        first_corn_variety2 + " & " + second_corn_variety2 + " (v" + version2 + ")"
-                    );
-                },
-                error: function (xhr, status, error) {
-                    console.error("Error occurred while fetching data for Table 1:", error);
+                url: "getVarietyNames.php",
+                data: { ids: [first_corn_variety1, second_corn_variety1, first_corn_variety2, second_corn_variety2] },
+                dataType: "json",
+                success: function (namesResponse) {
+                    var label1 = `${namesResponse[first_corn_variety1]} & ${namesResponse[second_corn_variety1]} (v${version1})`;
+                    var label2 = `${namesResponse[first_corn_variety2]} & ${namesResponse[second_corn_variety2]} (v${version2})`;
+
+                    // Ajax request for table 1 data
+                    $.ajax({
+                        type: "POST",
+                        url: "retrieveDataForCompare.php",
+                        data: {
+                            first_corn_variety: first_corn_variety1,
+                            second_corn_variety: second_corn_variety1,
+                            version: version1
+                        },
+                        success: function (response) {
+                            $("#tableBody1").html(response.tableHtml);
+                            averageFruitHeight1 = parseFloat(response.averageFruitHeight);
+                            averageStemHeight1 = parseFloat(response.averageStemHeight);
+                            averageMaleFloweringDay1 = parseFloat(response.averageMaleFloweringDay);
+                            averageFlowerDay1 = parseFloat(response.averageFlowerDay);
+
+                            updateCombinedChart(label1, label2);
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("Error occurred while fetching data for Table 1:", error);
+                        }
+                    });
                 }
             });
         }
@@ -50,25 +60,32 @@ $(document).ready(function () {
         if (first_corn_variety2 || second_corn_variety2 || version2) {
             $.ajax({
                 type: "POST",
-                url: "retrieveData.php",
-                data: {
-                    first_corn_variety: first_corn_variety2,
-                    second_corn_variety: second_corn_variety2,
-                    version: version2
-                },
-                success: function (response) {
-                    $("#tableBody2").html(response.tableHtml);
-                    averageFruitHeight2 = parseFloat(response.averageFruitHeight);
-                    averageStemHeight2 = parseFloat(response.averageStemHeight);
-                    averageMaleFloweringDay2 = parseFloat(response.averageMaleFloweringDay);
-                    averageFlowerDay2 = parseFloat(response.averageFlowerDay);
-                    updateCombinedChart(
-                        first_corn_variety1 + " & " + second_corn_variety1 + " (v" + version1 + ")",
-                        first_corn_variety2 + " & " + second_corn_variety2 + " (v" + version2 + ")"
-                    );
-                },
-                error: function (xhr, status, error) {
-                    console.error("Error occurred while fetching data for Table 2:", error);
+                url: "getVarietyNames.php",
+                data: { ids: [first_corn_variety1, second_corn_variety1, first_corn_variety2, second_corn_variety2] },
+                dataType: "json",
+                success: function (namesResponse) {
+                    var label1 = `${namesResponse[first_corn_variety1]} & ${namesResponse[second_corn_variety1]} (v${version1})`;
+                    var label2 = `${namesResponse[first_corn_variety2]} & ${namesResponse[second_corn_variety2]} (v${version2})`;
+                    $.ajax({
+                        type: "POST",
+                        url: "retrieveDataForCompare.php",
+                        data: {
+                            first_corn_variety: first_corn_variety2,
+                            second_corn_variety: second_corn_variety2,
+                            version: version2
+                        },
+                        success: function (response) {
+                            $("#tableBody2").html(response.tableHtml);
+                            averageFruitHeight2 = parseFloat(response.averageFruitHeight);
+                            averageStemHeight2 = parseFloat(response.averageStemHeight);
+                            averageMaleFloweringDay2 = parseFloat(response.averageMaleFloweringDay);
+                            averageFlowerDay2 = parseFloat(response.averageFlowerDay);
+                            updateCombinedChart(label1, label2);
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("Error occurred while fetching data for Table 2:", error);
+                        }
+                    });
                 }
             });
         }

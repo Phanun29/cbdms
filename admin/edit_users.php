@@ -75,6 +75,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Move the uploaded file to the specified directory
         if (move_uploaded_file($image['tmp_name'], $upload_file)) {
             $image_path = $upload_file; // Store the image path for database insertion
+
+            // If there is an old image, delete it (avoid deleting a default image)
+            if ($current_image_path && file_exists($current_image_path) && $current_image_path !== '../profile_image/default.png') {
+                unlink($current_image_path); // Delete the old image
+            }
         } else {
             $_SESSION['error_message_user'] = "Error uploading image.";
             header('Location: users.php');
