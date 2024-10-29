@@ -73,10 +73,10 @@
                         </div>
                         <div class="card-header py-3">
 
+                            <form action="" id="filterForm" method="GET" class="row">
 
-                            <div class="row">
-                                <div class="col-12 col-md-6 row">
-                                    <div class="col-4 pb-3">
+                                <div class="col-12 col-md-2 mt-2">
+                                    <div class="col-12 pb-3">
                                         <button class="btn btn-success" onclick="exportToExcel()">
                                             <i class="fas fa-file-export"></i>&nbsp;Export
                                         </button>
@@ -84,60 +84,57 @@
                                     </div>
 
                                 </div>
-                                <div class="col-12 col-md-6">
-                                    <form action="" id="filterForm" method="GET" class="row">
-                                        <div class="col-3">
-                                            <select name="filterPooch1" id="filterPooch1" class="form-control">
-                                                <option value="" disabled selected>--ជ្រើសរើស--</option>
-                                                <?php
-                                                // Fetch corn varieties only once
-                                                $query_corn_varieties = "SELECT * FROM tbl_corn_varieties";
-                                                $result = $conn->query($query_corn_varieties);
 
-                                                if ($result->num_rows > 0) {
-                                                    // Store corn varieties in an array for reuse
-                                                    $corn_varieties_array = [];
-                                                    while ($row = $result->fetch_assoc()) {
-                                                        $corn_varieties_array[] = $row;
-                                                    }
 
-                                                    // Populate the first dropdown
-                                                    foreach ($corn_varieties_array as $corn_varieties) {
-                                                        $selected = (isset($_GET['filterPooch1']) && $_GET['filterPooch1'] == $corn_varieties['id']) ? "selected" : "";
-                                                        echo "<option value='{$corn_varieties['id']}' $selected>{$corn_varieties['corn_varieties_name']}</option>";
-                                                    }
+                                <div class="row col-12 col-md-8 mt-2">
+                                    <div class="col-5">
+                                        <select name="filterPooch1" id="filterPooch1" class="form-control">
+                                            <option value="" disabled selected>--ពូជទី១--</option>
+                                            <?php
+                                            // Fetch corn varieties only once
+                                            $query_corn_varieties = "SELECT * FROM tbl_corn_varieties";
+                                            $result = $conn->query($query_corn_varieties);
+                                            if ($result->num_rows > 0) {
+                                                // Store corn varieties in an array for reuse
+                                                $corn_varieties_array = [];
+                                                while ($row = $result->fetch_assoc()) {
+                                                    $corn_varieties_array[] = $row;
                                                 }
-                                                ?>
-                                            </select>
-                                        </div>
-
-                                        <div class="col-3">
-                                            <select name="filterPooch2" id="filterPooch2" class="form-control">
-                                                <option value="" disabled selected>--ជ្រើសរើស--</option>
-                                                <?php
-                                                // Populate the second dropdown from the same array
-                                                if (!empty($corn_varieties_array)) {
-                                                    foreach ($corn_varieties_array as $corn_varieties) {
-                                                        $selected = (isset($_GET['filterPooch2']) && $_GET['filterPooch2'] == $corn_varieties['id']) ? "selected" : "";
-                                                        echo "<option value='{$corn_varieties['id']}' $selected>{$corn_varieties['corn_varieties_name']}</option>";
-                                                    }
+                                                // Populate the first dropdown
+                                                foreach ($corn_varieties_array as $corn_varieties) {
+                                                    $selected = (isset($_GET['filterPooch1']) && $_GET['filterPooch1'] == $corn_varieties['id']) ? "selected" : "";
+                                                    echo "<option value='{$corn_varieties['id']}' $selected>{$corn_varieties['corn_varieties_name']}</option>";
                                                 }
-                                                ?>
-                                            </select>
-                                        </div>
-
-                                        <div class="col-3">
-                                            <input type="text" name="filterJumnan" id="filterJumnan" class="form-control" placeholder="ជំនាន់" value="<?php echo isset($_GET['filterJumnan']) ? $_GET['filterJumnan'] : ''; ?>">
-                                        </div>
-
-                                        <div class="col-3">
-                                            <button type="submit" class="btn btn-primary" id="filterBtn"><i class="fas fa-filter"></i> Filter</button>
-                                        </div>
-                                    </form>
-
-
+                                            }
+                                            ?>
+                                        </select>
+                                    </div>
+                                    <div class="col-5">
+                                        <select name="filterPooch2" id="filterPooch2" class="form-control">
+                                            <option value="" disabled selected>--ពូជទី២--</option>
+                                            <?php
+                                            // Populate the second dropdown from the same array
+                                            if (!empty($corn_varieties_array)) {
+                                                foreach ($corn_varieties_array as $corn_varieties) {
+                                                    $selected = (isset($_GET['filterPooch2']) && $_GET['filterPooch2'] == $corn_varieties['id']) ? "selected" : "";
+                                                    echo "<option value='{$corn_varieties['id']}' $selected>{$corn_varieties['corn_varieties_name']}</option>";
+                                                }
+                                            }
+                                            ?>
+                                        </select>
+                                    </div>
+                                    <div class="col-2">
+                                        <input type="text" name="filterJumnan" id="filterJumnan" class="form-control" placeholder="ជំនាន់" value="<?php echo isset($_GET['filterJumnan']) ? $_GET['filterJumnan'] : ''; ?>">
+                                    </div>
                                 </div>
-                            </div>
+
+                                <div class="col-12 col-md-2 mt-2">
+
+                                    <button type="submit" class="btn btn-primary" id="filterBtn"><i class="fas fa-search"></i> ស្វែងរក</button>
+                                    <a href="list_corn_breeding_data.php" class="btn btn-danger"><i class="fa-solid fa-rotate-right"></i> សម្អាត</a>
+                                </div>
+
+                            </form>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">

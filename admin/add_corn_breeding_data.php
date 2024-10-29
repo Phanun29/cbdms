@@ -42,8 +42,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $number_of_roots = $_POST['number_of_roots'];
     $tip_length = $_POST['tip_length'];
     $total = $_POST['total'];
-
-
     // Retrieve corn variety names based on the selected IDs
     $query_first_variety = "SELECT corn_varieties_name FROM tbl_corn_varieties WHERE id = ?";
     $query_second_variety = "SELECT corn_varieties_name FROM tbl_corn_varieties WHERE id = ?";
@@ -52,19 +50,34 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt1 = $conn->prepare($query_first_variety);
     $stmt2 = $conn->prepare($query_second_variety);
 
-    // Bind parameters and execute
+    // Bind parameters and execute for the first variety
     $stmt1->bind_param('s', $first_corn_variety);
     $stmt1->execute();
     $result1 = $stmt1->get_result();
     $first_variety_name = $result1->fetch_assoc()['corn_varieties_name'];
 
+    // Bind parameters and execute for the second variety
     $stmt2->bind_param('s', $second_corn_variety);
     $stmt2->execute();
     $result2 = $stmt2->get_result();
     $second_variety_name = $result2->fetch_assoc()['corn_varieties_name'];
 
-    // Generate name of cut corn variety
-    $name_of_cut_corn_variety = $first_variety_name . " x " . $second_variety_name . " V" . $version;
+    // Check for the latest count based on the variety combination and increment it
+    $count_query = "
+    SELECT COUNT(*) AS countup 
+    FROM tbl_corn_breeding_data 
+    WHERE first_corn_variety = ? 
+    AND second_corn_variety = ?
+";
+    $stmt_count = $conn->prepare($count_query);
+    $stmt_count->bind_param('ss', $first_corn_variety, $second_corn_variety);
+    $stmt_count->execute();
+    $result_count = $stmt_count->get_result();
+    $countup = $result_count->fetch_assoc()['countup'] + 1;
+
+    // Generate name of cut corn variety with incremented count
+    $name_of_cut_corn_variety = $first_variety_name . " x " . $second_variety_name . " " . $version;
+
 
 
     // Handle file uploads
@@ -73,7 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $target_dir = "../uploads/$name_of_cut_corn_variety/";
         if (!is_dir($target_dir)) mkdir($target_dir, 0777, true);
 
-        foreach ($_FILES['images']['name'] as $key => $image) { 
+        foreach ($_FILES['images']['name'] as $key => $image) {
             $image_extension = pathinfo($image, PATHINFO_EXTENSION);
             $unique_name = uniqid() . '.' . $image_extension;
             $target_file = $target_dir . $unique_name;
@@ -85,6 +98,31 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 exit();
             }
         }
+    }
+    // Check if the corn variety name already exists
+    $check_query = "SELECT * FROM tbl_corn_varieties WHERE corn_varieties_name = ?";
+    $stmt_check = $conn->prepare($check_query);
+    $stmt_check->bind_param('s', $name_of_cut_corn_variety);
+    $stmt_check->execute();
+    $check_result = $stmt_check->get_result();
+
+    // If the name already exists, send an error response and redirect
+    if ($check_result->num_rows > 0) {
+        $_SESSION['error_message_cbd'] = "ការបង្កាត់ពូជពោតនេះមានរួចហើយ។";
+        $stmt_check->close();
+        header("Location: add_corn_breeding_data.php");
+        exit();
+    }
+
+    // Name does not exist, so insert the new variety
+    $query_corn_varieties = "INSERT INTO tbl_corn_varieties (corn_varieties_name, status) VALUES (?, '1')";
+    $stmt_insert_variety = $conn->prepare($query_corn_varieties);
+    $stmt_insert_variety->bind_param('s', $name_of_cut_corn_variety);
+
+    if ($stmt_insert_variety->execute()) {
+     //   $_SESSION['success_message_cbd'] = "Corn variety inserted successfully.";
+    } else {
+      //  $_SESSION['error_message_cbd'] = "Error inserting corn variety.";
     }
 
     // Insert data into the database
@@ -103,12 +141,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 //   echo "error" . $query_media . $conn->error;
             }
         }
-        $query_corn_varieties = "INSERT INTO tbl_corn_varieties (corn_varieties_name, status) VALUES ('$name_of_cut_corn_variety', '1')";
-        if ($conn->query($query_corn_varieties) == true) {
-            // echo "success";
-        } else {
-            //echo "error" . $query_corn_varieties . $conn->error;
-        }
+
 
         $_SESSION['success_message_cbd'] = "បន្ងែមទិន្នន័យបង្កាត់ពូជពោតបានជោគជ័យ.";
     } else {
@@ -160,7 +193,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
                         <h1 class="h3 mb-0 text-gray-800"> បន្ថែមទិន្នន័យបង្កាត់ពូជពោត</h1>
+                        <?php
+                        if (isset($_SESSION['success_message_cbd'])) {
+                            echo "<div class='alert alert-success alert-dismissible fade show mb-0' role='alert'>
+                                        <strong>{$_SESSION['success_message_cbd']}</strong>
+                                        <button type='button' class='close' data-dismiss='modal' aria-label='Close' onclick='this.parentElement.style.display=\"none\";'>
+                                            <span aria-hidden='true'>&times;</span>
+                                        </button>
+                                    </div>";
+                            unset($_SESSION['success_message_cbd']); // Clear the message after displaying
+                        }
 
+                        if (isset($_SESSION['error_message_cbd'])) {
+                            echo "<div class='alert alert-danger alert-dismissible fade show mb-0' role='alert'>
+                                        <strong>{$_SESSION['error_message_cbd']}</strong>
+                                        <button type='button' class='close' data-dismiss='modal' aria-label='Close' onclick='this.parentElement.style.display=\"none\";'>
+                                            <span aria-hidden='true'>&times;</span>
+                                        </button>
+                                    </div>";
+                            unset($_SESSION['error_message_cbd']); // Clear the message after displaying
+                        }
+                        ?>
                     </div>
 
                     <!-- DataTales Corn Breeding Data -->

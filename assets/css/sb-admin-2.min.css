@@ -68,13 +68,14 @@ section {
 
 body {
     margin: 0;
-    font-family: Nunito, Khmer OS Battambang, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    font-family: Nunito, "Battambang", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
     font-size: 1rem;
     font-weight: 400;
     line-height: 1.5;
     color: #858796;
     text-align: left;
-    background-color: #fff
+    background-color: #fff;
+    scroll-behavior: smooth;
 }
 
 [tabindex="-1"]:focus:not(:focus-visible) {

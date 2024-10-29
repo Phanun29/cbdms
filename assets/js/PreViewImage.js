@@ -4,14 +4,14 @@ var selectedFiles = []; // Array to store selected files
 function previewFiles(files) {
     var previewContainer = document.getElementById('imagePreview');
 
-    files.forEach(function(file) {
+    files.forEach(function (file) {
         selectedFiles.push(file);
 
         var reader = new FileReader();
 
-        reader.onload = function(e) {
+        reader.onload = function (e) {
             var fileContainer = document.createElement('div');
-            fileContainer.className = 'image-container col-4 col-md-1';
+            fileContainer.className = 'image-container col-4 col-md-3';
 
             if (file.type.startsWith('image/')) {
                 var image = document.createElement('img');
@@ -29,7 +29,7 @@ function previewFiles(files) {
             var closeButton = document.createElement('button');
             closeButton.className = 'close-button';
             closeButton.innerHTML = '&times;';
-            closeButton.addEventListener('click', function() {
+            closeButton.addEventListener('click', function () {
                 // Remove the file container when the button is clicked
                 fileContainer.remove();
                 // Remove the corresponding file from the selectedFiles array
@@ -52,20 +52,20 @@ function previewFiles(files) {
 // Function to update the file input element with the selected files
 function updateFileInput() {
     var newFileList = new DataTransfer();
-    selectedFiles.forEach(function(file) {
+    selectedFiles.forEach(function (file) {
         newFileList.items.add(file);
     });
     document.getElementById('images').files = newFileList.files;
 }
 
 // Handle file selection through file input
-document.getElementById('images').addEventListener('change', function(event) {
+document.getElementById('images').addEventListener('change', function (event) {
     var files = Array.from(event.target.files);
     previewFiles(files);
 });
 
 // Handle pasting of images
-document.addEventListener('paste', function(event) {
+document.addEventListener('paste', function (event) {
     var items = event.clipboardData.items;
     var newFiles = [];
 

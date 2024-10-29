@@ -62,7 +62,7 @@ $conn->close();
         .small-box {
             border-radius: .25rem;
             box-shadow: 0 0 1px rgba(0, 0, 0, .125), 0 1px 3px rgba(0, 0, 0, .2);
-        /*    display: block;*/
+            /* display: block;*/
             /* margin-bottom: 20px; */
             position: relative;
             overflow: hidden;
@@ -116,7 +116,7 @@ $conn->close();
 
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800">Dasshboard</h1>
+                        <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
 
                     </div>
 

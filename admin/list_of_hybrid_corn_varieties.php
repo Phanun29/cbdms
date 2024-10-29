@@ -63,7 +63,8 @@
                                             while ($row = $result->fetch_assoc()) {
                                                 echo "<tr  id='user-" . $row['id'] . "'>";
                                                 echo '<td>' . $i++ . '</td>';
-                                                echo '<td>' . $row['corn_varieties_name'] . '</td>';
+                                                //  echo '<td>' . $row['corn_varieties_name'] . '</td>';
+                                                echo "<td><a href='view_corn_breeding_data_more.php?name_of_cut_corn_variety={$row['corn_varieties_name']}' class=''>{$row['corn_varieties_name']}</a></td>";
                                             }
                                         }
 

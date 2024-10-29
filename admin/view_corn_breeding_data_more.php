@@ -297,14 +297,76 @@ $image_paths = !empty($cbd['image_paths']) ? explode(',', $cbd['image_paths']) :
                     // Determine if the file is an image or video
                     if (in_array($file_extension, ['jpeg', 'jpg', 'png', 'gif', 'bmp', 'webp'])) {
                       // Image
-                      echo '<div class="image-container col-4 col-md-3" style="">';
-                      echo '<img style="width:100%;" src="' . ($image_path) . '" alt="Image" class="issue-image">';
-
+                      echo '<div class="image-container col-4 col-md-3">';
+                      echo '<img onclick="openModal(this)" style="width:100%; cursor: pointer;" src="' . ($image_path) . '" alt="Image" class="issue-image">';
                       echo '</div>';
                     }
                   }
                 }
                 ?>
+
+                <!-- Modal for full-screen image -->
+                <div id="imageModal" class="modal" onclick="closeModal(event)">
+                  <span class="close" onclick="closeModal()">&times;</span>
+                  <img class="modal-content" id="fullImage">
+                </div>
+
+                <!-- CSS for the modal with auto width and height -->
+                <style>
+                  .modal {
+                    display: none;
+                    position: fixed;
+                    z-index: 1000;
+                    left: 0;
+                    top: 0;
+                    width: 100%;
+                    height: 100%;
+                    background-color: rgba(0, 0, 0, 0.9);
+                    overflow: auto;
+                  }
+
+                  .modal-content {
+                    margin: auto;
+                    display: block;
+                    max-width: 90%;
+                    max-height: 90%;
+                    width: auto;
+                    height: auto;
+                    object-fit: contain;
+                  }
+
+                  .close {
+                    position: absolute;
+                    top: 20px;
+                    right: 35px;
+                    color: white;
+                    font-size: 40px;
+                    font-weight: bold;
+                    cursor: pointer;
+                  }
+
+                  .close:hover,
+                  .close:focus {
+                    color: #bbb;
+                    text-decoration: none;
+                    cursor: pointer;
+                  }
+                </style>
+
+                <!-- JavaScript for modal functionality -->
+                <script>
+                  function openModal(img) {
+                    document.getElementById("imageModal").style.display = "block";
+                    document.getElementById("fullImage").src = img.src;
+                  }
+
+                  function closeModal(event) {
+                    // Close modal if the click target is the modal background or the close button
+                    if (event.target.id === "imageModal" || event.target.className === "close") {
+                      document.getElementById("imageModal").style.display = "none";
+                    }
+                  }
+                </script>
 
                 <div class="col-12 row mt-3" id="imagePreview">
                 </div>

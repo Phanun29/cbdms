@@ -64,7 +64,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $second_variety_name = $result2->fetch_assoc()['corn_varieties_name'];
 
   // Generate name of cut corn variety
-  $name_of_cut_corn_variety = $first_variety_name . " x " . $second_variety_name . " V" . $version;
+  $name_of_cut_corn_variety = $first_variety_name . " x " . $second_variety_name . " " . $version;
 
 
   // Dynamically generate name_of_cut_corn_variety based on first and second variety
@@ -77,6 +77,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   if ($name_of_cut_corn_variety_result->num_rows > 0) {
     $row = $name_of_cut_corn_variety_result->fetch_assoc();
     $nameCUT = $row['name_of_cut_corn_variety'];
+
+    // Check if the corn variety name already exists
+    $check_query = "SELECT * FROM tbl_corn_varieties WHERE corn_varieties_name = ?";
+    $stmt_check = $conn->prepare($check_query);
+    $stmt_check->bind_param('s', $name_of_cut_corn_variety);
+    $stmt_check->execute();
+    $check_result = $stmt_check->get_result();
+
+    // If the name already exists, send an error response and redirect
+    if ($check_result->num_rows > 0) {
+      $_SESSION['error_message_cbd'] = "ការបង្កាត់ពូជពោតនេះមានរួចហើយ។";
+      $stmt_check->close();
+      header("Location: edit_corn_breeding_data.php?id=$cbd_id");
+      exit();
+    }
+
+    // Name does not exist, so insert the new variety
+    $query_corn_varieties = "UPDATE tbl_corn_varieties SET corn_varieties_name =? WHERE corn_varieties_name =?";
+    $stmt_insert_variety = $conn->prepare($query_corn_varieties);
+    $stmt_insert_variety->bind_param('ss', $name_of_cut_corn_variety, $nameCUT);
+
+    if ($stmt_insert_variety->execute()) {
+      //   $_SESSION['success_message_cbd'] = "Corn variety inserted successfully.";
+    } else {
+      //  $_SESSION['error_message_cbd'] = "Error inserting corn variety.";
+    }
     // Handle deleted images
     if (!empty($_POST['delete_images'])) {
       foreach ($_POST['delete_images'] as $deleted_image) {
@@ -220,14 +246,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($stmt_update->execute()) {
 
 
-      $query_corn_varieties = "UPDATE tbl_corn_varieties SET corn_varieties_name = '$name_of_cut_corn_variety' WHERE corn_varieties_name =  '$nameCUT'";
-
-      if ($conn->query($query_corn_varieties) == true) {
-        // echo "success";
-      } else {
-        //echo "error" . $query_corn_varieties . $conn->error;
-      }
-
 
       $query_namecut = "UPDATE tbl_corn_breeding_data SET name_of_cut_corn_variety = '$name_of_cut_corn_variety' WHERE name_of_cut_corn_variety =  '$nameCUT'";
 
@@ -261,7 +279,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     exit();
   }
 }
-
 
 
 
@@ -325,6 +342,27 @@ $name_of_cut_corn_variety = $cbd['name_of_cut_corn_variety'];
           <!-- Page Heading -->
           <div class="d-sm-flex align-items-center justify-content-between mb-4">
             <h1 class="h3 mb-0 text-gray-800">កែទិន្នន័យបង្កាត់ពូជពោត</h1>
+            <?php
+            if (isset($_SESSION['success_message_cbd'])) {
+              echo "<div class='alert alert-success alert-dismissible fade show mb-0' role='alert'>
+                                        <strong>{$_SESSION['success_message_cbd']}</strong>
+                                        <button type='button' class='close' data-dismiss='modal' aria-label='Close' onclick='this.parentElement.style.display=\"none\";'>
+                                            <span aria-hidden='true'>&times;</span>
+                                        </button>
+                                    </div>";
+              unset($_SESSION['success_message_cbd']); // Clear the message after displaying
+            }
+
+            if (isset($_SESSION['error_message_cbd'])) {
+              echo "<div class='alert alert-danger alert-dismissible fade show mb-0' role='alert'>
+                                        <strong>{$_SESSION['error_message_cbd']}</strong>
+                                        <button type='button' class='close' data-dismiss='modal' aria-label='Close' onclick='this.parentElement.style.display=\"none\";'>
+                                            <span aria-hidden='true'>&times;</span>
+                                        </button>
+                                    </div>";
+              unset($_SESSION['error_message_cbd']); // Clear the message after displaying
+            }
+            ?>
 
           </div>
 
