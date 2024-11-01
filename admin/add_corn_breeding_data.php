@@ -68,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     FROM tbl_corn_breeding_data 
     WHERE first_corn_variety = ? 
     AND second_corn_variety = ?
-";
+    ";
     $stmt_count = $conn->prepare($count_query);
     $stmt_count->bind_param('ss', $first_corn_variety, $second_corn_variety);
     $stmt_count->execute();
@@ -120,9 +120,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt_insert_variety->bind_param('s', $name_of_cut_corn_variety);
 
     if ($stmt_insert_variety->execute()) {
-     //   $_SESSION['success_message_cbd'] = "Corn variety inserted successfully.";
+        //   $_SESSION['success_message_cbd'] = "Corn variety inserted successfully.";
     } else {
-      //  $_SESSION['error_message_cbd'] = "Error inserting corn variety.";
+        //  $_SESSION['error_message_cbd'] = "Error inserting corn variety.";
     }
 
     // Insert data into the database
@@ -132,16 +132,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     if ($stmt->execute()) {
 
+        $cbd_id = $conn->insert_id;  // Get the cbd_id of the newly inserted record
+
         $image_insert_success = true;
         foreach ($uploaded_images as $target_file) {
-            $query_media = "INSERT INTO tbl_corn_breeding_data_images (name_of_cut_corn_variety, image_path) VALUES ('$name_of_cut_corn_variety', '$target_file')";
-            if ($conn->query($query_media) == true) {
-                //   echo "success";
-            } else {
-                //   echo "error" . $query_media . $conn->error;
-            }
-        }
+            // Insert image along with cbd_id
+            $query_media = "INSERT INTO tbl_corn_breeding_data_images (cbd_id, image_path) VALUES (?, ?)";
+            $stmt_media = $conn->prepare($query_media);
+            $stmt_media->bind_param("is", $cbd_id, $target_file);
 
+            if ($stmt_media->execute()) {
+                // Image uploaded successfully for this cbd_id
+            } else {
+                // Handle the error if image insertion fails
+            }
+            $stmt_media->close();
+        }
 
         $_SESSION['success_message_cbd'] = "បន្ងែមទិន្នន័យបង្កាត់ពូជពោតបានជោគជ័យ.";
     } else {

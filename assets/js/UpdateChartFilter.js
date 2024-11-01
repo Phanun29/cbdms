@@ -27,8 +27,8 @@ $(document).ready(function () {
                 data: { ids: [first_corn_variety1, second_corn_variety1, first_corn_variety2, second_corn_variety2] },
                 dataType: "json",
                 success: function (namesResponse) {
-                    var label1 = `${namesResponse[first_corn_variety1]} & ${namesResponse[second_corn_variety1]} (v${version1})`;
-                    var label2 = `${namesResponse[first_corn_variety2]} & ${namesResponse[second_corn_variety2]} (v${version2})`;
+                    var label1 = `${namesResponse[first_corn_variety1]} & ${namesResponse[second_corn_variety1]} (${version1})`;
+                    var label2 = `${namesResponse[first_corn_variety2]} & ${namesResponse[second_corn_variety2]} (${version2})`;
 
                     // Ajax request for table 1 data
                     $.ajax({
@@ -64,8 +64,8 @@ $(document).ready(function () {
                 data: { ids: [first_corn_variety1, second_corn_variety1, first_corn_variety2, second_corn_variety2] },
                 dataType: "json",
                 success: function (namesResponse) {
-                    var label1 = `${namesResponse[first_corn_variety1]} & ${namesResponse[second_corn_variety1]} (v${version1})`;
-                    var label2 = `${namesResponse[first_corn_variety2]} & ${namesResponse[second_corn_variety2]} (v${version2})`;
+                    var label1 = `${namesResponse[first_corn_variety1]} & ${namesResponse[second_corn_variety1]} (${version1})`;
+                    var label2 = `${namesResponse[first_corn_variety2]} & ${namesResponse[second_corn_variety2]} (${version2})`;
                     $.ajax({
                         type: "POST",
                         url: "retrieveDataForCompare.php",

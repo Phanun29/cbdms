@@ -43,7 +43,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $tip_length = $_POST['tip_length'];
   $total = $_POST['total'];
 
-
   // Retrieve corn variety names based on the selected IDs
   $query_first_variety = "SELECT corn_varieties_name FROM tbl_corn_varieties WHERE id = ?";
   $query_second_variety = "SELECT corn_varieties_name FROM tbl_corn_varieties WHERE id = ?";
@@ -66,10 +65,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   // Generate name of cut corn variety
   $name_of_cut_corn_variety = $first_variety_name . " x " . $second_variety_name . " " . $version;
 
-
-  // Dynamically generate name_of_cut_corn_variety based on first and second variety
-
-  // $name_of_cut_corn_variety = $first_corn_variety . $second_corn_variety . "V" . $version;
   // Check if cbd_id exists in tbl_corn_breeding_data
   $name_of_cut_corn_variety_query = "SELECT name_of_cut_corn_variety FROM tbl_corn_breeding_data WHERE cbd_id = '$cbd_id'";
   $name_of_cut_corn_variety_result = $conn->query($name_of_cut_corn_variety_query);
@@ -84,24 +79,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt_check->bind_param('s', $name_of_cut_corn_variety);
     $stmt_check->execute();
     $check_result = $stmt_check->get_result();
-
-    // If the name already exists, send an error response and redirect
-    if ($check_result->num_rows > 0) {
-      $_SESSION['error_message_cbd'] = "ការបង្កាត់ពូជពោតនេះមានរួចហើយ។";
-      $stmt_check->close();
-      header("Location: edit_corn_breeding_data.php?id=$cbd_id");
-      exit();
+    if ($name_of_cut_corn_variety != $nameCUT) {
+      // If the name already exists, send an error response and redirect
+      if ($check_result->num_rows > 0) {
+        $_SESSION['error_message_cbd'] = "ការបង្កាត់ពូជពោតនេះមានរួចហើយ $version";
+        $stmt_check->close();
+        header("Location: edit_corn_breeding_data.php?id=$cbd_id");
+        exit();
+      }
     }
+    if ($name_of_cut_corn_variety != $nameCUT) {
+      // Name does not exist, so insert the new variety
+      $query_corn_varieties = "UPDATE tbl_corn_varieties SET corn_varieties_name = ? WHERE corn_varieties_name =?";
+      $stmt_insert_variety = $conn->prepare($query_corn_varieties);
+      $stmt_insert_variety->bind_param('ss', $name_of_cut_corn_variety, $nameCUT);
 
-    // Name does not exist, so insert the new variety
-    $query_corn_varieties = "UPDATE tbl_corn_varieties SET corn_varieties_name =? WHERE corn_varieties_name =?";
-    $stmt_insert_variety = $conn->prepare($query_corn_varieties);
-    $stmt_insert_variety->bind_param('ss', $name_of_cut_corn_variety, $nameCUT);
-
-    if ($stmt_insert_variety->execute()) {
-      //   $_SESSION['success_message_cbd'] = "Corn variety inserted successfully.";
-    } else {
-      //  $_SESSION['error_message_cbd'] = "Error inserting corn variety.";
+      if ($stmt_insert_variety->execute()) {
+        //   $_SESSION['success_message_cbd'] = "Corn variety inserted successfully.";
+      } else {
+        //  $_SESSION['error_message_cbd'] = "Error inserting corn variety.";
+      }
     }
     // Handle deleted images
     if (!empty($_POST['delete_images'])) {
@@ -126,36 +123,53 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       }
     }
 
-    // Handle file uploads for images
-    $uploaded_images = [];
-    if (!empty($_FILES['images']['name'][0])) {
-      $target_dir = "../uploads/$name_of_cut_corn_variety/";
-      if (!is_dir($target_dir)) mkdir($target_dir, 0777, true);
+    // Update the name of the corn variety
+    $query_namecut = "UPDATE tbl_corn_breeding_data SET name_of_cut_corn_variety = '$name_of_cut_corn_variety' WHERE name_of_cut_corn_variety =  '$nameCUT'";
 
-      foreach ($_FILES['images']['name'] as $key => $image) {
-        $image_extension = pathinfo($image, PATHINFO_EXTENSION);
-        $unique_name = uniqid() . '.' . $image_extension;
-        $target_file = $target_dir . $unique_name;
+    if ($conn->query($query_namecut) === true) {
+      // Define the old and new directories
+      $old_dir = "../uploads/$nameCUT/";
+      $new_dir = "../uploads/$name_of_cut_corn_variety/";
 
-        if (move_uploaded_file($_FILES["images"]["tmp_name"][$key], $target_file)) {
-          $uploaded_images[] = $target_file;
+      // Check if the old directory exists and rename it
+      if (is_dir($old_dir)) {
+        rename($old_dir, $new_dir);
+      }
 
-          // Secure prepared statement for inserting image paths
-          $stmt_media = $conn->prepare("INSERT INTO tbl_corn_breeding_data_images (name_of_cut_corn_variety, image_path) VALUES (?, ?)");
-          $stmt_media->bind_param("ss", $name_of_cut_corn_variety, $target_file);
-          if ($stmt_media->execute()) {
-            echo "Image added successfully";
+      // Handle file uploads for images
+      $uploaded_images = [];
+      if (!empty($_FILES['images']['name'][0])) {
+        // Create the new directory if it doesn't exist
+        if (!is_dir($new_dir)) mkdir($new_dir, 0777, true);
+
+        foreach ($_FILES['images']['name'] as $key => $image) {
+          $image_extension = pathinfo($image, PATHINFO_EXTENSION);
+          $unique_name = uniqid() . '.' . $image_extension;
+          $target_file = $new_dir . $unique_name;
+
+          if (move_uploaded_file($_FILES["images"]["tmp_name"][$key], $target_file)) {
+            $uploaded_images[] = $target_file;
+
+            // Insert image path into the database
+            $stmt_media = $conn->prepare("INSERT INTO tbl_corn_breeding_data_images (cbd_id, image_path) VALUES (?, ?)");
+            $stmt_media->bind_param("is", $cbd_id, $target_file);
+            if ($stmt_media->execute()) {
+              echo "Image added successfully";
+            } else {
+              echo "Error adding image: " . $stmt_media->error;
+            }
+            $stmt_media->close();
           } else {
-            echo "Error adding image: " . $stmt_media->error;
+            $_SESSION['error_message_cbd'] = "Error uploading image: " . $image;
+            header('Location: ' . $_SERVER['REQUEST_URI']);
+            exit();
           }
-          $stmt_media->close();
-        } else {
-          $_SESSION['error_message_cbd'] = "Error uploading image: " . $image;
-          header('Location: ' . $_SERVER['REQUEST_URI']);
-          exit();
         }
       }
+    } else {
+      echo "Error updating name of cut corn variety: " . $conn->error;
     }
+
 
     // Update data in the tbl_corn_breeding_data
     $update_query = "UPDATE tbl_corn_breeding_data SET 
@@ -247,13 +261,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 
 
-      $query_namecut = "UPDATE tbl_corn_breeding_data SET name_of_cut_corn_variety = '$name_of_cut_corn_variety' WHERE name_of_cut_corn_variety =  '$nameCUT'";
+      // $query_namecut = "UPDATE tbl_corn_breeding_data SET name_of_cut_corn_variety = '$name_of_cut_corn_variety' WHERE name_of_cut_corn_variety =  '$nameCUT'";
 
-      if ($conn->query($query_namecut) == true) {
-        // echo "success";
-      } else {
-        //echo "error" . $query_corn_varieties . $conn->error;
-      }
+      // if ($conn->query($query_namecut) == true) {
+      //   // echo "success";
+      // } else {
+      //   //echo "error" . $query_corn_varieties . $conn->error;
+      // }
 
 
       $_SESSION['success_message_cbd'] = "ទិន្នន័យបង្កាត់ពូជពោតត្រូវបានធ្វើបច្ចុប្បន្នភាពជោគជ័យ.";
@@ -289,13 +303,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 $cbd_query = $conn->prepare("SELECT t.*, GROUP_CONCAT(ti.image_path SEPARATOR ',') AS image_paths ,
                             cv1.corn_varieties_name AS first_corn_variety_name, 
                             cv2.corn_varieties_name AS second_corn_variety_name
-                             FROM tbl_corn_breeding_data t 
-                             LEFT JOIN tbl_corn_breeding_data_images ti 
-                             ON t.name_of_cut_corn_variety = ti.name_of_cut_corn_variety
-                             LEFT JOIN tbl_corn_varieties cv1 ON t.first_corn_variety = cv1.id
-                              LEFT JOIN tbl_corn_varieties cv2 ON t.second_corn_variety = cv2.id
-                             WHERE cbd_id = ? OR t.name_of_cut_corn_variety = ?
-                             GROUP BY t.name_of_cut_corn_variety");
+                            FROM tbl_corn_breeding_data t 
+                            LEFT JOIN tbl_corn_breeding_data_images ti ON t.cbd_id = ti.cbd_id
+                            LEFT JOIN tbl_corn_varieties cv1 ON t.first_corn_variety = cv1.id
+                            LEFT JOIN tbl_corn_varieties cv2 ON t.second_corn_variety = cv2.id
+                            WHERE t.cbd_id = ? OR t.name_of_cut_corn_variety = ?
+                            GROUP BY t.cbd_id");
 $cbd_query->bind_param('is', $cbd_id, $name_of_cut_corn_variety);
 $cbd_query->execute();
 $cbd_result = $cbd_query->get_result();
@@ -377,8 +390,9 @@ $name_of_cut_corn_variety = $cbd['name_of_cut_corn_variety'];
                 <label for="first_corn_variety" class="col-6">ពូជទី១ <span class="text-danger">*</span></label>
                 <select class="form-control col-6" name="first_corn_variety" id="first_corn_variety" required>
                   <?php
+                  $name_of_cut_corn_variety = $cbd['name_of_cut_corn_variety'];
                   // Perform SELECT query
-                  $sql = "SELECT id, corn_varieties_name FROM tbl_corn_varieties";
+                  $sql = "SELECT id, corn_varieties_name FROM tbl_corn_varieties WHERE corn_varieties_name != '$name_of_cut_corn_variety' ";
                   $result = $conn->query($sql);
 
                   // Check if the query was successful
@@ -398,8 +412,9 @@ $name_of_cut_corn_variety = $cbd['name_of_cut_corn_variety'];
                 <label for="second_corn_variety" class="col-6">ពូជទី២ <span class="text-danger">*</span></label>
                 <select class="form-control col-6" name="second_corn_variety" id="second_corn_variety" required>
                   <?php
+                  $name_of_cut_corn_variety = $cbd['name_of_cut_corn_variety'];
                   // Perform SELECT query
-                  $sql = "SELECT id, corn_varieties_name FROM tbl_corn_varieties";
+                  $sql = "SELECT id, corn_varieties_name FROM tbl_corn_varieties WHERE corn_varieties_name != '$name_of_cut_corn_variety'";
                   $result = $conn->query($sql);
 
                   // Check if the query was successful

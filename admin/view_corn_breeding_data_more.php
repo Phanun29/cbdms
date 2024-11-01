@@ -4,9 +4,9 @@ $name_of_cut_corn_variety = $_GET['name_of_cut_corn_variety'];
 
 $cbd_query = "SELECT  t.*, GROUP_CONCAT(ti.image_path SEPARATOR ',') AS image_paths
               FROM tbl_corn_breeding_data t 
-              LEFT JOIN tbl_corn_breeding_data_images ti ON t.name_of_cut_corn_variety = ti.name_of_cut_corn_variety
+              LEFT JOIN tbl_corn_breeding_data_images ti ON t.cbd_id = ti.cbd_id
               WHERE   t.name_of_cut_corn_variety = '$name_of_cut_corn_variety'
-              GROUP BY t.name_of_cut_corn_variety";
+              GROUP BY t.cbd_id";
 $cbd_result = $conn->query($cbd_query);
 $cbd = $cbd_result->fetch_assoc();
 $image_paths = !empty($cbd['image_paths']) ? explode(',', $cbd['image_paths']) : [];

@@ -3,7 +3,8 @@
 <html lang="en">
 
 <head>
-
+    <!-- Include Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <?php include "../inc/head.php"; ?>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.0/xlsx.full.min.js"></script>
 
@@ -256,187 +257,10 @@
                                         ?>
                                     </tbody>
 
-                                    <!-- <tbody id="cornBreedingData">
-                                        <?php
-                                        // Get filter values from the form
-                                        $first_corn_variety = $_GET['filterPooch1'] ?? '';
-                                        $second_corn_variety = $_GET['filterPooch2'] ?? '';
-                                        $version = $_GET['filterJumnan'] ?? '';
 
-                                        // Initialize a flag to check if any filters are applied 
-                                        $filtersApplied = false;
-
-                                        // Construct the SQL query based on filters
-                                        //$query = "SELECT * FROM tbl_corn_breeding_data WHERE 1=1";
-
-                                        $query = "
-                                        SELECT cbd.*, 
-                                               cv1.corn_varieties_name AS first_corn_variety_name, 
-                                               cv2.corn_varieties_name AS second_corn_variety_name
-                                        FROM tbl_corn_breeding_data cbd
-                                        LEFT JOIN tbl_corn_varieties cv1 ON cbd.first_corn_variety = cv1.id
-                                        LEFT JOIN tbl_corn_varieties cv2 ON cbd.second_corn_variety = cv2.id
-                                        WHERE 1=1
-                                            ";
-
-                                        // Add filters to the query if they are set
-                                        if (!empty($first_corn_variety)) {
-                                            $query .= " AND first_corn_variety = '" . $conn->real_escape_string($first_corn_variety) . "'";
-                                            $filtersApplied = true; // Set flag to true if any filter is applied
-                                        }
-                                        if (!empty($second_corn_variety)) {
-                                            $query .= " AND second_corn_variety = '" . $conn->real_escape_string($second_corn_variety) . "'";
-                                            $filtersApplied = true; // Set flag to true if any filter is applied
-                                        }
-                                        if (!empty($version)) {
-                                            $query .= " AND version = '" . $conn->real_escape_string($version) . "'";
-                                            $filtersApplied = true; // Set flag to true if any filter is applied
-                                        }
-
-
-                                        // Order the results by 'version' in descending order
-                                        $query .= " ORDER BY cbd_id DESC";
-
-                                        // Execute the query
-                                        $result = $conn->query($query);
-
-                                        // Initialize row counter and sums for averages
-                                        $i = 1;
-                                        $sumFruitHeight = 0;
-                                        $sumStemHeight = 0;
-                                        $sumMaleFloweringDay = 0;
-                                        $sumFlowerDay = 0;
-
-                                        if ($result->num_rows > 0) {
-                                            // Fetch data and display it
-                                            while ($row = $result->fetch_assoc()) {
-                                                // Output each row of data
-
-                                                echo "<tr class=''  id='user-" . $row['cbd_id'] . "'>";
-                                                echo '<td>' . $i++ . '</td>';
-                                                echo '<td>' . $row['first_corn_variety_name'] . '</td>';
-                                                echo '<td>' . $row['second_corn_variety_name'] . '</td>';
-                                                echo '<td>' . $row['version'] . '</td>';
-                                                echo '<td>' . $row['fruit_height'] . '</td>';
-                                                echo '<td>' . $row['stem_height'] . '</td>';
-                                                echo '<td>' . $row['flower_day'] . '</td>';
-                                                echo '<td>' . $row['male_flowering_day'] . '</td>';
-                                                echo "<td align='center'>
-                                                        <button type='button' class='btn btn-flat btn-default btn-sm dropdown-toggle dropdown-icon' data-toggle='dropdown'>
-                                                            Action
-                                                            <span class='sr-only'>Toggle Dropdown</span>
-                                                        </button>
-                                                        <div class='dropdown-menu' role='menu'>
-                                                            <a class='dropdown-item' href='view_corn_breeding_data.php?id={$row['cbd_id']}&name_of_cut_corn_variety={$row['name_of_cut_corn_variety']}'>
-                                                                <span class='fa fa-eye text-dark'></span> លម្អិត
-                                                            </a>
-                                                            <div class='dropdown-divider'></div>
-                                                            <a class='dropdown-item' href='edit_corn_breeding_data.php?id={$row['cbd_id']}'>
-                                                                <span class='fa fa-edit text-primary'></span> កែ
-                                                            </a>
-                                                            <div class='dropdown-divider'></div>
-                                                            <button data-id='" . $row['cbd_id'] . "' class='dropdown-item  delete-btn'><span class='fa-solid fa-trash  text-danger'></span> លុប</button>
-                                                        </div>
-                                                    </td>";
-                                                echo '</tr>';
-
-                                                // Accumulate the sums for each column
-                                                $sumFruitHeight += intval($row['fruit_height']);
-                                                $sumStemHeight += intval($row['stem_height']);
-                                                $sumMaleFloweringDay += intval($row['flower_day']);
-                                                $sumFlowerDay += intval($row['male_flowering_day']);
-                                            }
-
-                                            // Calculate and display the averages only if filters are applied
-                                            if ($filtersApplied) {
-                                                $numRows = $result->num_rows;
-                                                $averageFruitHeight = $sumFruitHeight / $numRows;
-                                                $averageStemHeight = $sumStemHeight / $numRows;
-                                                $averageMaleFloweringDay = $sumMaleFloweringDay / $numRows;
-                                                $averageFlowerDay = $sumFlowerDay / $numRows;
-
-                                                // Display the averages
-                                                echo '<tr>';
-                                                echo '<td colspan="4" class="text-center">ទិន្នន័យជាមធ្យម</td>';
-                                                echo '<td>' . number_format($averageFruitHeight, 2) . '</td>';
-                                                echo '<td>' . number_format($averageStemHeight, 2) . '</td>';
-                                                echo '<td>' . number_format($averageMaleFloweringDay, 2) . '</td>';
-                                                echo '<td>' . number_format($averageFlowerDay, 2) . '</td>';
-                                                echo '<td></td>'; // Empty cell for alignment
-                                                echo '</tr>';
-                                            }
-                                        } else {
-                                            // Display message if no data found
-                                            // echo "<tr><td class='text-center' colspan='9'>No corn breeding data found!</td></tr>";
-                                        }
-                                        ?>
-                                    </tbody> -->
 
                                 </table>
-                                <!-- <table class="table table-bordered text-nowrap" id="dataTable" width="100%"
-                                    cellspacing="0">
-                                    <thead>
-                                        <tr>
-                                            <th>#</th>
-                                            <th>ពូជទី១</th>
-                                            <th>ពូជទី២</th>
-                                            <th>ជំនាន់</th>
-                                            <th>កម្ពស់ផ្លែ</th>
-                                            <th>កម្ពស់ដើម</th>
-                                            <th>ថ្ងៃចេញផ្កាញី​ ៥០%</th>
-                                            <th>ថ្ងៃចេញផ្កាឈ្មោល​ ៥០%</th>
-                                            <th>សកម្មភាព</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="cornBreedingData">
-                                        <?php
 
-                                        $corn_breeding_data_query = "SELECT  *FROM tbl_corn_breeding_data
-                                            ORDER BY cbd_id DESC
-                                            ";
-                                        $cbd_result = $conn->query($corn_breeding_data_query);
-                                        $i = 1;
-                                        if ($cbd_result->num_rows > 0) {
-                                            while ($cbd = $cbd_result->fetch_assoc()) {
-                                                echo "<tr class=''  id='user-" . $cbd['cbd_id'] . "'>";
-                                                echo "<td class='py-2'>" . $i++ . "</td>";
-                                                echo "<td class='py-2'>" . $cbd['first_corn_variety'] . "</td>";
-                                                echo "<td class='py-2'>" . $cbd['second_corn_variety'] . "</td>";
-                                                echo "<td class='py-1'>" . $cbd['version'] . "</td>";
-                                                echo "<td class='py-1'>" . $cbd['fruit_height'] . "</td>";
-                                                echo "<td class='py-1'>" . $cbd['stem_height'] . "</td>";
-                                                echo "<td class='py-1'>" . $cbd['flower_day'] . "</td>";
-                                                echo "<td class='py-1'>" . $cbd['male_flowering_day'] . "</td>";
-
-                                                echo " <td align='centerz'>
-                                                <button type='button'
-                                                    class='btn btn-flat btn-default btn-sm dropdown-toggle dropdown-icon'
-                                                    data-toggle='dropdown'>
-                                                    Action
-                                                    <span class='sr-only'>Toggle Dropdown</span>
-                                                </button>
-                                                <div class='dropdown-menu' role='menu'>
-                                                    <a class='dropdown-item' href='view_corn_breeding_data.php?id={$cbd['cbd_id']}&name_of_cut_corn_variety={$cbd['name_of_cut_corn_variety']}'
-                                                        ><span class='fa fa-eye text-dark'></span> លម្អិត</a>
-                                                    <div class='dropdown-divider'></div>
-                                                    <a class='dropdown-item' href='edit_corn_breeding_data.php?id={$cbd['cbd_id']}''
-                                                        ><span class='fa fa-edit text-primary'></span>
-                                                        កែ</a>
-                                                    <div class='dropdown-divider'></div>
-                                                    <button data-id='" . $cbd['cbd_id'] . "' class='dropdown-item btn text-danger  delete-btn'><i class='fa-solid fa-trash'></i> លុប</button>
-                                                </div>
-                                            </td>";
-
-                                                echo "</tr>";
-                                            }
-                                        } else {
-                                            // echo "<tr><td class='text-center' colspan='9'>No corn breeding data found!</td></tr>";
-                                        }
-
-                                        ?>
-
-                                    </tbody>
-                                </table> -->
                                 <table
                                     class="table table-bordered text-nowrap"
                                     style="display: none;"
@@ -636,7 +460,27 @@
         <i class="fas fa-angle-up"></i>
     </a>
 
+    <!-- Include jQuery -->
+    <!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
 
+    <!-- Include Select2 JS -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script> -->
+
+    <!-- <script>
+        // Initialize Select2 on the dropdown
+        $(document).ready(function() {
+            $('#filterPooch2').select2({
+                placeholder: "--ពូជទី២--",
+                allowClear: true
+            });
+        });
+        $(document).ready(function() {
+            $('#filterPooch1').select2({
+                placeholder: "--ពូជទី២--",
+                allowClear: true
+            });
+        });
+    </script> -->
 
     <!-- Bootstrap core JavaScript-->
     <script src="../assets/vendor/jquery/jquery.min.js"></script>

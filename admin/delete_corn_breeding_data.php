@@ -21,7 +21,7 @@ if (is_dir($name_of_cut_corn_variety_dir)) {
 // Delete related records from tbl_corn_varieties tbl_corn_breeding_data_images and tbl_corn_breeding_data
 $queries = [
     "DELETE FROM tbl_corn_varieties WHERE corn_varieties_name = '$name_of_cut_corn_variety'",
-    "DELETE FROM tbl_corn_breeding_data_images WHERE name_of_cut_corn_variety = '$name_of_cut_corn_variety'",
+    "DELETE FROM tbl_corn_breeding_data_images WHERE cbd_id = '$cbd_id'",
     "DELETE FROM tbl_corn_breeding_data WHERE cbd_id = '$cbd_id'"
 ];
 

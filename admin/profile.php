@@ -247,7 +247,7 @@ $user = $user_result->fetch_assoc();
                             </div>
                         </div>
                         <!-- Error message displayed here -->
-                        <small id="passwordError" class="form-text text-danger" style="display: none;">ពាក្យសម្ងាត់មិនត្រូវគ្នាទេ, សូមពិនិត្យម្តងទៀត!</small>
+                        <small id="passwordError" class="form-text text-danger" style="display: none;">ពាក្យសម្ងាត់ថ្មីមិនត្រូវគ្នាទេ, សូមពិនិត្យម្តងទៀត!</small>
                         <!-- Submit Button -->
                         <div class="col-12" style="text-align: right;">
                             <button class="btn btn-success  mt-3" type="submit" name="change_password">

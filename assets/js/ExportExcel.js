@@ -26,7 +26,7 @@ function exportToExcel() {
 
     // Create a new row for the export table and add the header cells with custom styles
     var exportHeaderRow = document.createElement('tr');
-    headerRow.querySelectorAll('th').forEach(function(cell) {
+    headerRow.querySelectorAll('th').forEach(function (cell) {
         var exportCell = document.createElement('td');
         exportCell.textContent = cell.textContent;
 
@@ -42,12 +42,12 @@ function exportToExcel() {
 
     // Iterate over each row of the HTML table and add the data rows
     var tableRows = document.querySelectorAll('#tableForExport tbody tr');
-    tableRows.forEach(function(row) {
+    tableRows.forEach(function (row) {
         // Create a new row for the export table
         var exportRow = document.createElement('tr');
 
         // Iterate over each cell of the row and create corresponding cells in the export table
-        row.querySelectorAll('td').forEach(function(cell) {
+        row.querySelectorAll('td').forEach(function (cell) {
             var exportCell = document.createElement('td');
             exportCell.textContent = cell.textContent;
 
@@ -75,12 +75,12 @@ function exportToExcel() {
     var url = URL.createObjectURL(blob);
     var a = document.createElement("a");
     a.href = url;
-    a.download = "data_corn.xls";
+    a.download = "conr_breeding_data.xls";
     document.body.appendChild(a);
     a.click();
 
     // Cleanup
-    setTimeout(function() {
+    setTimeout(function () {
         document.body.removeChild(a);
         window.URL.revokeObjectURL(url);
     }, 0);

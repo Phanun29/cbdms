@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $email = $_POST['email'] ?? null;
     $phone_number = $_POST['phone_number'] ?? null;
     $user_type = $_POST['user_type'];
-    $status = $_POST['status'];
+    $status = "active";
 
 
     // Handle image upload
@@ -180,14 +180,14 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                                         <option value="user">user</option>
                                     </select required>
                                 </div>
-                                <div class="col-12 row mt-3">
+                                <!-- <div class="col-12 row mt-3">
                                     <label class="col-4" for="status">Status<span class="text-danger">*</span></label>
                                     <select class="form-control col-8" name="status" id="status" required>
                                         <option value="">--Select--</option>
                                         <option value="active">Active</option>
                                         <option value="inactive">Inactive</option>
                                     </select required>
-                                </div>
+                                </div> -->
 
                                 <div class="col-12 my-3" style="text-align: end;">
                                     <button class="btn btn-success"><i class="fa fa-check-circle" aria-hidden="true"></i> រក្សាទុក</button>
