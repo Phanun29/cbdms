@@ -436,22 +436,22 @@ $name_of_cut_corn_variety = $cbd['name_of_cut_corn_variety'];
                 <input type="text" name="version" id="version" class="form-control col-6" value="<?= $cbd['version'] ?>">
               </div>
               <div class="col-12 col-md-6 row mt-2">
-                <label for="fruit_height" class="col-6">កម្ពស់ផ្លែ <span class="text-danger">*</span></label>
+                <label for="fruit_height" class="col-6">កម្ពស់ផ្លែ <span class="text-danger"></span></label>
 
                 <input type="text" name="fruit_height" id="fruit_height" class="form-control col-6" value="<?= $cbd['fruit_height'] ?>">
               </div>
               <div class="col-12 col-md-6 row mt-2">
-                <label for="stem_height" class="col-6">កម្ពស់ដើម <span class="text-danger">*</span></label>
+                <label for="stem_height" class="col-6">កម្ពស់ដើម <span class="text-danger"></span></label>
 
                 <input type="text" name="stem_height" id="stem_height" class="form-control col-6" value="<?= $cbd['stem_height'] ?>">
               </div>
               <div class="col-12 col-md-6 row mt-2">
-                <label for="" class="col-6">ថ្ងៃចេញផ្កាញី​ ៥០% <span class="text-danger">*</span></label>
+                <label for="" class="col-6">ថ្ងៃចេញផ្កាញី​ ៥០% <span class="text-danger"></span></label>
 
                 <input type="text" name="flower_day" id="flower_day" class="form-control col-6" value="<?= $cbd['flower_day'] ?>">
               </div>
               <div class="col-12 col-md-6 row mt-2">
-                <label for="male_flowering_day" class="col-6">ថ្ងៃចេញផ្កាឈ្មោល​ ៥០% <span class="text-danger">*</span></label>
+                <label for="male_flowering_day" class="col-6">ថ្ងៃចេញផ្កាឈ្មោល​ ៥០% <span class="text-danger"></span></label>
 
                 <input type="text" name="male_flowering_day" id="male_flowering_day" class="form-control col-6" value="<?= $cbd['male_flowering_day'] ?>">
               </div>
