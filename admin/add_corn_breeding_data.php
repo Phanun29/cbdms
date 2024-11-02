@@ -267,20 +267,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 <input type="text" name="version" id="version" class="form-control col-6" required>
                             </div>
                             <div class="col-12 col-md-6 mt-2 row">
-                                <label for="fruit_height" class="col-6">កម្ពស់ផ្លែ <span class="text-danger">*</span></label>
-                                <input type="text" name="fruit_height" id="fruit_height" class="form-control col-6" required>
+                                <label for="fruit_height" class="col-6">កម្ពស់ផ្លែ <span class="text-danger"></span></label>
+                                <input type="text" name="fruit_height" id="fruit_height" class="form-control col-6" >
                             </div>
                             <div class="col-12 col-md-6 mt-2 row">
-                                <label for="stem_height" class="col-6">កម្ពស់ដើម <span class="text-danger">*</span></label>
-                                <input type="text" name="stem_height" id="stem_height" class="form-control col-6" required>
+                                <label for="stem_height" class="col-6">កម្ពស់ដើម <span class="text-danger"></span></label>
+                                <input type="text" name="stem_height" id="stem_height" class="form-control col-6" >
                             </div>
                             <div class="col-12 col-md-6 mt-2 row">
-                                <label for="flower_day" class="col-6">ថ្ងៃចេញផ្កាញី​ ៥០% <span class="text-danger">*</span></label>
-                                <input type="text" name="flower_day" id="flower_day" class="form-control col-6" required>
+                                <label for="flower_day" class="col-6">ថ្ងៃចេញផ្កាញី​ ៥០% <span class="text-danger"></span></label>
+                                <input type="text" name="flower_day" id="flower_day" class="form-control col-6" >
                             </div>
                             <div class="col-12 col-md-6 mt-2 row">
-                                <label for="male_flowering_day" class="col-6">ថ្ងៃចេញផ្កាឈ្មោល​ ៥០% <span class="text-danger">*</span></label>
-                                <input type="text" name="male_flowering_day" id="male_flowering_day" class="form-control col-6" required>
+                                <label for="male_flowering_day" class="col-6">ថ្ងៃចេញផ្កាឈ្មោល​ ៥០% <span class="text-danger"></span></label>
+                                <input type="text" name="male_flowering_day" id="male_flowering_day" class="form-control col-6" >
                             </div>
                             <div class="col-12 col-md-6 mt-2 row">
                                 <label for="flowering_age_gap" class="col-6">គម្លាតអាយុចេញផ្កា</label>

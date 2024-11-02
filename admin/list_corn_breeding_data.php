@@ -502,7 +502,7 @@
     <!-- sweet alert -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 
-    <!-- delete corn varieties -->
+    <!-- delete corn breeding data -->
     <script src="../assets/js/deletecCBD.js"></script>
 
     <!-- auto close session -->

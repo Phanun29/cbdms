@@ -1,6 +1,6 @@
-$(document).ready(function() {
+$(document).ready(function () {
     // Handle delete button click
-    $(document).on('click', '.delete-btn', function() {
+    $(document).on('click', '.delete-btn', function () {
         var userId = $(this).data('id');
         Swal.fire({
             title: 'តើអ្នកប្រាកដទេ?',
@@ -19,17 +19,17 @@ $(document).ready(function() {
                     data: {
                         id: userId
                     },
-                    success: function(response) {
+                    success: function (response) {
                         console.log('Response:', response); // Debugging: Log the response
                         if (response === 'success') {
                             console.log('Removing row with ID: #user-' + userId); // Log the row being removed
                             $('#user-' + userId).remove(); // Remove the row from the table
-                            Swal.fire('បានលុប!', 'ឈ្មោះពូជត្រូវបានលុប.', 'success');
+                            Swal.fire('បានលុប!', 'ឈ្មោះទិន្នន័យពូជពោតត្រូវបានលុប.', 'success');
                         } else {
                             Swal.fire('Error!', 'មានបញ្ហាពេលលុប.', 'error');
                         }
                     },
-                    error: function(xhr, status, error) {
+                    error: function (xhr, status, error) {
                         console.error('AJAX Error:', status, error); // Debugging: Log AJAX errors
                         Swal.fire('Error!', 'An error occurred while deleting the user.', 'error');
                     }
