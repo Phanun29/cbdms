@@ -84,7 +84,38 @@
                                             </select>
                                         </div>
                                         <div class="col-3">
-                                            <input type="text" id="version1" class="form-control" placeholder="ជំនាន់">
+                                            <select name="version1" id="version1" class="form-control">
+                                                <option value="" disabled selected>--ជំនាន់--</option>
+                                                <!-- Version options will be dynamically added here -->
+                                            </select>
+                                            <script>
+                                                document.getElementById('filterBreedA1').addEventListener('change', fetchVersions);
+                                                document.getElementById('filterBreedB1').addEventListener('change', fetchVersions);
+
+                                                function fetchVersions() {
+                                                    const pooch1 = document.getElementById('filterBreedA1').value;
+                                                    const pooch2 = document.getElementById('filterBreedB1').value;
+
+                                                    if (pooch1 && pooch2) {
+                                                        // Make an AJAX request to fetch versions
+                                                        fetch(`fetch_versions.php?pooch1=${pooch1}&pooch2=${pooch2}`)
+                                                            .then(response => response.json())
+                                                            .then(data => {
+                                                                const filterJumnan = document.getElementById('version1');
+                                                                filterJumnan.innerHTML = '<option value="" disabled selected>--ជំនាន់--</option>';
+
+                                                                data.forEach(version => {
+                                                                    const option = document.createElement('option');
+                                                                    option.value = version;
+                                                                    option.textContent = version;
+                                                                    filterJumnan.appendChild(option);
+                                                                });
+                                                            })
+                                                            .catch(error => console.error('Error fetching versions:', error));
+                                                    }
+                                                }
+                                            </script>
+                                            <!-- <input type="text" id="version1" class="form-control" placeholder="ជំនាន់"> -->
                                         </div>
                                     </form>
                                 </div>
@@ -121,7 +152,39 @@
                                             </select>
                                         </div>
                                         <div class="col-3">
-                                            <input type="text" id="version2" class="form-control" placeholder="ជំនាន់">
+
+                                            <select name="version2" id="version2" class="form-control">
+                                                <option value="" disabled selected>--ជំនាន់--</option>
+                                                <!-- Version options will be dynamically added here -->
+                                            </select>
+                                            <script>
+                                                document.getElementById('filterBreedA2').addEventListener('change', fetchVersions);
+                                                document.getElementById('filterBreedB2').addEventListener('change', fetchVersions);
+
+                                                function fetchVersions() {
+                                                    const pooch1 = document.getElementById('filterBreedA2').value;
+                                                    const pooch2 = document.getElementById('filterBreedB2').value;
+
+                                                    if (pooch1 && pooch2) {
+                                                        // Make an AJAX request to fetch versions
+                                                        fetch(`fetch_versions.php?pooch1=${pooch1}&pooch2=${pooch2}`)
+                                                            .then(response => response.json())
+                                                            .then(data => {
+                                                                const filterJumnan = document.getElementById('version2');
+                                                                filterJumnan.innerHTML = '<option value="" disabled selected>--ជំនាន់--</option>';
+
+                                                                data.forEach(version => {
+                                                                    const option = document.createElement('option');
+                                                                    option.value = version;
+                                                                    option.textContent = version;
+                                                                    filterJumnan.appendChild(option);
+                                                                });
+                                                            })
+                                                            .catch(error => console.error('Error fetching versions:', error));
+                                                    }
+                                                }
+                                            </script>
+                                            <!-- <input type="text" id="version2" class="form-control" placeholder="ជំនាន់"> -->
                                         </div>
                                         <div class="col-3">
                                             <button id="applyFiltersBtn" class="btn btn-primary" type="button">ប្រៀបធៀប</button>

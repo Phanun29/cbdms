@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 02, 2024 at 02:03 PM
+-- Generation Time: Nov 03, 2024 at 03:00 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -70,14 +70,6 @@ CREATE TABLE `tbl_corn_breeding_data` (
   `total` varchar(10) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `tbl_corn_breeding_data`
---
-
-INSERT INTO `tbl_corn_breeding_data` (`cbd_id`, `name_of_cut_corn_variety`, `users_id`, `first_corn_variety`, `second_corn_variety`, `version`, `fruit_height`, `stem_height`, `flower_day`, `male_flowering_day`, `flowering_age_gap`, `number_of_stalks`, `number_of_male_flower_stalks`, `male_flowering_age`, `flowering_age`, `leaf_angle`, `the_tail_on_the_end_of_the_fruit`, `fruit_length`, `fertility`, `original_size`, `stem_length`, `root_system`, `germination_rate`, `albino_birth_level`, `worm_damage_level`, `strength`, `age_gap_between_male_and_female_flowers`, `seuthern_rast`, `peeled_fruit_diameter`, `disease_level`, `peel_length`, `number_of_rows_of_seeds_per_fruit`, `fruit_peel`, `weight`, `worm`, `seedling_vigor`, `row_of_corn_kernels`, `number_of_roots`, `tip_length`, `total`) VALUES
-(160, 'Pumpoy x Namvang s3', 3, 18, 43, 's3', '26', '28', '22', '26', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''),
-(161, 'Pumpoy x Namvang s2', 3, 18, 43, 's2', '20', '29', '31', '29', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '');
-
 -- --------------------------------------------------------
 
 --
@@ -89,14 +81,6 @@ CREATE TABLE `tbl_corn_breeding_data_images` (
   `cbd_id` int(11) NOT NULL,
   `image_path` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `tbl_corn_breeding_data_images`
---
-
-INSERT INTO `tbl_corn_breeding_data_images` (`id`, `cbd_id`, `image_path`) VALUES
-(16, 160, '../uploads/Pumpoy x Namvang s1/6724e18bd67b4.jpg'),
-(17, 161, '../uploads/Pumpoy x Namvang s2/6724e1a9c786a.jpg');
 
 -- --------------------------------------------------------
 
@@ -121,8 +105,7 @@ INSERT INTO `tbl_corn_varieties` (`id`, `corn_varieties_name`, `status`) VALUES
 (44, 'Samly', 0),
 (45, 'Bigwhith', 0),
 (46, 'Violet', 0),
-(162, 'Pumpoy x Namvang s3', 1),
-(163, 'Pumpoy x Namvang s2', 1);
+(169, 'big bom', 0);
 
 -- --------------------------------------------------------
 
@@ -149,9 +132,8 @@ CREATE TABLE `tbl_users` (
 --
 
 INSERT INTO `tbl_users` (`users_id`, `first_name`, `last_name`, `username`, `password`, `email`, `phone_number`, `image`, `user_type`, `status`, `created_at`) VALUES
-(3, 'phanun', 'sok', 'admin', '$2y$10$sSNVYVL4WnVmXNH/Tdng9uKmhsXnaJPbcldKGvLSe3n.8FQaZ9/Fa', 'nun@gmail.com', '0123456789', '../profile_image/671a0807504ee.1729759239_blank_profile.jpg', 'admin', 'active', '2024-10-31 14:09:40'),
-(7, 'Devith', 'Ku', 'user', '$2y$10$5IXPfugT0On.qfO4whZu0unVBH.leu9hQNzGyNwz.pOmjLkCJnk3a', 'user@gmail.com', '123456789', '../profile_image/66efe7a8d3f6e.1726998440_20240830_114603.jpg', 'user', 'active', '2024-11-01 14:39:31'),
-(11, '', 'no', 'nun', '$2y$10$36aGIv/xvVQFdTI0iNTueeoY9bBJ9CQCG0gfE.iYJOa8mL0H7yebW', 'nun1@ptt.com', '12345678904', '', 'user', 'active', '2024-11-01 14:39:17');
+(3, 'phanun', 'sok', 'admin', '$2y$10$lfmToY2Fdeacoa8mtyuRHOFW4eY0Ksa.60HnRP5XYl1nRwGKKeJOe', 'nun@gmail.com', '0123456789', '../profile_image/671a0807504ee.1729759239_blank_profile.jpg', 'admin', 'active', '2024-11-03 08:21:58'),
+(7, 'Devith', 'Ku', 'user', '$2y$10$5IXPfugT0On.qfO4whZu0unVBH.leu9hQNzGyNwz.pOmjLkCJnk3a', 'user@gmail.com', '123456789', '../profile_image/6727290042230.1730619648_blank_profile.jpg', 'user', 'active', '2024-11-03 07:40:48');
 
 --
 -- Indexes for dumped tables
@@ -196,19 +178,19 @@ ALTER TABLE `tbl_users`
 -- AUTO_INCREMENT for table `tbl_corn_breeding_data`
 --
 ALTER TABLE `tbl_corn_breeding_data`
-  MODIFY `cbd_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=162;
+  MODIFY `cbd_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=168;
 
 --
 -- AUTO_INCREMENT for table `tbl_corn_breeding_data_images`
 --
 ALTER TABLE `tbl_corn_breeding_data_images`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `tbl_corn_varieties`
 --
 ALTER TABLE `tbl_corn_varieties`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=164;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=171;
 
 --
 -- AUTO_INCREMENT for table `tbl_users`

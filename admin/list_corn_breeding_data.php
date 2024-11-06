@@ -125,7 +125,53 @@
                                         </select>
                                     </div>
                                     <div class="col-2">
-                                        <input type="text" name="filterJumnan" id="filterJumnan" class="form-control" placeholder="ជំនាន់" value="<?php echo isset($_GET['filterJumnan']) ? $_GET['filterJumnan'] : ''; ?>">
+
+                                        <select name="filterJumnan" id="filterJumnan" class="form-control">
+                                            <option value="" disabled selected>--ជំនាន់--</option>
+                                            <script>
+                                                const selectedVersion = "<?php echo $_GET['filterJumnan'] ?? ''; ?>";
+                                            </script>
+
+                                            <!-- Version options will be dynamically added here -->
+                                        </select>
+                                        <script>
+                                            document.getElementById('filterPooch1').addEventListener('change', fetchVersions);
+                                            document.getElementById('filterPooch2').addEventListener('change', fetchVersions);
+
+                                            function fetchVersions() {
+                                                const pooch1 = document.getElementById('filterPooch1').value;
+                                                const pooch2 = document.getElementById('filterPooch2').value;
+
+
+                                                if (pooch1 && pooch2) {
+                                                    // Make an AJAX request to fetch versions
+                                                    fetch(`fetch_versions.php?pooch1=${pooch1}&pooch2=${pooch2}`)
+                                                        .then(response => response.json())
+                                                        .then(data => {
+                                                            const filterJumnan = document.getElementById('filterJumnan');
+                                                            filterJumnan.innerHTML = '<option value="" disabled selected>--ជំនាន់--</option>';
+
+                                                            data.forEach(version => {
+                                                                const option = document.createElement('option');
+                                                                option.value = version;
+                                                                option.textContent = version;
+                                                                filterJumnan.appendChild(option);
+                                                            });
+                                                        })
+                                                        .catch(error => console.error('Error fetching versions:', error));
+                                                }
+                                            }
+                                            document.addEventListener("DOMContentLoaded", function() {
+                                                const pooch1 = document.getElementById('filterPooch1').value;
+                                                const pooch2 = document.getElementById('filterPooch2').value;
+                                                if (pooch1 || pooch2) {
+                                                    fetchVersions();
+                                                }
+                                            });
+                                        </script>
+
+
+                                        <!-- <input type="text" name="filterJumnan" id="filterJumnan" class="form-control" placeholder="ជំនាន់" value="<?php echo isset($_GET['filterJumnan']) ? $_GET['filterJumnan'] : ''; ?>"> -->
                                     </div>
                                 </div>
 
