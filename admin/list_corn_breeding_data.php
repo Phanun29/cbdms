@@ -149,12 +149,17 @@
                                                         .then(response => response.json())
                                                         .then(data => {
                                                             const filterJumnan = document.getElementById('filterJumnan');
-                                                            filterJumnan.innerHTML = '<option value="" disabled selected>--ជំនាន់--</option>';
-
+                                                            filterJumnan.innerHTML = '<option value=""  selected>--ជំនាន់--</option>';
                                                             data.forEach(version => {
                                                                 const option = document.createElement('option');
                                                                 option.value = version;
                                                                 option.textContent = version;
+
+                                                                // Check if this version matches the previously selected version
+                                                                if (version === selectedVersion) {
+                                                                    option.selected = true;
+                                                                }
+
                                                                 filterJumnan.appendChild(option);
                                                             });
                                                         })
