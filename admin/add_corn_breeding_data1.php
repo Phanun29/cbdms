@@ -1,68 +1,138 @@
-<?php
-include "../inc/script_header.php";
-include 'functions.php';
+<?php include "../inc/script_header.php";
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Get the columns for the users table
-    $columns = getUserColumns($conn);
 
-    $data = [];
-    $placeholders = [];
-    $bindTypes = ""; // To store bind types for bind_param()
+    $add_by = $fetch_info['users_id'];
 
-    foreach ($columns as $column) {
-        if (isset($_POST[$column]) && $column != 'cbd_id') {
-            $value = $_POST[$column];
-            $data[$column] = $value;
-            $placeholders[] = "?";
+    // Sanitize and retrieve form data
+    $first_corn_variety = $_POST['first_corn_variety'];
+    $second_corn_variety = $_POST['second_corn_variety'];
+    $version = $_POST['version'];
+    $fruit_height = $_POST['fruit_height'];
+    $stem_height = $_POST['stem_height'];
+    $flower_day = $_POST['flower_day'];
+    $male_flowering_day = $_POST['male_flowering_day'];
+    $flowering_age_gap = $_POST['flowering_age_gap'];
+    $number_of_stalks = $_POST['number_of_stalks'];
+    $number_of_male_flower_stalks = $_POST['number_of_male_flower_stalks'];
+    $male_flowering_age = $_POST['male_flowering_age'];
+    $flowering_age = $_POST['flowering_age'];
+    $leaf_angle = $_POST['leaf_angle'];
+    $the_tail_on_the_end_of_the_fruit = $_POST['the_tail_on_the_end_of_the_fruit'];
+    $fruit_length = $_POST['fruit_length'];
+    $fertility = $_POST['fertility'];
+    $original_size = $_POST['original_size'];
+    $stem_length = $_POST['stem_length'];
+    $root_system = $_POST['root_system'];
+    $germination_rate = $_POST['germination_rate'];
+    $albino_birth_level = $_POST['albino_birth_level'];
+    $worm_damage_level = $_POST['worm_damage_level'];
+    $strength = $_POST['strength'];
+    $age_gap_between_male_and_female_flowers = $_POST['age_gap_between_male_and_female_flowers'];
+    $seuthern_rast = $_POST['seuthern_rast'];
+    $peeled_fruit_diameter = $_POST['peeled_fruit_diameter'];
+    $disease_level = $_POST['disease_level'];
+    $peel_length = $_POST['peel_length'];
+    $number_of_rows_of_seeds_per_fruit = $_POST['number_of_rows_of_seeds_per_fruit'];
+    $fruit_peel = $_POST['fruit_peel'];
+    $weight = $_POST['weight'];
+    $worm = $_POST['worm'];
+    $seedling_vigor = $_POST['seedling_vigor'];
+    $row_of_corn_kernels = $_POST['row_of_corn_kernels'];
+    $number_of_roots = $_POST['number_of_roots'];
+    $tip_length = $_POST['tip_length'];
+    $total = $_POST['total'];
+    // Retrieve corn variety names based on the selected IDs
+    $query_first_variety = "SELECT corn_varieties_name FROM tbl_corn_varieties WHERE id = ?";
+    $query_second_variety = "SELECT corn_varieties_name FROM tbl_corn_varieties WHERE id = ?";
 
-            // Add the appropriate bind type based on the column type
-            if (is_numeric($value)) {
-                $bindTypes .= "i"; // Integer type
+    // Prepare statements
+    $stmt1 = $conn->prepare($query_first_variety);
+    $stmt2 = $conn->prepare($query_second_variety);
+
+    // Bind parameters and execute for the first variety
+    $stmt1->bind_param('s', $first_corn_variety);
+    $stmt1->execute();
+    $result1 = $stmt1->get_result();
+    $first_variety_name = $result1->fetch_assoc()['corn_varieties_name'];
+
+    // Bind parameters and execute for the second variety
+    $stmt2->bind_param('s', $second_corn_variety);
+    $stmt2->execute();
+    $result2 = $stmt2->get_result();
+    $second_variety_name = $result2->fetch_assoc()['corn_varieties_name'];
+
+    // Check for the latest count based on the variety combination and increment it
+    $count_query = "
+    SELECT COUNT(*) AS countup 
+    FROM tbl_corn_breeding_data 
+    WHERE first_corn_variety = ? 
+    AND second_corn_variety = ?
+    ";
+    $stmt_count = $conn->prepare($count_query);
+    $stmt_count->bind_param('ss', $first_corn_variety, $second_corn_variety);
+    $stmt_count->execute();
+    $result_count = $stmt_count->get_result();
+    $countup = $result_count->fetch_assoc()['countup'] + 1;
+
+    // Generate name of cut corn variety with incremented count
+    $name_of_cut_corn_variety = $first_variety_name . " x " . $second_variety_name . " " . $version;
+
+
+
+    // Handle file uploads
+    $uploaded_images = [];
+    if (!empty($_FILES['images']['name'][0])) {
+        $target_dir = "../uploads/$name_of_cut_corn_variety/";
+        if (!is_dir($target_dir)) mkdir($target_dir, 0777, true);
+
+        foreach ($_FILES['images']['name'] as $key => $image) {
+            $image_extension = pathinfo($image, PATHINFO_EXTENSION);
+            $unique_name = uniqid() . '.' . $image_extension;
+            $target_file = $target_dir . $unique_name;
+            if (move_uploaded_file($_FILES["images"]["tmp_name"][$key], $target_file)) {
+                $uploaded_images[] = $target_file; // Save the file path
             } else {
-                $bindTypes .= "s"; // String type
+                $_SESSION['error_message_cbd'] = "Error uploading image: " . $image;
+                header('Location: ' . $_SERVER['REQUEST_URI']);
+                exit();
             }
         }
     }
+    // Check if the corn variety name already exists
+    $check_query = "SELECT * FROM tbl_corn_varieties WHERE corn_varieties_name = ?";
+    $stmt_check = $conn->prepare($check_query);
+    $stmt_check->bind_param('s', $name_of_cut_corn_variety);
+    $stmt_check->execute();
+    $check_result = $stmt_check->get_result();
 
-    $columnList = implode(", ", array_keys($data));
-    $placeholderList = implode(", ", $placeholders);
-    $sql = "INSERT INTO tbl_corn_breeding_data ($columnList) VALUES ($placeholderList)";
-
-    // Prepare the statement
-    $stmt = $conn->prepare($sql);
-
-    if ($stmt === false) {
-        die("Error preparing the query: " . $conn->error);
+    // If the name already exists, send an error response and redirect
+    if ($check_result->num_rows > 0) {
+        $_SESSION['error_message_cbd'] = "ការបង្កាត់ពូជពោតនេះមានរួចហើយ។";
+        $stmt_check->close();
+        header("Location: add_corn_breeding_data.php");
+        exit();
     }
 
-    // Bind the parameters
-    $stmt->bind_param($bindTypes, ...array_values($data));
+    // Name does not exist, so insert the new variety
+    $query_corn_varieties = "INSERT INTO tbl_corn_varieties (corn_varieties_name, status) VALUES (?, '1')";
+    $stmt_insert_variety = $conn->prepare($query_corn_varieties);
+    $stmt_insert_variety->bind_param('s', $name_of_cut_corn_variety);
+
+    if ($stmt_insert_variety->execute()) {
+        //   $_SESSION['success_message_cbd'] = "Corn variety inserted successfully.";
+    } else {
+        //  $_SESSION['error_message_cbd'] = "Error inserting corn variety.";
+    }
+
+    // Insert data into the database
+    $stmt = $conn->prepare("INSERT INTO tbl_corn_breeding_data (name_of_cut_corn_variety, users_id, first_corn_variety, second_corn_variety, version, fruit_height, stem_height, flower_day, male_flowering_day, flowering_age_gap, number_of_stalks, number_of_male_flower_stalks, male_flowering_age, flowering_age, leaf_angle, the_tail_on_the_end_of_the_fruit, fruit_length, fertility, original_size, stem_length, root_system, germination_rate, albino_birth_level, worm_damage_level, strength, age_gap_between_male_and_female_flowers, seuthern_rast, peeled_fruit_diameter, disease_level, peel_length, number_of_rows_of_seeds_per_fruit, fruit_peel, weight, worm, seedling_vigor, row_of_corn_kernels, number_of_roots, tip_length, total) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+
+    $stmt->bind_param("sssssssssssssssssssssssssssssssssssssss", $name_of_cut_corn_variety, $add_by, $first_corn_variety, $second_corn_variety, $version, $fruit_height, $stem_height, $flower_day, $male_flowering_day, $flowering_age_gap, $number_of_stalks, $number_of_male_flower_stalks, $male_flowering_age, $flowering_age, $leaf_angle, $the_tail_on_the_end_of_the_fruit, $fruit_length, $fertility, $original_size, $stem_length, $root_system, $germination_rate, $albino_birth_level, $worm_damage_level, $strength, $age_gap_between_male_and_female_flowers, $seuthern_rast, $peeled_fruit_diameter, $disease_level, $peel_length, $number_of_rows_of_seeds_per_fruit, $fruit_peel, $weight, $worm, $seedling_vigor, $row_of_corn_kernels, $number_of_roots, $tip_length, $total);
 
     if ($stmt->execute()) {
+
         $cbd_id = $conn->insert_id;  // Get the cbd_id of the newly inserted record
-
-
-
-        // Handle file uploads
-        $uploaded_images = [];
-        if (!empty($_FILES['images']['name'][0])) {
-            $target_dir = "../uploads/$cbd_id/";
-            if (!is_dir($target_dir)) mkdir($target_dir, 0777, true);
-
-            foreach ($_FILES['images']['name'] as $key => $image) {
-                $image_extension = pathinfo($image, PATHINFO_EXTENSION);
-                $unique_name = uniqid() . '.' . $image_extension;
-                $target_file = $target_dir . $unique_name;
-                if (move_uploaded_file($_FILES["images"]["tmp_name"][$key], $target_file)) {
-                    $uploaded_images[] = $target_file; // Save the file path
-                } else {
-                    $_SESSION['error_message_cbd'] = "Error uploading image: " . $image;
-                    header('Location: ' . $_SERVER['REQUEST_URI']);
-                    exit();
-                }
-            }
-        }
 
         $image_insert_success = true;
         foreach ($uploaded_images as $target_file) {
@@ -80,18 +150,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
 
         $_SESSION['success_message_cbd'] = "បន្ងែមទិន្នន័យបង្កាត់ពូជពោតបានជោគជ័យ.";
-
-        header("Location: list_corn_breeding_data.php"); // Redirect after successful insert
-        exit();
     } else {
-        echo "Error adding record: " . $stmt->error;
+        $_SESSION['error_message_cbd'] = "បន្ងែមទិន្នន័យបង្កាត់ពូជពោតបរាជ័យ.";
     }
-
     $stmt->close();
+    // Redirect to the page ticket to display messages
+    header("Location: list_corn_breeding_data.php");
+    exit();
     $conn->close();
 }
 
-$columns = getUserColumns($conn);
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -159,7 +228,7 @@ $columns = getUserColumns($conn);
 
                             <a class="btn btn-secondary" href="javascript:history.back()"><i class="fa fa-arrow-circle-left" aria-hidden="true"></i> ថយក្រោយ</a>
                         </div>
-                        <!-- <form action="" class="row mt-3 px-3" method="POST" enctype="multipart/form-data">
+                        <form action="" class="row mt-3 px-3" method="POST" enctype="multipart/form-data">
                             <div class="col-12 col-md-6 mt-2 row">
                                 <label for="first_corn_variety" class="col-6">ពូជទី១ <span class="text-danger">*</span></label>
 
@@ -339,7 +408,7 @@ $columns = getUserColumns($conn);
                                 <label for="" class="col-6">រូបភាព</label>
                                 <input type="file" class="form-control col-6" id="images" name="images[]" multiple accept="">
                             </div>
-                        
+                            <!-- Display selected new images -->
                             <div class="col-12 row mt-3" id="imagePreview">
                             </div>
                             <div class="col-12 my-2" style="text-align:end;">
@@ -348,53 +417,7 @@ $columns = getUserColumns($conn);
 
                             </div>
 
-                        </form> -->
-                        <!-- Form for adding a new user -->
-                        <form action="" method="post" class="row mt-3 px-3" enctype="multipart/form-data">
-                            <?php foreach ($columns as $column): ?>
-                                <?php if ($column === 'users_id'): ?>
-                                    <input type="hidden" name="users_id" value="<?= $fetch_info['users_id'] ?>">
-                                <?php endif; ?>
-
-                                <?php if ($column != 'cbd_id' && $column != 'name_of_cut_corn_variety' && $column != 'users_id'): ?>
-                                    <div class="col-12 col-md-6 mt-2 row">
-                                        <label class="col-6"><?php echo ucfirst($column); ?>:</label>
-
-                                        <?php if ($column === 'first_variety_name' || $column === 'second_variety_name'): ?>
-                                            <!-- Dropdown for 'corn_varieties' column, populated from tbl_corn_varieties -->
-                                            <?php
-                                            $cornQuery = "SELECT id, corn_varieties_name FROM tbl_corn_varieties";
-                                            $cornResult = $conn->query($cornQuery);
-                                            ?>
-                                            <select class="col-6 form-control" name="<?php echo $column; ?>" required>
-                                                <option value="">Select Corn Variety</option>
-                                                <?php while ($cornRow = $cornResult->fetch_assoc()): ?>
-                                                    <option value="<?php echo $cornRow['id']; ?>">
-                                                        <?php echo $cornRow['corn_varieties_name']; ?>
-                                                    </option>
-                                                <?php endwhile; ?>
-                                            </select><br>
-                                        <?php else: ?>
-                                            <input class="form-control col-6" type="text" name="<?php echo $column; ?>"><br>
-                                        <?php endif; ?>
-                                    </div>
-                                <?php endif; ?>
-                            <?php endforeach; ?>
-                            <div class="col-12 col-md-6 mt-2 row">
-                                <label for="" class="col-6">រូបភាព</label>
-                                <input type="file" class="form-control col-6" id="images" name="images[]" multiple accept="">
-                            </div>
-
-                            <div class="col-12 row mt-3" id="imagePreview">
-                            </div>
-                            <div class="col-12 my-2" style="text-align:end;">
-
-                                <button type="submit" class="btn btn-success"><i class="fa fa-check-circle" aria-hidden="true"></i> រក្សាទុក</button>
-
-                            </div>
                         </form>
-
-
 
                     </div>
 

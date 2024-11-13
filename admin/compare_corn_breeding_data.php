@@ -53,7 +53,7 @@
                             <div class="row">
                                 <div class="col-12 col-md-6 row">
                                     <form action="" class="row">
-                                        <div class="col-3">
+                                        <div class="col-4">
                                             <select id="filterBreedA1" class="form-control">
                                                 <option value="" disabled selected>--ជ្រើសរើស--</option>
                                                 <?php
@@ -68,7 +68,7 @@
                                                 ?>
                                             </select>
                                         </div>
-                                        <div class="col-3">
+                                        <div class="col-4">
                                             <select id="filterBreedB1" class="form-control">
                                                 <option value="" disabled selected>--ជ្រើសរើស--</option>
                                                 <?php
@@ -83,7 +83,7 @@
                                                 ?>
                                             </select>
                                         </div>
-                                        <div class="col-3">
+                                        <div class="col-4">
                                             <select name="version1" id="version1" class="form-control">
                                                 <option value="" disabled selected>--ជំនាន់--</option>
                                                 <!-- Version options will be dynamically added here -->

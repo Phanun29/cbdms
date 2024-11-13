@@ -225,7 +225,7 @@
     <script src="../assets/js/auto_close_alert.js"></script>
 
     <!-- sweet alert -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script src="../assets/vendor/sweetalert2/sweetalert2.all.min.js"></script>
 
     <!-- delete corn varieties -->
     <script src="../assets/js/deleteCornVariety.js"></script>

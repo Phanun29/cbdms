@@ -19,8 +19,8 @@ $sql = "SELECT t.*,
            cv2.corn_varieties_name AS second_variety_name
     FROM tbl_corn_breeding_data t 
     LEFT JOIN tbl_corn_breeding_data_images ti ON t.cbd_id = ti.cbd_id
-    LEFT JOIN tbl_corn_varieties cv1 ON t.first_variety_name = cv1.id
-    LEFT JOIN tbl_corn_varieties cv2 ON t.second_variety_name = cv2.id
+    LEFT JOIN tbl_corn_varieties cv1 ON t.first_corn_variety = cv1.id
+    LEFT JOIN tbl_corn_varieties cv2 ON t.second_corn_variety = cv2.id
     WHERE t.cbd_id = ? OR t.name_of_cut_corn_variety = ?
     GROUP BY t.cbd_id";
 $stmt = $conn->prepare($sql);
@@ -67,7 +67,7 @@ $imagePaths = !empty($user['image_paths']) ? explode(',', $user['image_paths']) 
                                 }
 
                                 // Check and display First Corn Variety
-                                if ($column == 'ពូជទី១') {
+                                if ($column == 'first_corn_variety') {
                                     $firstVariety = $user['first_variety_name'] ?? 'N/A'; // Fallback to 'N/A' if NULL
                                     echo "<div class='col-12 col-md-6 row'>
                                         <label class='col-6'>First Corn Variety</label>
@@ -75,7 +75,7 @@ $imagePaths = !empty($user['image_paths']) ? explode(',', $user['image_paths']) 
                                     </div>";
 
                                     // Check and display Second Corn Variety
-                                } elseif ($column == 'ពូជទី២') {
+                                } elseif ($column == 'second_corn_variety') {
                                     $secondVariety = $user['second_variety_name'] ?? 'N/A'; // Fallback to 'N/A' if NULL
                                     echo "<div class='col-12 col-md-6 row'>
                                         <label class='col-6'>Second Corn Variety</label>
@@ -84,7 +84,7 @@ $imagePaths = !empty($user['image_paths']) ? explode(',', $user['image_paths']) 
 
                                     // Display other columns with fallback if NULL
                                 } else {
-                                    $value = $user[$column] ?? ''; // Fallback to 'N/A' if NULL
+                                    $value = $user[$column] ?? 'N/A'; // Fallback to 'N/A' if NULL
                                     echo "<div class='col-12 col-md-6 row'>
                                         <label class='col-6'>" . ucfirst(str_replace('_', ' ', $column)) . "</label>
                                         <p class='form-control col-6'>" . htmlspecialchars($value) . "</p>

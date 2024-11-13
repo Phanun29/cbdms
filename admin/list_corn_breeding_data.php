@@ -131,9 +131,8 @@
                                             <script>
                                                 const selectedVersion = "<?php echo $_GET['filterJumnan'] ?? ''; ?>";
                                             </script>
-
-                                            <!-- Version options will be dynamically added here -->
                                         </select>
+
                                         <script>
                                             document.getElementById('filterPooch1').addEventListener('change', fetchVersions);
                                             document.getElementById('filterPooch2').addEventListener('change', fetchVersions);
@@ -142,20 +141,22 @@
                                                 const pooch1 = document.getElementById('filterPooch1').value;
                                                 const pooch2 = document.getElementById('filterPooch2').value;
 
-
                                                 if (pooch1 && pooch2) {
-                                                    // Make an AJAX request to fetch versions
                                                     fetch(`fetch_versions.php?pooch1=${pooch1}&pooch2=${pooch2}`)
-                                                        .then(response => response.json())
+                                                        .then(response => {
+                                                            if (!response.ok) throw new Error('Network response was not ok');
+                                                            return response.json();
+                                                        })
                                                         .then(data => {
                                                             const filterJumnan = document.getElementById('filterJumnan');
-                                                            filterJumnan.innerHTML = '<option value=""  selected>--ជំនាន់--</option>';
+                                                            filterJumnan.innerHTML = '<option value="" selected>--ជំនាន់--</option>';
+
                                                             data.forEach(version => {
                                                                 const option = document.createElement('option');
                                                                 option.value = version;
                                                                 option.textContent = version;
 
-                                                                // Check if this version matches the previously selected version
+                                                                // Select the previously chosen version if it matches
                                                                 if (version === selectedVersion) {
                                                                     option.selected = true;
                                                                 }
@@ -166,14 +167,16 @@
                                                         .catch(error => console.error('Error fetching versions:', error));
                                                 }
                                             }
+
                                             document.addEventListener("DOMContentLoaded", function() {
                                                 const pooch1 = document.getElementById('filterPooch1').value;
                                                 const pooch2 = document.getElementById('filterPooch2').value;
-                                                if (pooch1 || pooch2) {
+                                                if (pooch1 && pooch2) {
                                                     fetchVersions();
                                                 }
                                             });
                                         </script>
+
 
 
                                         <!-- <input type="text" name="filterJumnan" id="filterJumnan" class="form-control" placeholder="ជំនាន់" value="<?php echo isset($_GET['filterJumnan']) ? $_GET['filterJumnan'] : ''; ?>"> -->
@@ -190,301 +193,129 @@
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table class="table table-bordered text-nowrap" id="dataTable" width="100%" cellspacing="0">
+
+                                <?php
+                                include 'functions.php';
+
+                                // Get columns from the users table
+                                $columns = getUserColumns($conn);
+                                // Get filter values from the form
+                                $first_corn_variety = $_GET['filterPooch1'] ?? '';
+                                $second_corn_variety = $_GET['filterPooch2'] ?? '';
+                                $version = $_GET['filterJumnan'] ?? '';
+                                // Define a query with a JOIN to include corn variety name
+                                $sql = "SELECT t.*,   
+                                cv1.corn_varieties_name AS first_corn_variety_name, 
+                                cv2.corn_varieties_name AS second_corn_variety_name
+                                FROM tbl_corn_breeding_data t
+                                LEFT JOIN tbl_corn_varieties cv1 ON t.first_variety_name = cv1.id
+                                LEFT JOIN tbl_corn_varieties cv2 ON t.second_variety_name = cv2.id
+                                WHERE 1=1";
+
+                                // Add filters to the query if they are set
+                                if (!empty($first_corn_variety)) {
+                                    $sql .= " AND t.first_variety_name = '" . $conn->real_escape_string($first_corn_variety) . "'";
+                                }
+                                if (!empty($second_corn_variety)) {
+                                    $sql .= " AND t.second_variety_name = '" . $conn->real_escape_string($second_corn_variety) . "'";
+                                }
+
+                                if (!empty($version)) {
+                                    $sql .= " AND version = '" . $conn->real_escape_string($version) . "'";
+                                }
+
+                                $sql .= " ORDER  BY cbd_id DESC";
+                                $result = $conn->query($sql);
+
+                                ?>
+
+                                <table class='table table-bordered text-nowrap' id='dataTable' width='100%' cellspacing='0'>
                                     <thead>
                                         <tr>
-                                            <th>#</th>
-                                            <th>ពូជទី១</th>
-                                            <th>ពូជទី២</th>
-                                            <th>ជំនាន់</th>
-                                            <th>កម្ពស់ផ្លែ</th>
-                                            <th>កម្ពស់ដើម</th>
-                                            <th>ថ្ងៃចេញផ្កាញី​ ៥០%</th>
-                                            <th>ថ្ងៃចេញផ្កាឈ្មោល​ ៥០%</th>
-                                            <th>សកម្មភាព</th>
+                                            <?php
+                                            // Display table headers with numbering
+
+                                            echo "<th>#</th>";
+                                            foreach ($columns as $column) {
+                                                if ($column != 'cbd_id' && $column != 'name_of_cut_corn_variety' && $column != 'users_id') {  // Skip cbd_id column
+                                                    // Check and display First Corn Variety
+                                                    if ($column == 'first_variety_name') {
+                                                        $firstVariety = $user['first_variety_name'] ?? 'N/A'; // Fallback to 'N/A' if NULL
+                                                        echo "<th class='col-6'>ពូជទី១</th>";
+
+                                                        // Check and display Second Corn Variety
+                                                    } elseif ($column == 'second_variety_name') {
+                                                        $secondVariety = $user['second_variety_name'] ?? 'N/A'; // Fallback to 'N/A' if NULL
+                                                        echo "<th class='col-6'>ពូជទី២</th>";
+                                                        // Display other columns with fallback if NULL
+                                                    } else {
+                                                        echo "<th>" . ucfirst($column) . "</th>";
+                                                    }
+                                                    if ($column == 'male_flowering_day') {
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                            echo "<th>Actions</th>";
+
+                                            ?>
                                         </tr>
                                     </thead>
-                                    <tbody id="cornBreedingData">
+
+                                    <tbody>
                                         <?php
-                                        // Get filter values from the form
-                                        $first_corn_variety = $_GET['filterPooch1'] ?? '';
-                                        $second_corn_variety = $_GET['filterPooch2'] ?? '';
-                                        $version = $_GET['filterJumnan'] ?? '';
+                                        // Display table data
+                                        $rowNumber = 1;
+                                        while ($row = $result->fetch_assoc()) {
 
-                                        // Construct the base SQL query
-                                        $query = "
-                                            SELECT cbd.*, 
-                                                cv1.corn_varieties_name AS first_corn_variety_name, 
-                                                cv2.corn_varieties_name AS second_corn_variety_name
-                                            FROM tbl_corn_breeding_data cbd
-                                            LEFT JOIN tbl_corn_varieties cv1 ON cbd.first_corn_variety = cv1.id
-                                            LEFT JOIN tbl_corn_varieties cv2 ON cbd.second_corn_variety = cv2.id
-                                            WHERE 1=1
-                                            ";
 
-                                        // Add filters to the query if they are set
-                                        if (!empty($first_corn_variety)) {
-                                            $query .= " AND first_corn_variety = '" . $conn->real_escape_string($first_corn_variety) . "'";
-                                        }
-                                        if (!empty($second_corn_variety)) {
-                                            $query .= " AND second_corn_variety = '" . $conn->real_escape_string($second_corn_variety) . "'";
-                                        }
-                                        if (!empty($version)) {
-                                            $query .= " AND version = '" . $conn->real_escape_string($version) . "'";
-                                        }
+                                            echo "<tr id='user-" . $row['cbd_id'] . "'>";
+                                            echo "<td>" . $rowNumber++ . "</td>";  // Display and increment row number
 
-                                        // Order the results by 'cbd_id' in descending order
-                                        $query .= " ORDER BY cbd_id DESC";
+                                            foreach ($columns as $column) {
+                                                // Skip cbd_id, name_of_cut_corn_variety, and users_id columns
+                                                if ($column == 'cbd_id' || $column == 'name_of_cut_corn_variety' || $column == 'users_id') {
+                                                    continue;
+                                                }
 
-                                        // Execute the query
-                                        $result = $conn->query($query);
+                                                if ($column == 'first_variety_name') {
+                                                    // Display corn_varieties_name instead of the ID for first_corn_variety
+                                                    echo "<td>" . htmlspecialchars($row['first_corn_variety_name']) . "</td>";
+                                                } elseif ($column == 'second_variety_name') {
+                                                    // Display corn_varieties_name instead of the ID for second_corn_variety
+                                                    echo "<td>" . htmlspecialchars($row['second_corn_variety_name']) . "</td>";
+                                                } else {
+                                                    if ($column == 'flowering_age_gap') {
+                                                        break;
+                                                    }
+                                                    echo "<td>" . htmlspecialchars($row[$column]) . "</td>";
+                                                }
+                                            }
 
-                                        // Initialize row counter and sums for averages
-                                        $i = 1;
-                                        $sumFruitHeight = 0;
-                                        $sumStemHeight = 0;
-                                        $sumMaleFloweringDay = 0;
-                                        $sumFlowerDay = 0;
-
-                                        if ($result && $result->num_rows > 0) {
-                                            while ($row = $result->fetch_assoc()) {
-                                                // Output each row of data
-                                                echo "<tr id='user-" . $row['cbd_id'] . "'>";
-                                                echo '<td>' . $i++ . '</td>';
-                                                echo '<td>' . $row['first_corn_variety_name'] . '</td>';
-                                                echo '<td>' . $row['second_corn_variety_name'] . '</td>';
-                                                echo '<td>' . $row['version'] . '</td>';
-                                                echo '<td>' . $row['fruit_height'] . '</td>';
-                                                echo '<td>' . $row['stem_height'] . '</td>';
-                                                echo '<td>' . $row['flower_day'] . '</td>';
-                                                echo '<td>' . $row['male_flowering_day'] . '</td>';
-                                                echo "<td align='center'>
-                                                    <button type='button' class='btn btn-flat btn-default btn-sm dropdown-toggle dropdown-icon' data-toggle='dropdown'>
-                                                        Action
-                                                        <span class='sr-only'>Toggle Dropdown</span>
-                                                    </button>
-                                                    <div class='dropdown-menu' role='menu'>
-                                                        <a class='dropdown-item' href='view_corn_breeding_data.php?id={$row['cbd_id']}'>
-                                                            <span class='fa fa-eye text-dark'></span> លម្អិត
-                                                        </a>
-                                                        <div class='dropdown-divider'></div>
-                                                        <a class='dropdown-item' href='edit_corn_breeding_data.php?id={$row['cbd_id']}'>
-                                                            <span class='fa fa-edit text-primary'></span> កែ
-                                                        </a>
-                                                        <div class='dropdown-divider'></div>
-                                                        <button data-id='" . $row['cbd_id'] . "' class='dropdown-item  delete-btn'><span class='fa-solid fa-trash  text-danger'></span> លុប</button>
-                                                    </div>
+                                            echo "<td align='center'>
+                                                <button type='button' class='btn btn-flat btn-default btn-sm dropdown-toggle dropdown-icon' data-toggle='dropdown'>
+                                                    Action
+                                                    <span class='sr-only'>Toggle Dropdown</span>
+                                                </button>
+                                                <div class='dropdown-menu' role='menu'>
+                                                    <a class='dropdown-item' href='view_corn_breeding_data.php?id={$row['cbd_id']}'>
+                                                        <span class='fa fa-eye text-dark'></span> លម្អិត
+                                                    </a>
+                                                    <div class='dropdown-divider'></div>
+                                                    <a class='dropdown-item' href='edit_corn_breeding_data.php?id={$row['cbd_id']}'>
+                                                        <span class='fa fa-edit text-primary'></span> កែ
+                                                    </a>
+                                                    <div class='dropdown-divider'></div>
+                                                    <button data-id='" . $row['cbd_id'] . "' class='dropdown-item  delete-btn'><span class='fa-solid fa-trash  text-danger'></span> លុប</button>
+                                                </div>
                                                 </td>";
-                                                echo '</tr>';
-
-                                                // Accumulate the sums for averages
-                                                $sumFruitHeight += intval($row['fruit_height']);
-                                                $sumStemHeight += intval($row['stem_height']);
-                                                $sumMaleFloweringDay += intval($row['flower_day']);
-                                                $sumFlowerDay += intval($row['male_flowering_day']);
-                                            }
-
-                                            // Display averages if filters are applied
-                                            if ($first_corn_variety || $second_corn_variety || $version) {
-                                                $numRows = $result->num_rows;
-                                                $averageFruitHeight = $sumFruitHeight / $numRows;
-                                                $averageStemHeight = $sumStemHeight / $numRows;
-                                                $averageMaleFloweringDay = $sumMaleFloweringDay / $numRows;
-                                                $averageFlowerDay = $sumFlowerDay / $numRows;
-
-                                                echo '<tr>';
-                                                echo '<td colspan="4" class="text-center">ទិន្នន័យជាមធ្យម</td>';
-                                                echo '<td>' . number_format($averageFruitHeight, 2) . '</td>';
-                                                echo '<td>' . number_format($averageStemHeight, 2) . '</td>';
-                                                echo '<td>' . number_format($averageMaleFloweringDay, 2) . '</td>';
-                                                echo '<td>' . number_format($averageFlowerDay, 2) . '</td>';
-                                                echo '<td></td>'; // Empty cell for alignment
-                                                echo '</tr>';
-                                            }
-                                        } else {
-                                            // Display a message if no data is found
-                                            //  echo "<tr><td class='text-center' colspan='9'>No corn breeding data found!</td></tr>";
+                                            echo "</tr>";
                                         }
                                         ?>
                                     </tbody>
-
-
-
                                 </table>
 
-                                <table
-                                    class="table table-bordered text-nowrap"
-                                    style="display: none;"
-                                    id="tableForExport"
-                                    width="100%"
-                                    cellspacing="0">
-                                    <thead>
-                                        <tr>
-                                            <th>#</th>
-                                            <th>ពូជទី១</th>
-                                            <th>ពូជទី២</th>
-                                            <th>ជំនាន់</th>
-                                            <th>កម្ពស់ផ្លែ</th>
-                                            <th>កម្ពស់ដើម</th>
-                                            <th>ថ្ងៃចេញផ្កាញី​ ៥០%</th>
-                                            <th>ថ្ងៃចេញផ្កាឈ្មោល​ ៥០%</th>
 
-                                            <th>គម្លាតអាយុចេញផ្កា</th>
-                                            <th>ចំនួនទងផ្កាញី</th>
-                                            <th>ចំនួនផ្កាឈ្មោល</th>
-                                            <th>អាយុចេញផ្កាឈ្មោល</th>
-                                            <th>អាយុចេញផ្កាញី</th>
-                                            <th>មុំស្លឹក</th>
-                                            <th>ភាពមានកន្ទុយលើចុងផ្លែ</th>
-                                            <th>ប្រវែងផ្លែ</th>
-                                            <th>ភាពជាប់ផ្លែ</th>
-                                            <th>ទំហំដើម</th>
-                                            <th>ប្រវែងគល់ផ្លែ</th>
-                                            <th>ប្រព័ន្ធឫស</th>
-                                            <th>អត្រាដំណុះ</th>
-                                            <th>កម្រិតកើត Albino</th>
-
-                                            <th>កម្រិតបំផ្លាញរបស់ដង្កូវ</th>
-                                            <th>ភាពរឹងមាំ</th>
-                                            <th>គម្លាតអាយុផ្កាញីនិងឈ្មោល</th>
-                                            <th>កើតជំងឺ(Seuthern Rast)</th>
-                                            <th>អង្កត់ផ្ចិតផ្លែបកសំបក</th>
-                                            <th>កម្រិតការកើតជំងឺ</th>
-                                            <th>ប្រវែងផ្លែបកសំបក</th>
-                                            <th>ចំនួនជួរគ្រាប់ក្នុងមួយផ្លែ</th>
-                                            <th>សំបកផ្លែ</th>
-                                            <th>ទម្ងន់</th>
-                                            <th>ដង្កូវ</th>
-                                            <th>ភាពរឹងមាំរបស់កូន</th>
-                                            <th>ការរៀងជួររបស់គ្រាប់</th>
-                                            <th>ចំនួនឫស</th>
-                                            <th>ប្រវែងចុងស្នៀត</th>
-                                            <th>សរុប</th>
-
-                                        </tr>
-                                    </thead>
-                                    <tbody id="cornBreedingData2">
-                                        <?php
-
-                                        // Get filter values from the form
-                                        $first_corn_variety = $_GET['filterPooch1'] ?? '';
-                                        $second_corn_variety = $_GET['filterPooch2'] ?? '';
-                                        $version = $_GET['filterJumnan'] ?? '';
-
-                                        // Initialize a flag to check if any filters are applied 
-                                        $filtersApplied = false;
-
-                                        // Construct the SQL query based on filters
-                                        $query = "
-                                            SELECT cbd.*, 
-                                                cv1.corn_varieties_name AS first_corn_variety_name, 
-                                                cv2.corn_varieties_name AS second_corn_variety_name
-                                            FROM tbl_corn_breeding_data cbd
-                                            LEFT JOIN tbl_corn_varieties cv1 ON cbd.first_corn_variety = cv1.id
-                                            LEFT JOIN tbl_corn_varieties cv2 ON cbd.second_corn_variety = cv2.id
-                                            WHERE 1=1
-                                            ";
-
-                                        // Add filters to the query if they are set
-                                        if (!empty($first_corn_variety)) {
-                                            $query .= " AND first_corn_variety = '" . $conn->real_escape_string($first_corn_variety) . "'";
-                                            $filtersApplied = true; // Set flag to true if any filter is applied
-                                        }
-                                        if (!empty($second_corn_variety)) {
-                                            $query .= " AND second_corn_variety = '" . $conn->real_escape_string($second_corn_variety) . "'";
-                                            $filtersApplied = true; // Set flag to true if any filter is applied
-                                        }
-                                        if (!empty($version)) {
-                                            $query .= " AND version = '" . $conn->real_escape_string($version) . "'";
-                                            $filtersApplied = true; // Set flag to true if any filter is applied
-                                        }
-
-                                        // Execute the query
-                                        $result = $conn->query($query);
-
-                                        // Initialize row counter and sums for averages
-                                        $i = 1;
-                                        $sumFruitHeight = 0;
-                                        $sumStemHeight = 0;
-                                        $sumMaleFloweringDay = 0;
-                                        $sumFlowerDay = 0;
-
-                                        if ($result->num_rows > 0) {
-                                            while ($cbd = $result->fetch_assoc()) {
-                                                echo "<tr class=''  id='user-" . $cbd['cbd_id'] . "'>";
-                                                echo "<td class='py-2'>" . $i++ . "</td>";
-                                                echo "<td class='py-2'>" . $cbd['first_corn_variety_name'] . "</td>";
-                                                echo "<td class='py-2'>" . $cbd['second_corn_variety_name'] . "</td>";
-                                                echo "<td class='py-1'>" . $cbd['version'] . "</td>";
-                                                echo "<td class='py-1'>" . $cbd['fruit_height'] . "</td>";
-                                                echo "<td class='py-1'>" . $cbd['stem_height'] . "</td>";
-                                                echo "<td class='py-1'>" . $cbd['flower_day'] . "</td>";
-                                                echo "<td class='py-1'>" . $cbd['male_flowering_day'] . "</td>";
-                                                echo "<td class='py-2'>" . $cbd['flowering_age_gap'] . "</td>";
-                                                echo "<td class='py-2'>" . $cbd['number_of_stalks'] . "</td>";
-                                                echo "<td class='py-1'>" . $cbd['number_of_male_flower_stalks'] . "</td>";
-                                                echo "<td class='py-1'>" . $cbd['male_flowering_age'] . "</td>";
-                                                echo "<td class='py-1'>" . $cbd['flowering_age'] . "</td>";
-                                                echo "<td class='py-1'>" . $cbd['leaf_angle'] . "</td>";
-                                                echo "<td class='py-1'>" . $cbd['the_tail_on_the_end_of_the_fruit'] . "</td>";
-                                                echo "<td class='py-2'>" . $cbd['fruit_length'] . "</td>";
-                                                echo "<td class='py-2'>" . $cbd['fertility'] . "</td>";
-                                                echo "<td class='py-1'>" . $cbd['original_size'] . "</td>";
-                                                echo "<td class='py-1'>" . $cbd['stem_length'] . "</td>";
-                                                echo "<td class='py-1'>" . $cbd['root_system'] . "</td>";
-                                                echo "<td class='py-1'>" . $cbd['germination_rate'] . "</td>";
-                                                echo "<td class='py-1'>" . $cbd['albino_birth_level'] . "</td>";
-                                                echo "<td class='py-2'>" . $cbd['worm_damage_level'] . "</td>";
-                                                echo "<td class='py-2'>" . $cbd['strength'] . "</td>";
-                                                echo "<td class='py-1'>" . $cbd['age_gap_between_male_and_female_flowers'] . "</td>";
-                                                echo "<td class='py-1'>" . $cbd['seuthern_rast'] . "</td>";
-                                                echo "<td class='py-1'>" . $cbd['peeled_fruit_diameter'] . "</td>";
-                                                echo "<td class='py-1'>" . $cbd['disease_level'] . "</td>";
-                                                echo "<td class='py-1'>" . $cbd['peel_length'] . "</td>";
-                                                echo "<td class='py-2'>" . $cbd['number_of_rows_of_seeds_per_fruit'] . "</td>";
-                                                echo "<td class='py-2'>" . $cbd['fruit_peel'] . "</td>";
-                                                echo "<td class='py-2'>" . $cbd['weight'] . "</td>";
-                                                echo "<td class='py-1'>" . $cbd['worm'] . "</td>";
-                                                echo "<td class='py-1'>" . $cbd['seedling_vigor'] . "</td>";
-                                                echo "<td class='py-1'>" . $cbd['row_of_corn_kernels'] . "</td>";
-                                                echo "<td class='py-1'>" . $cbd['number_of_roots'] . "</td>";
-                                                echo "<td class='py-1'>" . $cbd['tip_length'] . "</td>";
-                                                echo "<td class='py-2'>" . $cbd['total'] . "</td>";
-                                                echo "</tr>";
-                                                // Accumulate the sums for each column
-                                                $sumFruitHeight += intval($cbd['fruit_height']);
-                                                $sumStemHeight += intval($cbd['stem_height']);
-                                                $sumMaleFloweringDay += intval($cbd['flower_day']);
-                                                $sumFlowerDay += intval($cbd['male_flowering_day']);
-                                            }
-                                            if ($filtersApplied) {
-                                                $numRows = $result->num_rows;
-                                                $averageFruitHeight = $sumFruitHeight / $numRows;
-                                                $averageStemHeight = $sumStemHeight / $numRows;
-                                                $averageMaleFloweringDay = $sumMaleFloweringDay / $numRows;
-                                                $averageFlowerDay = $sumFlowerDay / $numRows;
-
-                                                // Display the averages
-                                                echo '<tr>';
-                                                echo '<td></td>';
-                                                echo '<td></td>';
-                                                echo '<td></td>';
-                                                echo '<td colspan="" class="text-center">ទិន្នន័យជាមធ្យម</td>';
-                                                echo '<td>' . number_format($averageFruitHeight, 2) . '</td>';
-                                                echo '<td>' . number_format($averageStemHeight, 2) . '</td>';
-                                                echo '<td>' . number_format($averageMaleFloweringDay, 2) . '</td>';
-                                                echo '<td>' . number_format($averageFlowerDay, 2) . '</td>';
-
-                                                echo '</tr>';
-                                            }
-                                        } else {
-                                            echo "<tr><td class='text-center' colspan='9'>No corn breeding data found!</td></tr>";
-                                        }
-
-                                        ?>
-
-                                    </tbody>
-                                </table>
 
                             </div>
                         </div>
@@ -551,7 +382,8 @@
     <script src="../assets/vendor/datatables/dataTables.bootstrap4.min.js"></script>
 
     <!-- sweet alert -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+    <script src="../assets/vendor/sweetalert2/sweetalert2.all.min.js"></script>
 
     <!-- delete corn breeding data -->
     <script src="../assets/js/deletecCBD.js"></script>

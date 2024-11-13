@@ -10,7 +10,7 @@ $cbd_id = isset($_POST['id']) && is_numeric($_POST['id']) ? $_POST['id'] : exit(
 $name_of_cut_corn_variety = $conn->query("SELECT name_of_cut_corn_variety FROM tbl_corn_breeding_data WHERE cbd_id = $cbd_id")->fetch_assoc()['name_of_cut_corn_variety'] ?? exit('invalid');
 
 // Define the target directory
-$name_of_cut_corn_variety_dir = "../uploads/$name_of_cut_corn_variety";
+$name_of_cut_corn_variety_dir = "../uploads/$cbd_id";
 
 // Delete files and directory
 if (is_dir($name_of_cut_corn_variety_dir)) {

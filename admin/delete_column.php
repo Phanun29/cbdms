@@ -16,7 +16,7 @@ $sql = "ALTER TABLE `$table` DROP COLUMN `$column`";
 // Execute the query
 if ($conn->query($sql) === TRUE) {
     echo "Column '$column' deleted successfully.";
-    header("location: column_user.php");
+    header("location: column_tbl_cbd.php");
     exit();
 } else {
     echo "Error deleting column: " . $conn->error;

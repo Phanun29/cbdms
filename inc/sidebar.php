@@ -78,7 +78,16 @@ $current_menu = basename($_SERVER['PHP_SELF']);
                 <span>បញ្ជីអ្នកប្រើប្រាស់</span>
             </a>
         </li>
+        <!-- Divider -->
+        <hr class="sidebar-divider my-0">
 
+        <li <?= ($current_menu == "column_tbl_cbd.php") ? 'class="nav-item active"' : 'class="nav-item"' ?>>
+            <a class="nav-link" href="column_tbl_cbd.php">
+                <i class="fa-solid fa-table-columns"></i>
+
+                <span>Column</span>
+            </a>
+        </li>
         <!-- Divider -->
         <hr class="sidebar-divider my-0">
         <!-- <hr class="sidebar-divider d-none d-md-block"> -->
