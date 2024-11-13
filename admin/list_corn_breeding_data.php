@@ -208,16 +208,16 @@
                                 cv1.corn_varieties_name AS first_corn_variety_name, 
                                 cv2.corn_varieties_name AS second_corn_variety_name
                                 FROM tbl_corn_breeding_data t
-                                LEFT JOIN tbl_corn_varieties cv1 ON t.first_variety_name = cv1.id
-                                LEFT JOIN tbl_corn_varieties cv2 ON t.second_variety_name = cv2.id
+                                LEFT JOIN tbl_corn_varieties cv1 ON t.first_corn_variety = cv1.id
+                                LEFT JOIN tbl_corn_varieties cv2 ON t.second_corn_variety = cv2.id
                                 WHERE 1=1";
 
                                 // Add filters to the query if they are set
                                 if (!empty($first_corn_variety)) {
-                                    $sql .= " AND t.first_variety_name = '" . $conn->real_escape_string($first_corn_variety) . "'";
+                                    $sql .= " AND t.first_corn_variety = '" . $conn->real_escape_string($first_corn_variety) . "'";
                                 }
                                 if (!empty($second_corn_variety)) {
-                                    $sql .= " AND t.second_variety_name = '" . $conn->real_escape_string($second_corn_variety) . "'";
+                                    $sql .= " AND t.second_corn_variety = '" . $conn->real_escape_string($second_corn_variety) . "'";
                                 }
 
                                 if (!empty($version)) {
@@ -239,14 +239,18 @@
                                             foreach ($columns as $column) {
                                                 if ($column != 'cbd_id' && $column != 'name_of_cut_corn_variety' && $column != 'users_id') {  // Skip cbd_id column
                                                     // Check and display First Corn Variety
-                                                    if ($column == 'first_variety_name') {
+                                                    if ($column == 'first_corn_variety') {
                                                         $firstVariety = $user['first_variety_name'] ?? 'N/A'; // Fallback to 'N/A' if NULL
                                                         echo "<th class='col-6'>ពូជទី១</th>";
 
                                                         // Check and display Second Corn Variety
-                                                    } elseif ($column == 'second_variety_name') {
+                                                    } elseif ($column == 'second_corn_variety') {
                                                         $secondVariety = $user['second_variety_name'] ?? 'N/A'; // Fallback to 'N/A' if NULL
                                                         echo "<th class='col-6'>ពូជទី២</th>";
+                                                        // Display other columns with fallback if NULL
+                                                    } elseif ($column == 'version') {
+                                                        $secondVariety = $user['version'] ?? 'N/A'; // Fallback to 'N/A' if NULL
+                                                        echo "<th class='col-6'>ជំនាន់</th>";
                                                         // Display other columns with fallback if NULL
                                                     } else {
                                                         echo "<th>" . ucfirst($column) . "</th>";
@@ -278,10 +282,10 @@
                                                     continue;
                                                 }
 
-                                                if ($column == 'first_variety_name') {
+                                                if ($column == 'first_corn_variety') {
                                                     // Display corn_varieties_name instead of the ID for first_corn_variety
                                                     echo "<td>" . htmlspecialchars($row['first_corn_variety_name']) . "</td>";
-                                                } elseif ($column == 'second_variety_name') {
+                                                } elseif ($column == 'second_corn_variety') {
                                                     // Display corn_varieties_name instead of the ID for second_corn_variety
                                                     echo "<td>" . htmlspecialchars($row['second_corn_variety_name']) . "</td>";
                                                 } else {

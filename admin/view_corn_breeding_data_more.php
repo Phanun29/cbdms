@@ -1,15 +1,29 @@
-<?php include "../inc/script_header.php";
-
+<?php
+include "../inc/script_header.php";
+include "functions.php";
+$columns = getUserColumns($conn);
 $name_of_cut_corn_variety = $_GET['name_of_cut_corn_variety'];
 
-$cbd_query = "SELECT  t.*, GROUP_CONCAT(ti.image_path SEPARATOR ',') AS image_paths
-              FROM tbl_corn_breeding_data t 
-              LEFT JOIN tbl_corn_breeding_data_images ti ON t.cbd_id = ti.cbd_id
-              WHERE   t.name_of_cut_corn_variety = '$name_of_cut_corn_variety'
-              GROUP BY t.cbd_id";
-$cbd_result = $conn->query($cbd_query);
-$cbd = $cbd_result->fetch_assoc();
-$image_paths = !empty($cbd['image_paths']) ? explode(',', $cbd['image_paths']) : [];
+// Fetch the user data to populate the form
+$sql = "SELECT t.*, 
+           GROUP_CONCAT(ti.image_path SEPARATOR ',') AS image_paths,
+           cv1.corn_varieties_name AS first_variety_name, 
+           cv2.corn_varieties_name AS second_variety_name
+    FROM tbl_corn_breeding_data t 
+    LEFT JOIN tbl_corn_breeding_data_images ti ON t.cbd_id = ti.cbd_id
+    LEFT JOIN tbl_corn_varieties cv1 ON t.first_corn_variety = cv1.id
+    LEFT JOIN tbl_corn_varieties cv2 ON t.second_corn_variety = cv2.id
+    WHERE t.cbd_id = ? OR t.name_of_cut_corn_variety = ?
+    GROUP BY t.cbd_id";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("is", $userId, $name_of_cut_corn_variety);  // Binding both parameters for the query
+$stmt->execute();
+$result = $stmt->get_result();
+$user = $result->fetch_assoc();
+$stmt->close();
+
+// Explode the image paths into an array
+$imagePaths = !empty($user['image_paths']) ? explode(',', $user['image_paths']) : [];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -56,255 +70,101 @@ $image_paths = !empty($cbd['image_paths']) ? explode(',', $cbd['image_paths']) :
             <div class="card-header py-3 bg-primary">
 
               <a class="btn btn-secondary" href="javascript:history.back()"><i class="fa fa-arrow-circle-left" aria-hidden="true"></i> ថយក្រោយ</a>
-              <p class="btn text-white"><?= $cbd['name_of_cut_corn_variety'] ?></p>
+              <p class="btn text-white"><?php ?></p>
             </div>
-            <form action="" class="row mt-3 px-3">
-              <div class="col-12 col-md-6 row">
-                <label for="" class="col-6">ពូជទី១ </label>
-                <?php
-                $first_corn_variety =  $cbd['first_corn_variety'];
-                // Retrieve corn variety names based on the selected IDs
-                $query_first_variety = "SELECT corn_varieties_name FROM tbl_corn_varieties WHERE id = ?";
-
-
-                // Prepare statements
-                $stmt1 = $conn->prepare($query_first_variety);
-
-
-                // Bind parameters and execute
-                $stmt1->bind_param('s', $first_corn_variety);
-                $stmt1->execute();
-                $result1 = $stmt1->get_result();
-                $first_variety_name = $result1->fetch_assoc()['corn_varieties_name'];
-
-                // Query to select corn variety
-                $query_first_corn_variety = "SELECT * FROM tbl_corn_varieties WHERE corn_varieties_name = '$first_variety_name'";
-                $fcv_result = $conn->query($query_first_corn_variety);
-
-                // Check if the query returns any rows
-                if ($fcv_result && $fcv_result->num_rows > 0) {
-                  // Fetch the result
-                  $fcv = $fcv_result->fetch_assoc();
-                  $status = $fcv['status'];
-
-                  if ($status) {
-                    echo " <a href='view_corn_breeding_data_more.php?id={$cbd['cbd_id']}&name_of_cut_corn_variety={$first_variety_name}' class='form-control col-6 text-primary mb-3'>{$first_variety_name}</a>";
-                  } else {
-                    echo " <p class='form-control col-6'>{$first_variety_name}</p>";
-                  }
-                } else {
-                  // Handle case where no data was found
-                  echo "<p class='form-control col-6 text-danger'>Corn variety not found</p>";
+            <!-- Form displaying user data -->
+            <form action="" method="POST" class="row mt-3 px-3">
+              <?php
+              // Display form data with conditional checks for NULL values
+              foreach ($columns as $column) {
+                // Skip specific columns that you don't want to display
+                if ($column == 'cbd_id' || $column == 'name_of_cut_corn_variety' || $column == 'users_id') {
+                  continue;
                 }
-                ?>
 
-              </div>
-              <div class="col-12 col-md-6 row">
-                <label for="" class="col-6">ពូជទី២ </label>
-                <?php
+                // Check and display First Corn Variety
+                if ($column == 'first_corn_variety') {
+                  $firstVariety = $user['first_variety_name'] ?? 'N/A'; // Fallback to 'N/A' if NULL
 
-                $second_corn_variety =  $cbd['second_corn_variety'];
+                  $query_first_variety = "SELECT * FROM tbl_corn_varieties WHERE corn_varieties_name = '$firstVariety' ";
+                  $fcv_result = $conn->query($query_first_variety);
 
-
-                // Retrieve corn variety names based on the selected IDs
-
-                $query_second_variety = "SELECT corn_varieties_name FROM tbl_corn_varieties WHERE id = ?";
-
-                // Prepare statements
-
-                $stmt2 = $conn->prepare($query_second_variety);
-
-
-                $stmt2->bind_param('s', $second_corn_variety);
-                $stmt2->execute();
-                $result2 = $stmt2->get_result();
-                $second_variety_name = $result2->fetch_assoc()['corn_varieties_name'];
-
-                $query_second_corn_variety = "SELECT *FROM tbl_corn_varieties WHERE corn_varieties_name = '$second_variety_name' ";
-                $scv_result = $conn->query($query_second_corn_variety);
-
-
-
-                // Check if the query returns any rows
-                if ($scv_result && $scv_result->num_rows > 0) {
-                  // Fetch the result
-                  $scv = $scv_result->fetch_assoc();
-                  $status = $scv['status'];
-
-                  if ($status) {
-                    echo " <a href='view_corn_breeding_data_more.php?name_of_cut_corn_variety={$second_variety_name}' class='form-control col-6 text-primary mb-3'>{$second_variety_name}</a>";
-                  } else {
-                    echo " <p class='form-control col-6'>{$second_variety_name}</p>";
+                  // Check if the query returns any rows
+                  if ($fcv_result && $fcv_result->num_rows > 0) {
+                    // Fetch the result
+                    $scv = $fcv_result->fetch_assoc();
+                    $status = $scv['status'];
+                    if ($status) {
+                      echo "<div class='col-12 col-md-6 row'>
+                          <label class='col-6'>ពូជទី១</label>
+                          <a href='view_corn_breeding_data_more.php?name_of_cut_corn_variety={$firstVariety}' class='form-control col-6 text-primary mb-3'>{$firstVariety}</a>
+                      </div>";
+                    } else {
+                      echo "<div class='col-12 col-md-6 row'>
+                          <label class='col-6'>ពូជទី១</label>
+                          <p class='form-control col-6'>" . htmlspecialchars($firstVariety) . "</p>
+                      </div>";
+                    }
                   }
+
+                  // Check and display Second Corn Variety
+                } elseif ($column == 'second_corn_variety') {
+                  $secondVariety = $user['second_variety_name'] ?? 'N/A'; // Fallback to 'N/A' if NULL
+
+                  $query_second_variety = "SELECT * FROM tbl_corn_varieties WHERE corn_varieties_name = '$secondVariety' ";
+                  $fcv_result = $conn->query($query_second_variety);
+                  // Check if the query returns any rows
+                  if ($fcv_result && $fcv_result->num_rows > 0) {
+                    // Fetch the result
+                    $scv = $fcv_result->fetch_assoc();
+                    $status = $scv['status'];
+                    if ($status) {
+                      echo "<div class='col-12 col-md-6 row'>
+                      <label class='col-6'>ពូជទី២</label>
+                      <a href='view_corn_breeding_data_more.php?name_of_cut_corn_variety={$secondVariety}' class='form-control col-6 text-primary mb-3'>{$secondVariety}</a>
+                  </div>";
+                    } else {
+                      echo "<div class='col-12 col-md-6 row'>
+                      <label class='col-6'>ពូជទី២</label>
+                      <p class='form-control col-6'>" . htmlspecialchars($secondVariety) . "</p>
+                  </div>";
+                    }
+                  }
+                } elseif ($column == "version") {
+                  $secondVariety = $user['version'] ?? 'N/A'; // Fallback to 'N/A' if NULL
+                  echo "<div class='col-12 col-md-6 row'>
+                                        <label class='col-6'>ជំនាន់</label>
+                                        <p class='form-control col-6'>" . htmlspecialchars($secondVariety) . "</p>
+                                    </div>";
+                  // Display other columns with fallback if NULL
                 } else {
-                  // Handle case where no data was found
-                  echo "<p class='form-control col-6 text-danger'>Corn variety not found</p>";
+                  $value = $user[$column] ?? ''; // Fallback to 'N/A' if NULL
+                  echo "<div class='col-12 col-md-6 row'>
+                                        <label class='col-6'>" . ucfirst(str_replace('_', ' ', $column)) . "</label>
+                                        <p class='form-control col-6'>" . htmlspecialchars($value) . "</p>
+                                    </div>";
                 }
-                ?>
+              }
 
-              </div>
-              <div class="col-12 col-md-6 row">
-                <label for="" class="col-6">ជំនាន់</label>
-                <p class="form-control col-6"><?= $cbd['version'] ?></p>
-              </div>
-              <div class="col-12 col-md-6 row">
-                <label for="" class="col-6">កម្ពស់ផ្លែ</label>
-                <p class="form-control col-6"><?= $cbd['fruit_height'] ?></p>
-              </div>
-              <div class="col-12 col-md-6 row">
-                <label for="" class="col-6">កម្ពស់ដើម</label>
-                <p class="form-control col-6"><?= $cbd['stem_height'] ?></p>
-              </div>
-              <div class="col-12 col-md-6 row">
-                <label for="" class="col-6">ថ្ងៃចេញផ្កាញី​ ៥០%</label>
-                <p class="form-control col-6"><?= $cbd['flower_day'] ?></p>
-              </div>
-              <div class="col-12 col-md-6 row">
-                <label for="" class="col-6">ថ្ងៃចេញផ្កាឈ្មោល​ ៥០%</label>
-                <p class="form-control col-6"><?= $cbd['male_flowering_day'] ?></p>
-              </div>
-              <div class="col-12 col-md-6 row">
-                <label for="" class="col-6">គម្លាតអាយុចេញផ្កា</label>
-                <p class="form-control col-6"><?= $cbd['flowering_age_gap'] ?></p>
-              </div>
-              <div class="col-12 col-md-6 row">
-                <label for="" class="col-6">ចំនួនទងផ្កាញី</label>
-                <p class="form-control col-6"><?= $cbd['number_of_stalks'] ?></p>
-              </div>
-              <div class="col-12 col-md-6 row">
-                <label for="" class="col-6">ចំនួនផ្កាឈ្មោល</label>
-                <p class="form-control col-6"><?= $cbd['number_of_male_flower_stalks'] ?></p>
-              </div>
-              <div class="col-12 col-md-6 row">
-                <label for="" class="col-6">អាយុចេញផ្កាឈ្មោល</label>
-                <p class="form-control col-6"><?= $cbd['male_flowering_age'] ?></p>
-              </div>
-              <div class="col-12 col-md-6 row">
-                <label for="" class="col-6">អាយុចេញផ្កាញី</label>
-                <p class="form-control col-6"><?= $cbd['flowering_age'] ?></p>
-              </div>
-              <div class="col-12 col-md-6 row">
-                <label for="" class="col-6">មុំស្លឹក</label>
-                <p class="form-control col-6"><?= $cbd['leaf_angle'] ?></p>
-              </div>
-              <div class="col-12 col-md-6 row">
-                <label for="" class="col-6">ភាពមានកន្ទុយលើចុងផ្លែ</label>
-                <p class="form-control col-6"><?= $cbd['the_tail_on_the_end_of_the_fruit'] ?></p>
-              </div>
-              <div class="col-12 col-md-6 row">
-                <label for="" class="col-6">ប្រវែងផ្លែ <span class="text-danger">*</span></label>
-                <p class="form-control col-6"><?= $cbd['fruit_length'] ?></p>
-              </div>
-              <div class="col-12 col-md-6 row">
-                <label for="" class="col-6">ភាពជាប់ផ្លែ</label>
-                <p class="form-control col-6"><?= $cbd['fertility'] ?></p>
-              </div>
-              <div class="col-12 col-md-6 row">
-                <label for="" class="col-6">ទំហំដើម</label>
-                <p class="form-control col-6"><?= $cbd['original_size'] ?></p>
-              </div>
-              <div class="col-12 col-md-6 row">
-                <label for="" class="col-6">ប្រវែងគល់ផ្លែ</label>
-                <p class="form-control col-6"><?= $cbd['stem_length'] ?></p>
-              </div>
-              <div class="col-12 col-md-6 row">
-                <label for="" class="col-6">ប្រព័ន្ធឫស</label>
-                <p class="form-control col-6"><?= $cbd['root_system'] ?></p>
-              </div>
-              <div class="col-12 col-md-6 row">
-                <label for="" class="col-6">អត្រាដំណុះ</label>
-                <p class="form-control col-6"><?= $cbd['germination_rate'] ?></p>
-              </div>
-              <div class="col-12 col-md-6 row">
-                <label for="" class="col-6">កម្រិតកើត Albino</label>
-                <p class="form-control col-6"><?= $cbd['albino_birth_level'] ?></p>
-                <!-- to this -->
-              </div>
-              <div class="col-12 col-md-6 row">
-                <label for="" class="col-6">កម្រិតបំផ្លាញរបស់ដង្កូវ</label>
-                <p class="form-control col-6"><?= $cbd['worm_damage_level'] ?></p>
-              </div>
-              <div class="col-12 col-md-6 row">
-                <label for="" class="col-6">ភាពរឹងមាំ</label>
-                <p class="form-control col-6"><?= $cbd['strength'] ?></p>
-              </div>
-              <div class="col-12 col-md-6 row">
-                <label for="" class="col-6">គម្លាតអាយុផ្កាញីនិងឈ្មោល</label>
-                <p class="form-control col-6"><?= $cbd['age_gap_between_male_and_female_flowers'] ?></p>
-              </div>
-              <div class="col-12 col-md-6 row">
-                <label for="" class="col-6">កើតជំងឺ(Seuthern Rast)</label>
-                <p class="form-control col-6"><?= $cbd['seuthern_rast'] ?></p>
-              </div>
-              <div class="col-12 col-md-6 row">
-                <label for="" class="col-6">អង្កត់ផ្ចិតផ្លែបកសំបក</label>
-                <p class="form-control col-6"><?= $cbd['peeled_fruit_diameter'] ?></p>
-              </div>
-              <div class="col-12 col-md-6 row">
-                <label for="" class="col-6">កម្រិតការកើតជំងឺ</label>
-                <p class="form-control col-6"><?= $cbd['disease_level'] ?></p>
-              </div>
-              <div class="col-12 col-md-6 row">
-                <label for="" class="col-6">ប្រវែងផ្លែបកសំបក</label>
-                <p class="form-control col-6"><?= $cbd['peel_length'] ?></p>
-              </div>
-              <div class="col-12 col-md-6 row">
-                <label for="" class="col-6">ចំនួនជួរគ្រាប់ក្នុងមួយផ្លែ</label>
-                <p class="form-control col-6"><?= $cbd['number_of_rows_of_seeds_per_fruit'] ?></p>
-              </div>
-
-              <div class="col-12 col-md-6 row">
-                <label for="" class="col-6">សំបកផ្លែ</label>
-                <p class="form-control col-6"><?= $cbd['fruit_peel'] ?></p>
-              </div>
-              <div class="col-12 col-md-6 row">
-                <label for="" class="col-6">ទម្ងន់</label>
-                <p class="form-control col-6"><?= $cbd['weight'] ?></p>
-              </div>
-              <div class="col-12 col-md-6 row">
-                <label for="" class="col-6">ដង្កូវ</label>
-                <p class="form-control col-6"><?= $cbd['worm'] ?></p>
-              </div>
-
-              <div class="col-12 col-md-6 row">
-                <label for="" class="col-6">ភាពរឹងមាំរបស់កូន</label>
-                <p class="form-control col-6"><?= $cbd['seedling_vigor'] ?></p>
-              </div>
-              <div class="col-12 col-md-6 row">
-                <label for="" class="col-6">ការរៀងជួររបស់គ្រាប់</label>
-                <p class="form-control col-6"><?= $cbd['row_of_corn_kernels'] ?></p>
-              </div>
-              <div class="col-12 col-md-6 row">
-                <label for="" class="col-6">ចំនួនឫស</label>
-                <p class="form-control col-6"><?= $cbd['number_of_roots'] ?></p>
-              </div>
-              <div class="col-12 col-md-6 row">
-                <label for="" class="col-6">ប្រវែងចុងស្នៀត(cm)</label>
-                <p class="form-control col-6"><?= $cbd['tip_length'] ?></p>
-              </div>
-              <div class="col-12 col-md-6 row">
-                <label for="" class="col-6">សរុប</label>
-                <p class="form-control col-6"><?= $cbd['total'] ?></p>
-              </div>
-
+              ?>
               <div class="form-group col-sm-12 row mt-2">
                 <?php
-                if (!empty($image_paths)) {
-                  foreach ($image_paths as $image_path) {
-                    // Check the file extension to determine if it's an image or a video
+                // Display images if available
+                if (!empty($imagePaths)) {
+                  foreach ($imagePaths as $image_path) {
+                    // Check the file extension to determine if it's an image or video
                     $file_extension = strtolower(pathinfo($image_path, PATHINFO_EXTENSION));
 
-                    // Determine if the file is an image or video
+                    // Determine if the file is an image
                     if (in_array($file_extension, ['jpeg', 'jpg', 'png', 'gif', 'bmp', 'webp'])) {
                       // Image
                       echo '<div class="image-container col-4 col-md-3">';
-                      echo '<img onclick="openModal(this)" style="width:100%; cursor: pointer;" src="' . ($image_path) . '" alt="Image" class="issue-image">';
+                      echo '<img onclick="openModal(this)" style="width:100%; cursor: pointer;" src="' . htmlspecialchars($image_path) . '" alt="Image" class="image">';
                       echo '</div>';
                     }
                   }
                 }
                 ?>
-
                 <!-- Modal for full-screen image -->
                 <div id="imageModal" class="modal" onclick="closeModal(event)">
                   <span class="close" onclick="closeModal()">&times;</span>
@@ -367,12 +227,11 @@ $image_paths = !empty($cbd['image_paths']) ? explode(',', $cbd['image_paths']) :
                     }
                   }
                 </script>
-
                 <div class="col-12 row mt-3" id="imagePreview">
                 </div>
               </div>
-
             </form>
+     
 
           </div>
 

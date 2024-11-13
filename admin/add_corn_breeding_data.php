@@ -8,22 +8,114 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     $data = [];
     $placeholders = [];
-    $bindTypes = ""; // To store bind types for bind_param()
+    $bindTypes = "";
 
+    // Assuming $columns is an array containing column names
     foreach ($columns as $column) {
         if (isset($_POST[$column]) && $column != 'cbd_id') {
             $value = $_POST[$column];
-            $data[$column] = $value;
-            $placeholders[] = "?";
 
-            // Add the appropriate bind type based on the column type
-            if (is_numeric($value)) {
-                $bindTypes .= "i"; // Integer type
-            } else {
-                $bindTypes .= "s"; // String type
+            // Check for 'first_variety_name'
+            if ($column == 'first_corn_variety') {
+                // Store the value for first variety
+                $data[$column] = $value;
+                $placeholders[] = "?";
+                $bindTypes .= "s"; // Assuming it's a string
+
+                // Prepare query to retrieve the first corn variety name
+                $query_first_variety = "SELECT corn_varieties_name FROM tbl_corn_varieties WHERE id = ?";
+                $stmt1 = $conn->prepare($query_first_variety);
+                $stmt1->bind_param('i', $value); // Bind the 'first_corn_variety' ID
+                $stmt1->execute();
+                $result1 = $stmt1->get_result();
+                $first_variety_name = $result1->fetch_assoc()['corn_varieties_name'];
+
+                // Optional: Log or echo the value for debugging
+                //  echo "First corn variety name: " . $first_variety_name;
+            }
+
+            // Check for 'second_variety_name'
+            if ($column == 'second_corn_variety') {
+                // Store the value for second variety
+                $data[$column] = $value;
+                $placeholders[] = "?";
+                $bindTypes .= "s"; // Assuming it's a string
+
+                // Prepare query to retrieve the second corn variety name
+                $query_second_variety = "SELECT corn_varieties_name FROM tbl_corn_varieties WHERE id = ?";
+                $stmt2 = $conn->prepare($query_second_variety);
+                $stmt2->bind_param('i', $value); // Bind the 'second_corn_variety' ID
+                $stmt2->execute();
+                $result2 = $stmt2->get_result();
+                $second_variety_name = $result2->fetch_assoc()['corn_varieties_name'];
+
+                // Optional: Log or echo the value for debugging
+                //    echo "Second corn variety name: " . $second_variety_name;
+            }
+
+            // Check for 'version'
+            if ($column == 'version') {
+                $data[$column] = $value;
+                $placeholders[] = "?";
+                $bindTypes .= "s";
+                $version = $value;
+            }
+
+            // Handle other columns normally
+            if ($column != 'first_corn_variety' && $column != 'second_corn_variety' && $column != 'version') {
+                $data[$column] = $value;
+                $placeholders[] = "?";
+
+                if (is_numeric($value)) {
+                    $bindTypes .= "i";
+                } else {
+                    $bindTypes .= "s";
+                }
             }
         }
     }
+    //   Now you can use $first_variety_name, $second_variety_name, and $version for inserting into another table
+    if (isset($first_variety_name) && isset($second_variety_name) && isset($version)) {
+
+        // Assuming $first_variety_name, $second_variety_name, and $version are set
+
+        $name_of_cut_corn_variety = $first_variety_name . " x " . $second_variety_name . " " . $version;
+
+        // Check if the combination already exists in tbl_corn_varieties
+        $query_check = "SELECT COUNT(*) FROM tbl_corn_varieties WHERE corn_varieties_name = ?";
+        $stmt_check = $conn->prepare($query_check);
+        $stmt_check->bind_param('s', $name_of_cut_corn_variety);
+        $stmt_check->execute();
+        $stmt_check->bind_result($count);
+        $stmt_check->fetch();
+        $stmt_check->close();
+
+        if ($count > 0) {
+            $_SESSION['error_message_cbd'] = "ការបង្កាត់ពូជពោតនេះមានរួចហើយ។";
+           
+            header("Location: add_corn_breeding_data.php");
+            exit();
+        } else {
+            // Entry does not exist, proceed with insertion
+            $query_insert = "INSERT INTO tbl_corn_varieties (corn_varieties_name, status) VALUES (?, '1')";
+            $stmt_insert = $conn->prepare($query_insert);
+            $stmt_insert->bind_param('s', $name_of_cut_corn_variety);
+
+            if ($stmt_insert->execute()) {
+                echo "Corn variety inserted successfully!";
+            } else {
+                echo "Error inserting corn variety: " . $stmt_insert->error;
+            }
+            $stmt_insert->close();
+        }
+    }
+    //  $name_of_cut_corn_variety = $first_variety_name . " x " . $second_variety_name . " " . $version;
+
+    // Add name_of_cut_corn_variety to the $data array
+    $data['name_of_cut_corn_variety'] = $name_of_cut_corn_variety;
+    $placeholders[] = "?"; // Add a placeholder for the new column
+    $bindTypes .= "s"; // Assuming it's a string, so add 's' to the bind types
+
 
     $columnList = implode(", ", array_keys($data));
     $placeholderList = implode(", ", $placeholders);
@@ -358,16 +450,28 @@ $columns = getUserColumns($conn);
 
                                 <?php if ($column != 'cbd_id' && $column != 'name_of_cut_corn_variety' && $column != 'users_id'): ?>
                                     <div class="col-12 col-md-6 mt-2 row">
-                                        <label class="col-6"><?php echo ucfirst($column); ?>:</label>
+                                        <?php
+                                        if ($column === 'first_corn_variety') {
+                                            echo "  <label class='col-6'>ពូជទី១ <span class='text-danger'>*</span></label>";
+                                        } elseif ($column === 'second_corn_variety') {
+                                            echo "  <label class='col-6'>ពូជទី2 <span class='text-danger'>*</span></label>";
+                                        } elseif ($column == "version") {
+                                            echo "<label class='col-6'>ជំនាន់<span class='text-danger'>*</span></label>";
+                                        } else {
+                                            echo "<label class='col-6'>$column</label>";
+                                        }
 
-                                        <?php if ($column === 'first_variety_name' || $column === 'second_variety_name'): ?>
+                                        ?>
+                                        <!-- <label class="col-6"><?php echo ucfirst($column); ?>:</label> -->
+
+                                        <?php if ($column === 'first_corn_variety' || $column === 'second_corn_variety'): ?>
                                             <!-- Dropdown for 'corn_varieties' column, populated from tbl_corn_varieties -->
                                             <?php
                                             $cornQuery = "SELECT id, corn_varieties_name FROM tbl_corn_varieties";
                                             $cornResult = $conn->query($cornQuery);
                                             ?>
                                             <select class="col-6 form-control" name="<?php echo $column; ?>" required>
-                                                <option value="">Select Corn Variety</option>
+                                                <option value="">ជ្រើសរើសពូជ</option>
                                                 <?php while ($cornRow = $cornResult->fetch_assoc()): ?>
                                                     <option value="<?php echo $cornRow['id']; ?>">
                                                         <?php echo $cornRow['corn_varieties_name']; ?>
@@ -387,9 +491,13 @@ $columns = getUserColumns($conn);
 
                             <div class="col-12 row mt-3" id="imagePreview">
                             </div>
-                            <div class="col-12 my-2" style="text-align:end;">
+                            <div class="col-12 row my-2" style="">
+                                <div class="col-6">
 
-                                <button type="submit" class="btn btn-success"><i class="fa fa-check-circle" aria-hidden="true"></i> រក្សាទុក</button>
+                                </div>
+                                <div class="col-6" style='text-align:end; '>
+                                    <button type="submit" class="btn btn-success"><i class="fa fa-check-circle" aria-hidden="true"></i> រក្សាទុក</button>
+                                </div>
 
                             </div>
                         </form>

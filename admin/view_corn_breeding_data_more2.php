@@ -63,7 +63,7 @@ $image_paths = !empty($cbd['image_paths']) ? explode(',', $cbd['image_paths']) :
                 <div class="col-12  row">
                   <label for="" class="col-6">ពូជទី១ </label>
                   <?php
-                  $first_corn_variety =  $cbd['first_corn_variety'];
+                  $first_corn_variety =  $cbd['first_variety_name'];
                   // Retrieve corn variety names based on the selected IDs
                   $query_first_variety = "SELECT corn_varieties_name FROM tbl_corn_varieties WHERE id = ?";
                   // Prepare statements

@@ -10,8 +10,8 @@ $sql = "SELECT t.*,
                                 cv1.corn_varieties_name AS first_variety_name, 
                                 cv2.corn_varieties_name AS second_variety_name
                                 FROM tbl_corn_breeding_data t
-                                LEFT JOIN tbl_corn_varieties cv1 ON t.first_variety_name = cv1.id
-                                LEFT JOIN tbl_corn_varieties cv2 ON t.second_variety_name = cv2.id
+                                LEFT JOIN tbl_corn_varieties cv1 ON t.first_corn_variety = cv1.id
+                                LEFT JOIN tbl_corn_varieties cv2 ON t.second_corn_variety = cv2.id
                                 ";
 $result = $conn->query($sql);
 
@@ -47,12 +47,12 @@ while ($row = $result->fetch_assoc()) {
             continue;
         }
 
-        if ($column == 'ពូជទី១') {
+        if ($column == 'first_corn_variety') {
             // Display corn_varieties_name instead of the ID for first_corn_variety
-            echo "<td>" . htmlspecialchars($row['first_corn_variety_name']) . "</td>";
+            echo "<td>" . htmlspecialchars($row['first_variety_name']) . "</td>";
         } elseif ($column == 'second_corn_variety') {
             // Display corn_varieties_name instead of the ID for second_corn_variety
-            echo "<td>" . htmlspecialchars($row['second_corn_variety_name']) . "</td>";
+            echo "<td>" . htmlspecialchars($row['second_variety_name']) . "</td>";
         } else {
             if ($column == 'flowering_age_gap') {
                 break;

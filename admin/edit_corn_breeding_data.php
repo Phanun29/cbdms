@@ -54,7 +54,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
   foreach ($columns as $column) {
     // Only include non-empty fields that are not the users_id
-    if (isset($_POST[$column]) && $_POST[$column] == '' && $column !== 'users_id') {
+    if (isset($_POST[$column]) && $_POST[$column] !== '' && $column !== 'users_id') {
+
       $data[] = $_POST[$column];
       $setFields[] = "$column = ?";
     }
@@ -65,7 +66,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     echo "No data to update.";
     exit;
   }
-
 
   // Handle deleted images
   if (!empty($_POST['delete_images'])) {
@@ -204,10 +204,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                 <?php if ($column != "users_id" && $column != 'cbd_id' && $column != 'name_of_cut_corn_variety' && $column != 'users_id'): ?>
                   <div class="col-12 col-md-6 mt-2 row">
-                    <label class="col-6"><?php echo ucfirst($column); ?>:</label>
+                    <?php
+
+                    if ($column == "first_corn_variety") {
+                      echo "<label class='col-6'>ពូជទី១</label>";
+                    } elseif ($column == "second_corn_variety") {
+                      echo "<label class='col-6'>ពូជទី២</label>";
+                    } elseif ($column == "version") {
+                      echo "<label class='col-6'>ជំនាន់</label>";
+                    } else {
+                      echo "<label class='col-6'>$column</label>";
+                    }
+
+
+
+                    ?>
+                    <!-- <label class="col-6"><?php echo ucfirst($column); ?>:</label> -->
 
                     <?php
-                    if ($column === 'first_variety_name' || $column === 'second_variety_name'): ?>
+                    if ($column === 'first_corn_variety' || $column === 'second_corn_variety'): ?>
                       <!-- Dropdown for 'corn_varieties' column, populated from the roles table -->
                       <select class="form-control col-6" name="<?php echo $column; ?>">
                         <?php foreach ($roles as $role): ?>
