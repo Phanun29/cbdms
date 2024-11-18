@@ -92,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         if ($count > 0) {
             $_SESSION['error_message_cbd'] = "ការបង្កាត់ពូជពោតនេះមានរួចហើយ។";
-           
+
             header("Location: add_corn_breeding_data.php");
             exit();
         } else {
@@ -477,8 +477,14 @@ $columns = getUserColumns($conn);
                                                         <?php echo $cornRow['corn_varieties_name']; ?>
                                                     </option>
                                                 <?php endwhile; ?>
-                                            </select><br>
+                                            </select>
+
+                                        <?php elseif ($column === 'version'): ?>
+                                            <!-- Dropdown for 'corn_varieties' column, populated from tbl_corn_varieties -->
+
+                                            <input class="form-control col-6" type="text" name="<?php echo $column; ?>" required>
                                         <?php else: ?>
+
                                             <input class="form-control col-6" type="text" name="<?php echo $column; ?>"><br>
                                         <?php endif; ?>
                                     </div>
@@ -491,7 +497,7 @@ $columns = getUserColumns($conn);
 
                             <div class="col-12 row mt-3" id="imagePreview">
                             </div>
-                            <div class="col-12 row my-2" style="">
+                            <div class="col-12 row my-2">
                                 <div class="col-6">
 
                                 </div>

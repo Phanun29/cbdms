@@ -13,10 +13,10 @@ $sql = "SELECT t.*,
     LEFT JOIN tbl_corn_breeding_data_images ti ON t.cbd_id = ti.cbd_id
     LEFT JOIN tbl_corn_varieties cv1 ON t.first_corn_variety = cv1.id
     LEFT JOIN tbl_corn_varieties cv2 ON t.second_corn_variety = cv2.id
-    WHERE t.cbd_id = ? OR t.name_of_cut_corn_variety = ?
+    WHERE t.name_of_cut_corn_variety = ?
     GROUP BY t.cbd_id";
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("is", $userId, $name_of_cut_corn_variety);  // Binding both parameters for the query
+$stmt->bind_param("s", $name_of_cut_corn_variety);  // Binding both parameters for the query
 $stmt->execute();
 $result = $stmt->get_result();
 $user = $result->fetch_assoc();
@@ -231,7 +231,7 @@ $imagePaths = !empty($user['image_paths']) ? explode(',', $user['image_paths']) 
                 </div>
               </div>
             </form>
-     
+
 
           </div>
 

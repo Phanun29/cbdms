@@ -194,43 +194,174 @@
                         <div class="card-body">
                             <div class="table-responsive">
 
-                                <?php
-                                include 'functions.php';
 
-                                // Get columns from the users table
-                                $columns = getUserColumns($conn);
-                                // Get filter values from the form
-                                $first_corn_variety = $_GET['filterPooch1'] ?? '';
-                                $second_corn_variety = $_GET['filterPooch2'] ?? '';
-                                $version = $_GET['filterJumnan'] ?? '';
-                                // Define a query with a JOIN to include corn variety name
-                                $sql = "SELECT t.*,   
-                                cv1.corn_varieties_name AS first_corn_variety_name, 
-                                cv2.corn_varieties_name AS second_corn_variety_name
-                                FROM tbl_corn_breeding_data t
-                                LEFT JOIN tbl_corn_varieties cv1 ON t.first_corn_variety = cv1.id
-                                LEFT JOIN tbl_corn_varieties cv2 ON t.second_corn_variety = cv2.id
-                                WHERE 1=1";
-
-                                // Add filters to the query if they are set
-                                if (!empty($first_corn_variety)) {
-                                    $sql .= " AND t.first_corn_variety = '" . $conn->real_escape_string($first_corn_variety) . "'";
-                                }
-                                if (!empty($second_corn_variety)) {
-                                    $sql .= " AND t.second_corn_variety = '" . $conn->real_escape_string($second_corn_variety) . "'";
-                                }
-
-                                if (!empty($version)) {
-                                    $sql .= " AND version = '" . $conn->real_escape_string($version) . "'";
-                                }
-
-                                $sql .= " ORDER  BY cbd_id DESC";
-                                $result = $conn->query($sql);
-
-                                ?>
 
                                 <table class='table table-bordered text-nowrap' id='dataTable' width='100%' cellspacing='0'>
                                     <thead>
+                                        <?php
+                                        include 'functions.php';
+
+                                        // Get columns from the users table
+                                        $columns = getUserColumns($conn);
+                                        // Get filter values from the form
+                                        $first_corn_variety = $_GET['filterPooch1'] ?? '';
+                                        $second_corn_variety = $_GET['filterPooch2'] ?? '';
+                                        $version = $_GET['filterJumnan'] ?? '';
+                                        // Define a query with a JOIN to include corn variety name
+                                        $sql = "SELECT t.*,   
+                                        cv1.corn_varieties_name AS first_corn_variety_name, 
+                                        cv2.corn_varieties_name AS second_corn_variety_name
+                                        FROM tbl_corn_breeding_data t
+                                        LEFT JOIN tbl_corn_varieties cv1 ON t.first_corn_variety = cv1.id
+                                        LEFT JOIN tbl_corn_varieties cv2 ON t.second_corn_variety = cv2.id
+                                        WHERE 1=1";
+
+                                        // Add filters to the query if they are set
+                                        if (!empty($first_corn_variety)) {
+                                            $sql .= " AND t.first_corn_variety = '" . $conn->real_escape_string($first_corn_variety) . "'";
+                                        }
+                                        if (!empty($second_corn_variety)) {
+                                            $sql .= " AND t.second_corn_variety = '" . $conn->real_escape_string($second_corn_variety) . "'";
+                                        }
+
+                                        if (!empty($version)) {
+                                            $sql .= " AND version = '" . $conn->real_escape_string($version) . "'";
+                                        }
+
+                                        $sql .= " ORDER  BY cbd_id DESC";
+                                        $result = $conn->query($sql);
+
+                                        ?>
+                                        <tr>
+                                            <?php
+                                            // Display table headers with numbering
+
+                                            echo "<th>#</th>";
+                                            $validColumnIndex = 0; // To track the position of valid columns
+                                            foreach ($columns as $column) {
+                                                if ($column != 'cbd_id' && $column != 'name_of_cut_corn_variety' && $column != 'users_id') {  // Skip cbd_id column
+                                                    // Check and display First Corn Variety
+                                                    if ($column == 'first_corn_variety') {
+                                                        $firstVariety = $user['first_variety_name'] ?? 'N/A'; // Fallback to 'N/A' if NULL
+                                                        echo "<th class='col-6'>ពូជទី១</th>";
+
+                                                        // Check and display Second Corn Variety
+                                                    } elseif ($column == 'second_corn_variety') {
+                                                        $secondVariety = $user['second_variety_name'] ?? 'N/A'; // Fallback to 'N/A' if NULL
+                                                        echo "<th class='col-6'>ពូជទី២</th>";
+                                                        // Display other columns with fallback if NULL
+                                                    } elseif ($column == 'version') {
+                                                        $secondVariety = $user['version'] ?? 'N/A'; // Fallback to 'N/A' if NULL
+                                                        echo "<th class='col-6'>ជំនាន់</th>";
+                                                        // Display other columns with fallback if NULL
+                                                    } else {
+                                                        echo "<th>" . ucfirst($column) . "</th>";
+                                                    }
+                                                    $validColumnIndex++; // Increment for each valid column
+                                                    // Break after processing the fourth valid column
+                                                    if ($validColumnIndex == 7) {
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                            echo "<th>សកម្មភាព</th>";
+
+                                            ?>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        <?php
+                                        // Display table data
+                                        $rowNumber = 1;
+                                        while ($row = $result->fetch_assoc()) {
+
+
+                                            echo "<tr id='user-" . $row['cbd_id'] . "'>";
+                                            echo "<td>" . $rowNumber++ . "</td>";  // Display and increment row number
+                                            $validColumnIndex = 0; // To track the position of valid columns
+                                            foreach ($columns as $column) {
+                                                // Skip cbd_id, name_of_cut_corn_variety, and users_id columns
+                                                if ($column == 'cbd_id' || $column == 'name_of_cut_corn_variety' || $column == 'users_id') {
+                                                    continue;
+                                                }
+
+                                                if ($column == 'first_corn_variety') {
+                                                    // Display corn_varieties_name instead of the ID for first_corn_variety
+                                                    echo "<td>" . htmlspecialchars($row['first_corn_variety_name']) . "</td>";
+                                                } elseif ($column == 'second_corn_variety') {
+                                                    // Display corn_varieties_name instead of the ID for second_corn_variety
+                                                    echo "<td>" . htmlspecialchars($row['second_corn_variety_name']) . "</td>";
+                                                } else {
+
+                                                    echo "<td>" . htmlspecialchars($row[$column]) . "</td>";
+                                                }
+                                                $validColumnIndex++; // Increment for each valid column
+                                                // Break after processing the fourth valid column
+                                                if ($validColumnIndex == 7) {
+                                                    break;
+                                                }
+                                            }
+
+                                            echo "<td align='center'>
+                                                <button type='button' class='btn btn-flat btn-default btn-sm dropdown-toggle dropdown-icon' data-toggle='dropdown'>
+                                                    Action
+                                                    <span class='sr-only'>Toggle Dropdown</span>
+                                                </button>
+                                                <div class='dropdown-menu' role='menu'>
+                                                    <a class='dropdown-item' href='view_corn_breeding_data.php?id={$row['cbd_id']}'>
+                                                        <span class='fa fa-eye text-dark'></span> លម្អិត
+                                                    </a>
+                                                    <div class='dropdown-divider'></div>
+                                                    <a class='dropdown-item' href='edit_corn_breeding_data.php?id={$row['cbd_id']}'>
+                                                        <span class='fa fa-edit text-primary'></span> កែ
+                                                    </a>
+                                                    <div class='dropdown-divider'></div>
+                                                    <button data-id='" . $row['cbd_id'] . "' class='dropdown-item  delete-btn'><span class='fa-solid fa-trash  text-danger'></span> លុប</button>
+                                                </div>
+                                                </td>";
+                                            echo "</tr>";
+                                        }
+                                        ?>
+                                    </tbody>
+                                </table>
+
+                                <table class='table table-bordered text-nowrap' id='tableForExport' style="display: none;" width='100%' cellspacing='0'>
+                                    <thead>
+                                        <?php
+                                        // include 'functions.php';
+
+                                        // Get columns from the users table
+                                        // $columns = getUserColumns($conn);
+                                        // Get filter values from the form
+                                        $first_corn_variety = $_GET['filterPooch1'] ?? '';
+                                        $second_corn_variety = $_GET['filterPooch2'] ?? '';
+                                        $version = $_GET['filterJumnan'] ?? '';
+                                        // Define a query with a JOIN to include corn variety name
+                                        $sql = "SELECT t.*,   
+                                        cv1.corn_varieties_name AS first_corn_variety_name, 
+                                        cv2.corn_varieties_name AS second_corn_variety_name
+                                        FROM tbl_corn_breeding_data t
+                                        LEFT JOIN tbl_corn_varieties cv1 ON t.first_corn_variety = cv1.id
+                                        LEFT JOIN tbl_corn_varieties cv2 ON t.second_corn_variety = cv2.id
+                                        WHERE 1=1";
+
+                                        // Add filters to the query if they are set
+                                        if (!empty($first_corn_variety)) {
+                                            $sql .= " AND t.first_corn_variety = '" . $conn->real_escape_string($first_corn_variety) . "'";
+                                        }
+                                        if (!empty($second_corn_variety)) {
+                                            $sql .= " AND t.second_corn_variety = '" . $conn->real_escape_string($second_corn_variety) . "'";
+                                        }
+
+                                        if (!empty($version)) {
+                                            $sql .= " AND version = '" . $conn->real_escape_string($version) . "'";
+                                        }
+
+                                        $sql .= " ORDER  BY cbd_id DESC";
+                                        $result = $conn->query($sql);
+
+                                        ?>
                                         <tr>
                                             <?php
                                             // Display table headers with numbering
@@ -255,12 +386,9 @@
                                                     } else {
                                                         echo "<th>" . ucfirst($column) . "</th>";
                                                     }
-                                                    if ($column == 'male_flowering_day') {
-                                                        break;
-                                                    }
                                                 }
                                             }
-                                            echo "<th>Actions</th>";
+
 
                                             ?>
                                         </tr>
@@ -289,37 +417,17 @@
                                                     // Display corn_varieties_name instead of the ID for second_corn_variety
                                                     echo "<td>" . htmlspecialchars($row['second_corn_variety_name']) . "</td>";
                                                 } else {
-                                                    if ($column == 'flowering_age_gap') {
-                                                        break;
-                                                    }
+
                                                     echo "<td>" . htmlspecialchars($row[$column]) . "</td>";
                                                 }
                                             }
 
-                                            echo "<td align='center'>
-                                                <button type='button' class='btn btn-flat btn-default btn-sm dropdown-toggle dropdown-icon' data-toggle='dropdown'>
-                                                    Action
-                                                    <span class='sr-only'>Toggle Dropdown</span>
-                                                </button>
-                                                <div class='dropdown-menu' role='menu'>
-                                                    <a class='dropdown-item' href='view_corn_breeding_data.php?id={$row['cbd_id']}'>
-                                                        <span class='fa fa-eye text-dark'></span> លម្អិត
-                                                    </a>
-                                                    <div class='dropdown-divider'></div>
-                                                    <a class='dropdown-item' href='edit_corn_breeding_data.php?id={$row['cbd_id']}'>
-                                                        <span class='fa fa-edit text-primary'></span> កែ
-                                                    </a>
-                                                    <div class='dropdown-divider'></div>
-                                                    <button data-id='" . $row['cbd_id'] . "' class='dropdown-item  delete-btn'><span class='fa-solid fa-trash  text-danger'></span> លុប</button>
-                                                </div>
-                                                </td>";
+
                                             echo "</tr>";
                                         }
                                         ?>
                                     </tbody>
                                 </table>
-
-
 
                             </div>
                         </div>

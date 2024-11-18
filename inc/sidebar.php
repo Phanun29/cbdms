@@ -81,8 +81,8 @@ $current_menu = basename($_SERVER['PHP_SELF']);
         <!-- Divider -->
         <hr class="sidebar-divider my-0">
 
-        <li <?= ($current_menu == "column_tbl_cbd.php") ? 'class="nav-item active"' : 'class="nav-item"' ?>>
-            <a class="nav-link" href="column_tbl_cbd.php">
+        <li <?= ($current_menu == "list_column_tbl_cbd.php" || $current_menu == "edit_column.php") ? 'class="nav-item active"' : 'class="nav-item"' ?>>
+            <a class="nav-link" href="list_column_tbl_cbd.php">
                 <i class="fa-solid fa-table-columns"></i>
 
                 <span>Column</span>

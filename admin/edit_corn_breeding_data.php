@@ -2,143 +2,175 @@
 include "../inc/script_header.php";
 include 'functions.php';
 
-// Get user ID from the URL
 $userId = $_GET['id'] ?? null;
-
 if (!$userId) {
   die("User ID is required.");
 }
 
-// Get columns for the users table
 $columns = getUserColumns($conn);
-
 // Fetch the user data to populate the form
 $sql = "SELECT t.*, 
-           GROUP_CONCAT(ti.image_path SEPARATOR ',') AS image_paths 
-           FROM tbl_corn_breeding_data t 
-           LEFT JOIN tbl_corn_breeding_data_images ti ON t.cbd_id = ti.cbd_id 
-           WHERE t.cbd_id = ? 
-           GROUP BY t.cbd_id";
+           GROUP_CONCAT(ti.image_path SEPARATOR ',') AS image_paths,
+           cv1.corn_varieties_name AS first_variety_name, 
+           cv2.corn_varieties_name AS second_variety_name
+    FROM tbl_corn_breeding_data t 
+    LEFT JOIN tbl_corn_breeding_data_images ti ON t.cbd_id = ti.cbd_id
+    LEFT JOIN tbl_corn_varieties cv1 ON t.first_corn_variety = cv1.id
+    LEFT JOIN tbl_corn_varieties cv2 ON t.second_corn_variety = cv2.id
+    WHERE t.cbd_id = ? OR t.name_of_cut_corn_variety = ?
+    GROUP BY t.cbd_id";
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $userId);
+$stmt->bind_param("is", $userId, $userId);  // Binding both parameters for the query
 $stmt->execute();
 $result = $stmt->get_result();
-
-if ($result->num_rows == 0) {
-  die("User not found.");
-}
-
 $user = $result->fetch_assoc();
 $stmt->close();
+
+// Explode the image paths into an array
 $imagePaths = !empty($user['image_paths']) ? explode(',', $user['image_paths']) : [];
+// // Fetch user data with associated image paths
+// $sql = "SELECT t.*, 
+//            GROUP_CONCAT(ti.image_path SEPARATOR ',') AS image_paths 
+//            FROM tbl_corn_breeding_data t 
+//            LEFT JOIN tbl_corn_breeding_data_images ti ON t.cbd_id = ti.cbd_id 
+//            WHERE t.cbd_id = ? 
+//            GROUP BY t.cbd_id";
+// $stmt = $conn->prepare($sql);
+// $stmt->bind_param("i", $userId);
+// $stmt->execute();
+// $result = $stmt->get_result();
 
+// if ($result->num_rows == 0) {
+//   die("User not found.");
+// }
 
-// Fetch options for the corn_varieties dropdown
-$roles = [];
-$sql = "SELECT id, corn_varieties_name FROM tbl_corn_varieties";
-$result = $conn->query($sql);
+// $user = $result->fetch_assoc();
+// $stmt->close();
+// $imagePaths = !empty($user['image_paths']) ? explode(',', $user['image_paths']) : [];
 
-if ($result->num_rows > 0) {
-  while ($row = $result->fetch_assoc()) {
-    $roles[] = $row;
-  }
-}
+// // Fetch corn varieties for dropdown
+// $roles = [];
+// $sql = "SELECT id, corn_varieties_name FROM tbl_corn_varieties WHERE corn_varieties_name = ''";
+// $result = $conn->query($sql);
+// if ($result->num_rows > 0) {
+//   while ($row = $result->fetch_assoc()) {
+//     $roles[] = $row;
+//   }
+// }
 
-// Handle the form submission for updating user data
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   $userId = $_POST['users_id'];
-
-  // Prepare the fields to update
   $data = [];
   $setFields = [];
 
   foreach ($columns as $column) {
-    // Only include non-empty fields that are not the users_id
     if (isset($_POST[$column]) && $_POST[$column] !== '' && $column !== 'users_id') {
+      $value = $_POST[$column];
 
-      $data[] = $_POST[$column];
+      if ($column == 'first_corn_variety') {
+        $stmt1 = $conn->prepare("SELECT corn_varieties_name FROM tbl_corn_varieties WHERE id = ?");
+        $stmt1->bind_param('i', $value);
+        $stmt1->execute();
+        $first_variety_name = $stmt1->get_result()->fetch_assoc()['corn_varieties_name'];
+        $stmt1->close();
+      } elseif ($column == 'second_corn_variety') {
+        $stmt2 = $conn->prepare("SELECT corn_varieties_name FROM tbl_corn_varieties WHERE id = ?");
+        $stmt2->bind_param('i', $value);
+        $stmt2->execute();
+        $second_variety_name = $stmt2->get_result()->fetch_assoc()['corn_varieties_name'];
+        $stmt2->close();
+      } elseif ($column == 'version') {
+        $version = $value;
+      }
+
+      if (isset($first_variety_name, $second_variety_name, $version)) {
+        $name_of_cut_corn_variety = "$first_variety_name x $second_variety_name $version";
+
+        $query_check = "SELECT COUNT(*) FROM tbl_corn_varieties WHERE corn_varieties_name = ?";
+        $stmt_check = $conn->prepare($query_check);
+        $stmt_check->bind_param('s', $name_of_cut_corn_variety);
+        $stmt_check->execute();
+        $stmt_check->bind_result($count);
+        $stmt_check->fetch();
+        $stmt_check->close();
+
+        $query_namecut = "SELECT name_of_cut_corn_variety FROM tbl_corn_breeding_data WHERE cbd_id = ?";
+        $stmt_namecut = $conn->prepare($query_namecut);
+        $stmt_namecut->bind_param('i', $userId);
+        $stmt_namecut->execute();
+        $nameCUT = $stmt_namecut->get_result()->fetch_assoc()['name_of_cut_corn_variety'];
+        $stmt_namecut->close();
+
+        if ($name_of_cut_corn_variety != $nameCUT && $count > 0) {
+          $_SESSION['error_message_cbd'] = "ការបង្កាត់ពូជពោតនេះមានរួចហើយ $name_of_cut_corn_variety";
+          header("Location: edit_corn_breeding_data.php?id=$userId");
+          exit();
+        } else {
+          $update_variety = "UPDATE tbl_corn_varieties SET corn_varieties_name = ? WHERE corn_varieties_name = ?";
+          $stmt_update_variety = $conn->prepare($update_variety);
+          $stmt_update_variety->bind_param('ss', $name_of_cut_corn_variety, $nameCUT);
+          $stmt_update_variety->execute();
+          $stmt_update_variety->close();
+
+          $update_namecut = "UPDATE tbl_corn_breeding_data SET name_of_cut_corn_variety = ? WHERE cbd_id = ?";
+          $stmt_namecut_update = $conn->prepare($update_namecut);
+          $stmt_namecut_update->bind_param('si', $name_of_cut_corn_variety, $userId);
+          $stmt_namecut_update->execute();
+          $stmt_namecut_update->close();
+        }
+      }
+
+      $data[] = $value;
       $setFields[] = "$column = ?";
     }
-  }
-
-  // If no data to update, show an error
-  if (empty($data)) {
-    echo "No data to update.";
-    exit;
   }
 
   // Handle deleted images
   if (!empty($_POST['delete_images'])) {
     foreach ($_POST['delete_images'] as $deleted_image) {
-      // Validate and delete image file
       if (!empty($deleted_image) && file_exists($deleted_image)) {
         unlink($deleted_image);
 
-        // Remove from database record
-        $existing_images_array = !empty($prev_issue_images) ? array_map('trim', explode(', ', $prev_issue_images)) : [];
-        $existing_images_array = array_diff($existing_images_array, [$deleted_image]);
-        $prev_issue_images = implode(', ', $existing_images_array);
-
-        // Delete from tbl_corn_breeding_data_images
-        $delete_image_query = "DELETE FROM tbl_corn_breeding_data_images WHERE image_path = '$deleted_image'";
-        if ($conn->query($delete_image_query) == true) {
-          echo "Image deleted successfully";
-        } else {
-          echo "Error preparing delete statement: " . $conn->error;
-        }
+        $delete_image_query = "DELETE FROM tbl_corn_breeding_data_images WHERE image_path = ?";
+        $stmt_delete_image = $conn->prepare($delete_image_query);
+        $stmt_delete_image->bind_param('s', $deleted_image);
+        $stmt_delete_image->execute();
+        $stmt_delete_image->close();
       }
     }
   }
-  $new_dir = "../uploads/$userId/";
-  // Handle file uploads for images
-  $uploaded_images = [];
-  if (!empty($_FILES['images']['name'][0])) {
-    // Create the new directory if it doesn't exist
-    if (!is_dir($new_dir)) mkdir($new_dir, 0777, true);
 
+  $new_dir = "../uploads/$userId/";
+  if (!is_dir($new_dir)) mkdir($new_dir, 0777, true);
+
+  if (!empty($_FILES['images']['name'][0])) {
     foreach ($_FILES['images']['name'] as $key => $image) {
       $image_extension = pathinfo($image, PATHINFO_EXTENSION);
       $unique_name = uniqid() . '.' . $image_extension;
       $target_file = $new_dir . $unique_name;
 
       if (move_uploaded_file($_FILES["images"]["tmp_name"][$key], $target_file)) {
-        $uploaded_images[] = $target_file;
-
-        // Insert image path into the database
         $stmt_media = $conn->prepare("INSERT INTO tbl_corn_breeding_data_images (cbd_id, image_path) VALUES (?, ?)");
         $stmt_media->bind_param("is", $userId, $target_file);
-        if ($stmt_media->execute()) {
-          echo "Image added successfully";
-        } else {
-          echo "Error adding image: " . $stmt_media->error;
-        }
+        $stmt_media->execute();
         $stmt_media->close();
       } else {
-        $_SESSION['error_message_cbd'] = "Error uploading image: " . $image;
+        $_SESSION['error_message_cbd'] = "Error uploading image: $image";
         header('Location: ' . $_SERVER['REQUEST_URI']);
         exit();
       }
     }
   }
 
-
-  // Build the SQL query with placeholders
   $setFieldsStr = implode(", ", $setFields);
   $sql = "UPDATE tbl_corn_breeding_data SET $setFieldsStr WHERE cbd_id = ?";
-
-  // Prepare the statement for execution
   $stmt = $conn->prepare($sql);
 
-  // Create bind_param string (e.g., "sssi" for 3 string fields and 1 integer)
-  $bindTypes = str_repeat("s", count($data)) . "i";  // 's' for string, 'i' for integer (userId)
-
-  // Manually bind the parameters
-  $data[] = $userId; // Add $userId to the end of $data
+  $bindTypes = str_repeat("s", count($data)) . "i";
+  $data[] = $userId;
   $stmt->bind_param($bindTypes, ...$data);
 
-  // Execute the query and check the result
   if ($stmt->execute()) {
-    echo "User updated successfully!";
     header("Location: list_corn_breeding_data.php");
     exit();
   } else {
@@ -149,6 +181,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   $conn->close();
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -219,19 +252,35 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 
                     ?>
-                    <!-- <label class="col-6"><?php echo ucfirst($column); ?>:</label> -->
+                  
 
                     <?php
                     if ($column === 'first_corn_variety' || $column === 'second_corn_variety'): ?>
                       <!-- Dropdown for 'corn_varieties' column, populated from the roles table -->
-                      <select class="form-control col-6" name="<?php echo $column; ?>">
+                      <!-- <select class="form-control col-6" name="<?php echo $column; ?>">
                         <?php foreach ($roles as $role): ?>
                           <option value="<?php echo $role['id']; ?>"
                             <?php echo ($user[$column] == $role['id']) ? 'selected' : ''; ?>>
                             <?php echo htmlspecialchars($role['corn_varieties_name']); ?>
                           </option>
                         <?php endforeach; ?>
-                      </select><br>
+                      </select> -->
+
+
+                      <?php
+                      $nameCut = $user['name_of_cut_corn_variety'];
+
+                      $cornQuery = "SELECT id, corn_varieties_name FROM tbl_corn_varieties WHERE corn_varieties_name != '$nameCut' ";
+                      $cornResult = $conn->query($cornQuery);
+                      ?>
+                      <select class="col-6 form-control" name="<?= $column; ?>" required>
+                        <option value="">ជ្រើសរើសពូជ</option>
+                        <?php while ($cornRow = $cornResult->fetch_assoc()): ?>
+                          <option value="<?= $cornRow['id']; ?>" <?= ($user[$column] == $cornRow['id']) ? 'selected' : ''; ?>>
+                            <?= $cornRow['corn_varieties_name']; ?>
+                          </option>
+                        <?php endwhile; ?>
+                      </select>
 
                     <?php else: ?>
                       <!-- Text input for other columns -->

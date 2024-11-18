@@ -1,4 +1,3 @@
-
 <?php
 include "../inc/script_header.php";
 $user_type = $fetch_info['user_type'];
@@ -13,18 +12,31 @@ $sql = "SHOW COLUMNS FROM tbl_corn_breeding_data LIKE '$column'";
 $result = $conn->query($sql);
 $columnData = $result->fetch_assoc();
 
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $newColumnName = $_POST['column_name'];
-    $dataType = $_POST['data_type'];
-    $nullable = $_POST['nullable'] == 'YES' ? 'NULL' : 'NOT NULL';
-    $default = !empty($_POST['default_value']) ? "DEFAULT '{$_POST['default_value']}'" : '';
+    // Get form input values
+    $oldColumnName = $_POST['old_column_name'];  // Existing column name
+    $newColumnName = $_POST['column_name'];      // New column name
+    $dataType = $_POST['data_type'];             // New data type
 
-    // Use CHANGE to rename the column and update its data type or constraints
-    $sql = "ALTER TABLE tbl_corn_breeding_data CHANGE COLUMN $column $newColumnName $dataType $nullable $default";
+    // Check if the old column name has spaces, and wrap it in backticks if necessary
+    if (strpos($oldColumnName, ' ') !== false) {
+        $oldColumnName = "`" . $oldColumnName . "`";
+    }
 
+    // Check if the new column name has spaces, and wrap it in backticks if necessary
+    if (strpos($newColumnName, ' ') !== false) {
+        $newColumnName = "`" . $newColumnName . "`";
+    }
+
+    // Construct the SQL query to change the column name and its type
+    $sql = "ALTER TABLE tbl_corn_breeding_data CHANGE COLUMN $oldColumnName $newColumnName $dataType";
+
+    // Execute the SQL query
     if ($conn->query($sql) === TRUE) {
         echo "Column updated successfully!";
-        header("location: column_tbl_cbd.php");
+        $_SESSION['success_message_user'] = "Column updated successfully";
+        header("location: list_column_tbl_cbd.php");
         exit();
     } else {
         echo "Error updating column: " . $conn->error;
@@ -33,6 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $conn->close();
     exit();
 }
+
 
 
 ?>
@@ -76,7 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800">កែព័ត៌មានអ្នកប្រើប្រាស់</h1>
+                        <h1 class="h3 mb-0 text-gray-800">Edit Column</h1>
                         <?php
                         if (isset($_SESSION['success_message_user'])) {
                             echo "<div class='alert alert-success alert-dismissible fade show mb-0' role='alert'>
@@ -109,21 +122,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         </div>
                         <form method="POST" class="row" enctype="multipart/form-data">
                             <div class="card-body">
+                                <input type="hidden" name="old_column_name" value="<?php echo $columnData['Field']; ?>">
                                 <label for="last_name" class="col-12">Column Name:</label>
+
                                 <input class="form-control" type="text" name="column_name" value="<?php echo $columnData['Field']; ?>" required>
 
-                                <label class="label-form col-12" for="data_type">Data Type</label>
-                                <input class="form-control" type="text" name="data_type" value="<?php echo $columnData['Type']; ?>" required>
+                                <!-- <label class="label-form col-12" for="data_type">Data Type</label> -->
+                                <input class="form-control" type="hidden" name="data_type" value="<?php echo $columnData['Type']; ?>" required>
 
-                                <label class="col-12" for="first_name">Nullable</label>
+                                <!-- <label class="col-12" for="first_name">Nullable</label>
                                 <select class="form-control" name="nullable">
                                     <option value="YES" <?php if ($columnData['Null'] == 'YES') echo 'selected'; ?>>Yes</option>
                                     <option value="NO" <?php if ($columnData['Null'] == 'NO') echo 'selected'; ?>>No</option>
-                                </select>
+                                </select> -->
 
 
-                                <label class="col-12" for="username"> Default Value:</label>
-                                <input class="form-control" type="text" name="default_value" value="<?php echo $columnData['Default']; ?>">
+                                <!-- <label class="col-12" for="username"> Default Value:</label>
+                                <input class="form-control" type="text" name="default_value" value="<?php echo $columnData['Default']; ?>"> -->
 
 
 

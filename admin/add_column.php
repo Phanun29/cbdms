@@ -7,25 +7,44 @@ if ($user_type == "user") {
 }
 
 
-
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Get form input values
     $columnName = $_POST['column_name'];
     $dataType = $_POST['data_type'];
+
+    // Check if the column name contains spaces and add backticks if necessary
+    if (strpos($columnName, ' ') !== false) {
+        // If the column name contains spaces, wrap it in backticks
+        $columnName = "`" . $columnName . "`";
+    }
+
+    // Handle NULL or NOT NULL for the column
     $nullable = $_POST['nullable'] == 'YES' ? 'NULL' : 'NOT NULL';
+
+    // Handle default value if provided
     $default = !empty($_POST['default_value']) ? "DEFAULT '{$_POST['default_value']}'" : '';
 
+    // Check if the column data type is too large, switch to TEXT or BLOB if necessary
+    if ($dataType == 'VARCHAR(255)') {
+        $dataType = 'TEXT';  // Change to TEXT to avoid row size issues
+    }
+
+    // Prepare SQL query to add the column
     $sql = "ALTER TABLE tbl_corn_breeding_data ADD COLUMN $columnName $dataType $nullable $default";
 
+    // Execute the query
     if ($conn->query($sql) === TRUE) {
-        echo "Column added successfully!";
-        header("location: column_tbl_cbd.php");
+        $_SESSION['success_message_user'] = "Column added successfully!";
+        header("location: list_column_tbl_cbd.php");
         exit();
     } else {
         echo "Error adding column: " . $conn->error;
     }
 
+    // Close connection
     // $conn->close();
 }
+
 
 ?>
 <!DOCTYPE html>
@@ -68,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800">កែព័ត៌មានអ្នកប្រើប្រាស់</h1>
+                        <h1 class="h3 mb-0 text-gray-800">Add Column</h1>
                         <?php
                         if (isset($_SESSION['success_message_user'])) {
                             echo "<div class='alert alert-success alert-dismissible fade show mb-0' role='alert'>
@@ -104,18 +123,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 <label for="last_name" class="col-12">Column Name:</label>
                                 <input class="form-control" type="text" name="column_name" value="" required>
 
-                                <label class="label-form col-12" for="data_type">Data Type</label>
-                                <input class="form-control" type="text" name="data_type" value="" required>
+                                <!-- <label class="label-form col-12" for="data_type">Data Type</label> -->
+                                <input class="form-control" type="hidden" name="data_type" value="text" required>
 
-                                <label class="col-12" for="first_name">Nullable</label>
+                                <!-- <label class="col-12" for="first_name">Nullable</label>
                                 <select class="form-control" name="nullable">
                                     <option value="YES">Yes</option>
                                     <option value="NO">No</option>
-                                </select>
+                                </select> -->
+                                <input type="hidden" name="nullable" value="YES">
 
 
-                                <label class="col-12" for="username"> Default Value:</label>
-                                <input class="form-control" type="text" name="default_value" value="">
+                                <!-- <label class="col-12" for="username"> Default Value:</label> -->
+                                <input class="form-control" type="hidden" name="default_value" value="">
 
 
 

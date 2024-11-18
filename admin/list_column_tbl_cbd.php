@@ -45,7 +45,7 @@ if ($user_type == "user") {
 
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800">column</h1>
+                        <h1 class="h3 mb-0 text-gray-800">Column</h1>
                         <?php
                         if (isset($_SESSION['success_message_user'])) {
                             echo "<div class='alert alert-success alert-dismissible fade show mb-0' role='alert'>
@@ -74,7 +74,7 @@ if ($user_type == "user") {
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
 
-                            <a class="btn btn-primary" href="add_column.php"> <i class="fa fa-plus-circle" aria-hidden="true"></i> add column</a>
+                            <a class="btn btn-primary" href="add_column.php"> <i class="fa fa-plus-circle" aria-hidden="true"></i> Add Column</a>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
@@ -84,11 +84,6 @@ if ($user_type == "user") {
                                         <tr>
                                             <th>#</th>
                                             <th>Column Name</th>
-                                            <th>Data Type</th>
-                                            <th>Nullable</th>
-                                            <th>Key</th>
-                                            <th>Default</th>
-                                            <th>Extra</th>
                                             <th>Action</th>
 
                                         </tr>
@@ -96,30 +91,28 @@ if ($user_type == "user") {
                                     <tbody>
                                         <?php
                                         // Display the current columns in the table
-                                        $sql = "SHOW COLUMNS FROM tbl_corn_breeding_data";
+                                        $sql = "SHOW COLUMNS FROM tbl_corn_breeding_data ";
                                         $result = $conn->query($sql);
 
                                         if ($result->num_rows > 0) {
                                             $counter = 1;
 
                                             while ($row = $result->fetch_assoc()) {
-                                                if ($row['Field'] != 'cbd_id' && $row['Field'] != 'name_of_cut_corn_variety' && $row['Field'] != 'users_id'&& $row['Field'] != 'first_variety_name'&& $row['Field'] != 'second_variety_name'&& $row['Field'] != 'version') {  // Skip cbd_id column
+                                                if ($row['Field'] != 'cbd_id' && $row['Field'] != 'name_of_cut_corn_variety' && $row['Field'] != 'users_id' && $row['Field'] != 'first_corn_variety' && $row['Field'] != 'second_corn_variety' && $row['Field'] != 'version') {  // Skip cbd_id column
 
-                                                    echo "<tr>
+                                                    echo "<tr  id='user-" . $row['Field'] . "'>
                                                         <td>" . $counter++ . "</td>
                                                         <td>{$row['Field']}</td>
-                                                        <td>{$row['Type']}</td>
-                                                        <td>{$row['Null']}</td>
-                                                        <td>{$row['Key']}</td>
-                                                        <td>{$row['Default']}</td>
-                                                        <td>{$row['Extra']}</td>
-                                                        <td><a class='btn btn-danger' href='delete_column.php?column={$row['Field']}'>delete</a>
-                                                            <a class='btn btn-primary' href='edit_column.php?column={$row['Field']}'>Edit</a>
+                                                   
+                                                        <td>
+                                                            <a class='btn text-primary' href='edit_column.php?column={$row['Field']}'><span class='fa fa-edit text-primary'></span> កែ</a>
+                                                            <a class='btn text-danger' href='#' onclick='deleteColumn(\"{$row['Field']}\")'><i class='fa-solid fa-trash'></i> លុប</a>
+                                                
+                                                           
                                                         </td>
                                                     </tr>";
                                                 }
                                             }
-                                            echo "</table>";
                                         } else {
                                         }
 
@@ -175,6 +168,48 @@ if ($user_type == "user") {
 
     <!-- auto close messgae -->
     <script src="../assets/js/auto_close_alert.js"></script>
+    <!-- sweet alert -->
+    <script src="../assets/vendor/sweetalert2/sweetalert2.all.min.js"></script>
+
+    <script>
+        function deleteColumn(columnName) {
+            // SweetAlert confirmation dialog with Khmer text
+            Swal.fire({
+                title: 'តើអ្នកពិតជាការពិតទេ?',
+                text: "Column នេះនឹងត្រូវបានលុបចោល។",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'បាទ, លុបវា!',
+                cancelButtonText: 'ទេ, សូមរក្សាទុកវា',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Send an AJAX request to delete the column
+                    $.ajax({
+                        url: 'delete_column.php', // PHP script to handle column deletion
+                        type: 'GET',
+                        data: {
+                            column: columnName
+                        },
+                        success: function(response) {
+                            if (response === 'success') {
+                                // Successfully deleted, remove the row from the table
+                                Swal.fire('លុប!', 'Column នេះត្រូវបានលុបហើយ។', 'success').then(() => {
+                                    $('#user-' + columnName).remove(); // Remove the row from the table
+                                });
+                            } else {
+                                Swal.fire('កំហុស!', 'មានកំហុសក្នុងការលុប Column។', 'error');
+                            }
+                        },
+                        error: function() {
+                            Swal.fire('កំហុស!', 'មានបញ្ហាក្នុងការស្នើសុំ។ សូមព្យាយាមម្តងទៀត។', 'error');
+                        }
+                    });
+                }
+            });
+        }
+    </script>
+
 
 </body>
 

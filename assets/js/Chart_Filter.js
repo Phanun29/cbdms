@@ -6,7 +6,7 @@ var ctx1 = document.getElementById('combinedChart').getContext('2d');
 var chart1 = new Chart(ctx1, {
     type: 'bar',
     data: {
-        labels: ['កម្ពស់ផ្លែ (ជាមធ្យម)', 'កម្ពស់ដើម​ (ជាមធ្យម)', 'ថ្ងៃចេញផ្កាញី​ ៥០% (ជាមធ្យម)', 'ថ្ងៃចេញផ្កាឈ្មោល​ ៥០% (ជាមធ្យម)'],
+        labels: ['null', 'null', 'null', 'null'],
         datasets: [{
             label: '',
             backgroundColor: 'rgba(75, 192, 192, 0.2)',

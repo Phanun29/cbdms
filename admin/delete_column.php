@@ -1,26 +1,20 @@
 <?php
+include "config.php"; // Include your DB connection
 
-include "config.php";
-// Retrieve the column name from the URL or request
-$column = $_GET['column'] ?? null;
-$table = 'tbl_corn_breeding_data'; // Replace with your actual table name
+if (isset($_GET['column'])) {
+    $column = $_GET['column'];
 
-// Check if the column parameter is provided
-if (!$column) {
-    die("Column name is required.");
+    // Make sure to wrap the column name in backticks if it contains spaces
+    $column = "`" . $column . "`";
+
+    // SQL query to drop the column
+    $sql = "ALTER TABLE tbl_corn_breeding_data DROP COLUMN $column";
+
+    if ($conn->query($sql) === TRUE) {
+        echo "success"; // Send success response
+    } else {
+        echo "error"; // Send error response
+    }
+
+    $conn->close();
 }
-
-// Prepare the SQL statement to delete the column
-$sql = "ALTER TABLE `$table` DROP COLUMN `$column`";
-
-// Execute the query
-if ($conn->query($sql) === TRUE) {
-    echo "Column '$column' deleted successfully.";
-    header("location: column_tbl_cbd.php");
-    exit();
-} else {
-    echo "Error deleting column: " . $conn->error;
-}
-
-// Close the connection
-$conn->close();

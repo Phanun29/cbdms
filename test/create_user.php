@@ -104,16 +104,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         die("Error preparing the query: " . $conn->error);
     }
 
-    // Bind and execute the insert statement
-    $stmt->bind_param($bindTypes, ...array_values($data));
-
     if ($stmt->execute()) {
-        echo "New record added successfully!";
-        header("Location: read_users.php");
+        echo "<script>window.location.href = '" . $_SERVER['HTTP_REFERER'] . "';</script>";
         exit();
     } else {
         echo "Error adding record: " . $stmt->error;
     }
+
+
+
 
     $stmt->close();
     $conn->close();

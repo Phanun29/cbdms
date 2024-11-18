@@ -71,24 +71,57 @@ $imagePaths = !empty($user['image_paths']) ? explode(',', $user['image_paths']) 
                                 // Check and display First Corn Variety
                                 if ($column == 'first_corn_variety') {
                                     $firstVariety = $user['first_variety_name'] ?? 'N/A'; // Fallback to 'N/A' if NULL
-                                    echo "<div class='col-12 col-md-6 row'>
-                                        <label class='col-6'>ពូជទី១</label>
-                                        <p class='form-control col-6'>" . htmlspecialchars($firstVariety) . "</p>
-                                    </div>";
+
+                                    $query_first_variety = "SELECT * FROM tbl_corn_varieties WHERE corn_varieties_name = '$firstVariety' ";
+                                    $fcv_result = $conn->query($query_first_variety);
+
+                                    // Check if the query returns any rows
+                                    if ($fcv_result && $fcv_result->num_rows > 0) {
+                                        // Fetch the result
+                                        $scv = $fcv_result->fetch_assoc();
+                                        $status = $scv['status'];
+                                        if ($status) {
+                                            echo "<div class='col-12 col-md-6 row'>
+                                                <label class='col-6'>ពូជទី១</label>
+                                                <a href='view_corn_breeding_data_more.php?name_of_cut_corn_variety={$firstVariety}' class='form-control col-6 text-primary mb-3'>{$firstVariety}</a>
+                                            </div>";
+                                                            } else {
+                                                                echo "<div class='col-12 col-md-6 row'>
+                                                <label class='col-6'>ពូជទី១</label>
+                                                <p class='form-control col-6'>" . htmlspecialchars($firstVariety) . "</p>
+                                            </div>";
+                                        }
+                                    }
 
                                     // Check and display Second Corn Variety
                                 } elseif ($column == 'second_corn_variety') {
                                     $secondVariety = $user['second_variety_name'] ?? 'N/A'; // Fallback to 'N/A' if NULL
-                                    echo "<div class='col-12 col-md-6 row'>
-                                        <label class='col-6'>ពូជទី២</label>
-                                        <p class='form-control col-6'>" . htmlspecialchars($secondVariety) . "</p>
-                                    </div>";
+
+                                    $query_second_variety = "SELECT * FROM tbl_corn_varieties WHERE corn_varieties_name = '$secondVariety' ";
+                                    $fcv_result = $conn->query($query_second_variety);
+                                    // Check if the query returns any rows
+                                    if ($fcv_result && $fcv_result->num_rows > 0) {
+                                        // Fetch the result
+                                        $scv = $fcv_result->fetch_assoc();
+                                        $status = $scv['status'];
+                                        if ($status) {
+                                            echo "<div class='col-12 col-md-6 row'>
+                                                <label class='col-6'>ពូជទី២</label>
+                                                <a href='view_corn_breeding_data_more.php?name_of_cut_corn_variety={$secondVariety}' class='form-control col-6 text-primary mb-3'>{$secondVariety}</a>
+                                            </div>";
+                                                                } else {
+                                                                    echo "<div class='col-12 col-md-6 row'>
+                                                <label class='col-6'>ពូជទី២</label>
+                                                <p class='form-control col-6'>" . htmlspecialchars($secondVariety) . "</p>
+                                            </div>";
+                                        }
+                                    }
                                 } elseif ($column == "version") {
                                     $secondVariety = $user['version'] ?? 'N/A'; // Fallback to 'N/A' if NULL
                                     echo "<div class='col-12 col-md-6 row'>
-                                        <label class='col-6'>ជំនាន់</label>
-                                        <p class='form-control col-6'>" . htmlspecialchars($secondVariety) . "</p>
-                                    </div>";
+                                          <label class='col-6'>ជំនាន់</label>
+                                          <p class='form-control col-6'>" . htmlspecialchars($secondVariety) . "</p>
+                                      </div>";
                                     // Display other columns with fallback if NULL
                                 } else {
                                     $value = $user[$column] ?? ''; // Fallback to 'N/A' if NULL

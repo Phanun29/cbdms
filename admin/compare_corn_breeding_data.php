@@ -51,145 +51,145 @@
 
                         <div class="card-header py-3">
                             <div class="row">
-                                <div class="col-12 col-md-6 row">
-                                    <form action="" class="row">
-                                        <div class="col-4">
-                                            <select id="filterBreedA1" class="form-control">
-                                                <option value="" disabled selected>--ជ្រើសរើស--</option>
-                                                <?php
-                                                $query_corn_varieties = "SELECT * FROM tbl_corn_varieties";
-                                                $result = $conn->query($query_corn_varieties);
+                                <div class="col-12 col-md-5 row">
 
-                                                if ($result->num_rows > 0) {
-                                                    while ($corn_varieties = $result->fetch_assoc()) {
-                                                        echo "<option value='{$corn_varieties['id']}'>{$corn_varieties['corn_varieties_name']}</option>";
-                                                    }
+                                    <div class="col-4">
+                                        <select id="filterBreedA1" class="form-control">
+                                            <option value="" disabled selected>--ជ្រើសរើស--</option>
+                                            <?php
+                                            $query_corn_varieties = "SELECT * FROM tbl_corn_varieties";
+                                            $result = $conn->query($query_corn_varieties);
+
+                                            if ($result->num_rows > 0) {
+                                                while ($corn_varieties = $result->fetch_assoc()) {
+                                                    echo "<option value='{$corn_varieties['id']}'>{$corn_varieties['corn_varieties_name']}</option>";
                                                 }
-                                                ?>
-                                            </select>
-                                        </div>
-                                        <div class="col-4">
-                                            <select id="filterBreedB1" class="form-control">
-                                                <option value="" disabled selected>--ជ្រើសរើស--</option>
-                                                <?php
-                                                $query_corn_varieties = "SELECT * FROM tbl_corn_varieties";
-                                                $result = $conn->query($query_corn_varieties);
+                                            }
+                                            ?>
+                                        </select>
+                                    </div>
+                                    <div class="col-4">
+                                        <select id="filterBreedB1" class="form-control">
+                                            <option value="" disabled selected>--ជ្រើសរើស--</option>
+                                            <?php
+                                            $query_corn_varieties = "SELECT * FROM tbl_corn_varieties";
+                                            $result = $conn->query($query_corn_varieties);
 
-                                                if ($result->num_rows > 0) {
-                                                    while ($corn_varieties = $result->fetch_assoc()) {
-                                                        echo "<option value='{$corn_varieties['id']}'>{$corn_varieties['corn_varieties_name']}</option>";
-                                                    }
+                                            if ($result->num_rows > 0) {
+                                                while ($corn_varieties = $result->fetch_assoc()) {
+                                                    echo "<option value='{$corn_varieties['id']}'>{$corn_varieties['corn_varieties_name']}</option>";
                                                 }
-                                                ?>
-                                            </select>
-                                        </div>
-                                        <div class="col-4">
-                                            <select name="version1" id="version1" class="form-control">
-                                                <option value="" disabled selected>--ជំនាន់--</option>
-                                                <!-- Version options will be dynamically added here -->
-                                            </select>
-                                            <script>
-                                                document.getElementById('filterBreedA1').addEventListener('change', fetchVersions);
-                                                document.getElementById('filterBreedB1').addEventListener('change', fetchVersions);
+                                            }
+                                            ?>
+                                        </select>
+                                    </div>
+                                    <div class="col-4 ">
+                                        <select name="version1" id="version1" class="form-control">
+                                            <option value="" disabled selected>--ជំនាន់--</option>
+                                            <!-- Version options will be dynamically added here -->
+                                        </select>
+                                        <script>
+                                            document.getElementById('filterBreedA1').addEventListener('change', fetchVersions);
+                                            document.getElementById('filterBreedB1').addEventListener('change', fetchVersions);
 
-                                                function fetchVersions() {
-                                                    const pooch1 = document.getElementById('filterBreedA1').value;
-                                                    const pooch2 = document.getElementById('filterBreedB1').value;
+                                            function fetchVersions() {
+                                                const pooch1 = document.getElementById('filterBreedA1').value;
+                                                const pooch2 = document.getElementById('filterBreedB1').value;
 
-                                                    if (pooch1 && pooch2) {
-                                                        // Make an AJAX request to fetch versions
-                                                        fetch(`fetch_versions.php?pooch1=${pooch1}&pooch2=${pooch2}`)
-                                                            .then(response => response.json())
-                                                            .then(data => {
-                                                                const filterJumnan = document.getElementById('version1');
-                                                                filterJumnan.innerHTML = '<option value="" disabled selected>--ជំនាន់--</option>';
+                                                if (pooch1 && pooch2) {
+                                                    // Make an AJAX request to fetch versions
+                                                    fetch(`fetch_versions.php?pooch1=${pooch1}&pooch2=${pooch2}`)
+                                                        .then(response => response.json())
+                                                        .then(data => {
+                                                            const filterJumnan = document.getElementById('version1');
+                                                            filterJumnan.innerHTML = '<option value="" disabled selected>--ជំនាន់--</option>';
 
-                                                                data.forEach(version => {
-                                                                    const option = document.createElement('option');
-                                                                    option.value = version;
-                                                                    option.textContent = version;
-                                                                    filterJumnan.appendChild(option);
-                                                                });
-                                                            })
-                                                            .catch(error => console.error('Error fetching versions:', error));
-                                                    }
+                                                            data.forEach(version => {
+                                                                const option = document.createElement('option');
+                                                                option.value = version;
+                                                                option.textContent = version;
+                                                                filterJumnan.appendChild(option);
+                                                            });
+                                                        })
+                                                        .catch(error => console.error('Error fetching versions:', error));
                                                 }
-                                            </script>
-                                            <!-- <input type="text" id="version1" class="form-control" placeholder="ជំនាន់"> -->
-                                        </div>
-                                    </form>
+                                            }
+                                        </script>
+                                        <!-- <input type="text" id="version1" class="form-control" placeholder="ជំនាន់"> -->
+                                    </div>
+
                                 </div>
-                                <div class="col-12 col-md-6 row">
-                                    <form action="" class="row">
-                                        <div class="col-3">
-                                            <select id="filterBreedA2" class="form-control">
-                                                <option value="" disabled selected>--ជ្រើសរើស--</option>
-                                                <?php
-                                                $query_corn_varieties = "SELECT * FROM tbl_corn_varieties";
-                                                $result = $conn->query($query_corn_varieties);
+                                <div class="col-12 col-md-5 row">
 
-                                                if ($result->num_rows > 0) {
-                                                    while ($corn_varieties = $result->fetch_assoc()) {
-                                                        echo "<option value='{$corn_varieties['id']}'>{$corn_varieties['corn_varieties_name']}</option>";
-                                                    }
+                                    <div class="col-4">
+                                        <select id="filterBreedA2" class="form-control">
+                                            <option value="" disabled selected>--ជ្រើសរើស--</option>
+                                            <?php
+                                            $query_corn_varieties = "SELECT * FROM tbl_corn_varieties";
+                                            $result = $conn->query($query_corn_varieties);
+
+                                            if ($result->num_rows > 0) {
+                                                while ($corn_varieties = $result->fetch_assoc()) {
+                                                    echo "<option value='{$corn_varieties['id']}'>{$corn_varieties['corn_varieties_name']}</option>";
                                                 }
-                                                ?>
-                                            </select>
-                                        </div>
-                                        <div class="col-3">
-                                            <select id="filterBreedB2" class="form-control">
-                                                <option value="" disabled selected>--ជ្រើសរើស--</option>
-                                                <?php
-                                                $query_corn_varieties = "SELECT * FROM tbl_corn_varieties";
-                                                $result = $conn->query($query_corn_varieties);
+                                            }
+                                            ?>
+                                        </select>
+                                    </div>
+                                    <div class="col-4">
+                                        <select id="filterBreedB2" class="form-control">
+                                            <option value="" disabled selected>--ជ្រើសរើស--</option>
+                                            <?php
+                                            $query_corn_varieties = "SELECT * FROM tbl_corn_varieties";
+                                            $result = $conn->query($query_corn_varieties);
 
-                                                if ($result->num_rows > 0) {
-                                                    while ($corn_varieties = $result->fetch_assoc()) {
-                                                        echo "<option value='{$corn_varieties['id']}'>{$corn_varieties['corn_varieties_name']}</option>";
-                                                    }
+                                            if ($result->num_rows > 0) {
+                                                while ($corn_varieties = $result->fetch_assoc()) {
+                                                    echo "<option value='{$corn_varieties['id']}'>{$corn_varieties['corn_varieties_name']}</option>";
                                                 }
-                                                ?>
-                                            </select>
-                                        </div>
-                                        <div class="col-3">
+                                            }
+                                            ?>
+                                        </select>
+                                    </div>
+                                    <div class="col-4">
 
-                                            <select name="version2" id="version2" class="form-control">
-                                                <option value="" disabled selected>--ជំនាន់--</option>
-                                                <!-- Version options will be dynamically added here -->
-                                            </select>
-                                            <script>
-                                                document.getElementById('filterBreedA2').addEventListener('change', fetchVersions);
-                                                document.getElementById('filterBreedB2').addEventListener('change', fetchVersions);
+                                        <select name="version2" id="version2" class="form-control">
+                                            <option value="" disabled selected>--ជំនាន់--</option>
+                                            <!-- Version options will be dynamically added here -->
+                                        </select>
+                                        <script>
+                                            document.getElementById('filterBreedA2').addEventListener('change', fetchVersions);
+                                            document.getElementById('filterBreedB2').addEventListener('change', fetchVersions);
 
-                                                function fetchVersions() {
-                                                    const pooch1 = document.getElementById('filterBreedA2').value;
-                                                    const pooch2 = document.getElementById('filterBreedB2').value;
+                                            function fetchVersions() {
+                                                const pooch1 = document.getElementById('filterBreedA2').value;
+                                                const pooch2 = document.getElementById('filterBreedB2').value;
 
-                                                    if (pooch1 && pooch2) {
-                                                        // Make an AJAX request to fetch versions
-                                                        fetch(`fetch_versions.php?pooch1=${pooch1}&pooch2=${pooch2}`)
-                                                            .then(response => response.json())
-                                                            .then(data => {
-                                                                const filterJumnan = document.getElementById('version2');
-                                                                filterJumnan.innerHTML = '<option value="" disabled selected>--ជំនាន់--</option>';
+                                                if (pooch1 && pooch2) {
+                                                    // Make an AJAX request to fetch versions
+                                                    fetch(`fetch_versions.php?pooch1=${pooch1}&pooch2=${pooch2}`)
+                                                        .then(response => response.json())
+                                                        .then(data => {
+                                                            const filterJumnan = document.getElementById('version2');
+                                                            filterJumnan.innerHTML = '<option value="" disabled selected>--ជំនាន់--</option>';
 
-                                                                data.forEach(version => {
-                                                                    const option = document.createElement('option');
-                                                                    option.value = version;
-                                                                    option.textContent = version;
-                                                                    filterJumnan.appendChild(option);
-                                                                });
-                                                            })
-                                                            .catch(error => console.error('Error fetching versions:', error));
-                                                    }
+                                                            data.forEach(version => {
+                                                                const option = document.createElement('option');
+                                                                option.value = version;
+                                                                option.textContent = version;
+                                                                filterJumnan.appendChild(option);
+                                                            });
+                                                        })
+                                                        .catch(error => console.error('Error fetching versions:', error));
                                                 }
-                                            </script>
-                                            <!-- <input type="text" id="version2" class="form-control" placeholder="ជំនាន់"> -->
-                                        </div>
-                                        <div class="col-3">
-                                            <button id="applyFiltersBtn" class="btn btn-primary" type="button">ប្រៀបធៀប</button>
-                                        </div>
-                                    </form>
+                                            }
+                                        </script>
+                                        <!-- <input type="text" id="version2" class="form-control" placeholder="ជំនាន់"> -->
+                                    </div>
+
+                                </div>
+                                <div class="col-12 col-md-2 ">
+                                    <button id="applyFiltersBtn" class="btn btn-primary" type="button">ប្រៀបធៀប</button>
                                 </div>
                             </div>
                         </div>
